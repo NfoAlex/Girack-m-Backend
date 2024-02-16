@@ -10,7 +10,7 @@ import "./db/InitUser";
 import "./db/InitServer";
 
 const httpServer = createServer();
-const io = new Server(httpServer, {
+const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
 });
