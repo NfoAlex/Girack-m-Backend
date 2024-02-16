@@ -1,3 +1,4 @@
+//インスタンス情報
 export default interface IServerInfo {
   servername: string,
   registration: {

@@ -67,8 +67,7 @@ try { //読み込んでみる
 
   //生成
   for(let i=0; i<invCodeLength; i++){
-      invCodeGenResult += invCodeSource[Math.floor(Math.random() * invCodeSource.length)];
-
+    invCodeGenResult += invCodeSource[Math.floor(Math.random() * invCodeSource.length)];
   }
 
   //JSONをコピーする
