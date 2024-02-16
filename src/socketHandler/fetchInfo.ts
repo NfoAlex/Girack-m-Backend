@@ -1,6 +1,7 @@
 import { Socket, Server } from "socket.io";
 import { ServerInfo } from "../db/InitServer";
-import IServerInfo from "../type/Server";
+import type IServerInfo from "../type/Server";
+import type IRequestSender from "../type/requestSender";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
