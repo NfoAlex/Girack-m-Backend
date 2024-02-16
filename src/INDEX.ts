@@ -20,6 +20,6 @@ io.on("connection", (socket:Socket) => {
 });
 
 httpServer.listen(33333, () =>{
-  console.log("------ Girack ------");
+  console.log("------ Girack-m-Backend ------");
   console.log("INDEX :: サーバーホスト開始 -> ", 33333);
 });
