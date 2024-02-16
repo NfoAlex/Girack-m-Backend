@@ -31,6 +31,9 @@ module.exports = (io:Server) => {
         data: ServerInfoLimited<IServerInfo>
       }
       */
+
+      /* ...ToDo :: 権限チェック */
+
       socket.emit("ServerInfoFull", { result:"SUCCESS", data:ServerInfo });
     });
 
