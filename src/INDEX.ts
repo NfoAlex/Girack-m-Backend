@@ -10,16 +10,20 @@ import "./db/InitUser";
 import "./db/InitServer";
 
 const httpServer = createServer();
-const io = new Server(httpServer, {
+const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
 });
 
+//SocketHandlerインポート
+require("./socketHandler/fetchInfo.ts")(io);
+
+//共通ハンドラ
 io.on("connection", (socket:Socket) => {
   console.log("*** 接続検知 ***");
 });
 
 httpServer.listen(33333, () =>{
-  console.log("------ Girack ------");
+  console.log("------ Girack-m-Backend ------");
   console.log("INDEX :: サーバーホスト開始 -> ", 33333);
 });
