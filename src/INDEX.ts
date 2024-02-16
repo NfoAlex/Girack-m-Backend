@@ -1,5 +1,9 @@
+import fs from "fs";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
+
+//DB用に必要なディレクトリを作成
+try{fs.mkdirSync("./records/");}catch(e){}
 
 //DB整備
 import "./db/InitUser";

@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from "fs";
 import IServerInfo from "../type/Server";
 import mergeDeeply from "../util/mergeDeeply";
 
