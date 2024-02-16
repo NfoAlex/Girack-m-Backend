@@ -1,6 +1,9 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 
+//DB整備
+import "./db/InitUser";
+
 const httpServer = createServer();
 const io = new Server(httpServer, {
   //オプション

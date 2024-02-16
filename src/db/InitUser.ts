@@ -27,4 +27,5 @@ db.serialize(() => {
   )`);
 });
 
+console.log("InitUser :: ユーザーDB作成完了");
 db.close();
