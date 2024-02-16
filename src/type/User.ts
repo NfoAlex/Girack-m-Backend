@@ -1,5 +1,5 @@
 //ユーザー基本情報
-export interface UserInfo {
+export interface IUserInfo {
   userId: string,
   name: string,
   role: string,
@@ -9,7 +9,7 @@ export interface UserInfo {
 };
 
 //セッション情報
-export interface UserSession {
+export interface IUserSession {
   userId: string,
   name: string,
   loggedinTime: Date,
@@ -17,7 +17,7 @@ export interface UserSession {
 };
 
 //チャンネル参加情報
-export interface UserChannel {
+export interface IUserChannel {
   userId: string,
   channelIds: string[],
 };

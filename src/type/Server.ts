@@ -1,4 +1,4 @@
-export default interface ServerInfo {
+export default interface IServerInfo {
   servername: string,
   registration: {
     available: boolean,
