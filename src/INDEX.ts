@@ -15,6 +15,10 @@ const io:Server = new Server(httpServer, {
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
 });
 
+//SocketHandlerインポート
+require("./socketHandler/fetchInfo.ts")(io);
+
+//共通ハンドラ
 io.on("connection", (socket:Socket) => {
   console.log("*** 接続検知 ***");
 });
