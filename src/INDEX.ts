@@ -8,7 +8,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket:Socket) => {
-  console.log("")
+  console.log("*** 接続検知 ***");
 });
 
 httpServer.listen(33333, () =>{
