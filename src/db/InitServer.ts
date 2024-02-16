@@ -78,7 +78,7 @@ try { //読み込んでみる
 }
 
 //サーバー情報変数を適用
-const ServerInfo = ServerInfoLoading;
+export const ServerInfo = ServerInfoLoading;
 //この時点で一度書き込み保存
 fs.writeFileSync("./records/server.json", JSON.stringify(ServerInfo, null, 4));
 
