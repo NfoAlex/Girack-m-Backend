@@ -5,7 +5,7 @@ export default interface IServerInfo {
     available: boolean,
     invite: {
       inviteOnly: boolean,
-      inviteCode: string|null,
+      inviteCode: string|undefined,
     }
   },
   config: {
