@@ -1,4 +1,5 @@
 import { Socket, Server } from "socket.io";
+import checkDataIntegrality from "../util/checkDataIntegrality";
 import { ServerInfo } from "../db/InitServer";
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
@@ -25,7 +26,7 @@ module.exports = (io:Server) => {
     });
 
     //全てのインスタンス情報を取得
-    socket.on("fetchServerInfoFull", () => {
+    socket.on("fetchServerInfoFull", (RequestSender:IRequestSender) => {
       /*
       返し : {
         result: "SUCCESS"|"FAIL_MISSINGROLE",
