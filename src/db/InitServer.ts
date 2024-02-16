@@ -55,33 +55,31 @@ let ServerInfoLoading:IServerInfo = {
 };
 
 try { //読み込んでみる
-    //serverデータを読み取り
-    ServerInfoLoading = JSON.parse(fs.readFileSync('./server.json', 'utf-8')); //サーバー情報のJSON読み込み
-    //テンプレに上書きする感じでサーバー情報を取り込む
-    ServerInfoLoading = mergeDeeply(ServerInfoTemplate, ServerInfoLoading);
+  //serverデータを読み取り
+  ServerInfoLoading = JSON.parse(fs.readFileSync('./records/server.json', 'utf-8')); //サーバー情報のJSON読み込み
+  //テンプレに上書きする感じでサーバー情報を取り込む
+  ServerInfoLoading = mergeDeeply(ServerInfoTemplate, ServerInfoLoading);
 } catch(e) {
-    console.log("dbControl :: dataServerの読み込みエラー->", e);
-    //ユーザー登録用のパスワードを生成
-    const invCodeLength = 24; //生成したい文字列の長さ
-    const invCodeSource = "abcdefghijklmnopqrstuvwxyz0123456789"; //元になる文字
-    let invCodeGenResult = "";
+  //ユーザー登録用のパスワードを生成
+  const invCodeLength = 24; //生成したい文字列の長さ
+  const invCodeSource = "abcdefghijklmnopqrstuvwxyz0123456789"; //元になる文字
+  let invCodeGenResult = "";
 
-    //生成
-    for(let i=0; i<invCodeLength; i++){
-        invCodeGenResult += invCodeSource[Math.floor(Math.random() * invCodeSource.length)];
+  //生成
+  for(let i=0; i<invCodeLength; i++){
+      invCodeGenResult += invCodeSource[Math.floor(Math.random() * invCodeSource.length)];
 
-    }
+  }
 
-    //JSONをコピーする
-    ServerInfoLoading = ServerInfoTemplate;
-    //招待コードを割り当て
-    ServerInfoLoading.registration.invite.inviteCode = invCodeGenResult;
-
+  //JSONをコピーする
+  ServerInfoLoading = ServerInfoTemplate;
+  //招待コードを割り当て
+  ServerInfoLoading.registration.invite.inviteCode = invCodeGenResult;
 }
+
 //サーバー情報変数を適用
 const ServerInfo = ServerInfoLoading;
 //この時点で一度書き込み保存
-fs.writeFileSync("./server.json", JSON.stringify(ServerInfo, null, 4));
-
+fs.writeFileSync("./records/server.json", JSON.stringify(ServerInfo, null, 4));
 
 console.log("InitServer :: サーバー情報認識");
