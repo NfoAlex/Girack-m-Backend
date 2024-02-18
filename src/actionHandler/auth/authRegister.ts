@@ -16,10 +16,11 @@ export default async function authRegister(username:string):Promise<IUserInfo | 
   const passwordGenerated:string = generateKey();
 
   //ユーザー情報をDBへ作成
-  db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+  db.run("insert into USERS_INFO values (?,?,?,?,?,?,?)",
     userIdGen,
     username,
     "MEMBER",
+    "0001",
     false,
     false,
     passwordGenerated
@@ -31,6 +32,7 @@ export default async function authRegister(username:string):Promise<IUserInfo | 
     userId: userIdGen,
     name: username,
     role: ["MEMBER"],
+    channelJoined: ["0001"],
     loggedin: false,
     banned: false,
     pw: passwordGenerated
