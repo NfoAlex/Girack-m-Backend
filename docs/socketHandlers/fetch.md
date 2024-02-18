@@ -16,6 +16,7 @@
   data: IServerInfo
 }
 ```
+---
 </details>
 
 <details>
@@ -34,4 +35,5 @@
   data: IServerInfo
 }
 ```
+---
 </details>
