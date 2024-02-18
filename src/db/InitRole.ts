@@ -10,6 +10,7 @@ db.serialize(() => {
     ServerManage BOOLEAN NOT NULL,
     RoleManage BOOLEAN NOT NULL,
     ChannelRename BOOLEAN NOT NULL,
+    ChannelViewPrivate BOOLEAN NOT NULL,
     ChannelCreateAndDelete BOOLEAN NOT NULL,
     UserManage BOOLEAN NOT NULL,
     MessageDelete BOOLEAN NOT NULL,
