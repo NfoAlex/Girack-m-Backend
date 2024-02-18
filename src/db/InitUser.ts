@@ -7,6 +7,7 @@ db.serialize(() => {
     userId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     role TEXT NOT NULL,
+    channelJoined TEXT NOT NULL,
     loggedin BOOLEAN NOT NULL,
     banned BOOLEAN NOT NULL,
     pw TEXT NOT NULL
@@ -16,14 +17,8 @@ db.serialize(() => {
     userId TEXT PRIMARY KEY,
     sessionId TEXT NOT NULL,
     name TEXT NOT NULL,
-    loggedinTime TEXT NOT NULL,
-    loggedinTimeFirst TEXT NOT NULL,
-    FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
-  )`);
-  //ユーザーのチャンネル参加情報を保存するUSER_CHANNELテーブルを無ければ作成
-  db.run(`create table if not exists USERS_CHANNEL(
-    userId TEXT PRIMARY KEY,
-    channelIds TEXT NOT NULL,
+    loggedinTime TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+    loggedinTimeFirst TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });

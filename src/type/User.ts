@@ -3,6 +3,7 @@ export interface IUserInfo {
   userId: string,
   name: string,
   role: string[],
+  channelJoined: string[],
   loggedin: boolean,
   banned: boolean,
   pw: string
@@ -25,10 +26,4 @@ export interface IUserSession {
   name: string,
   loggedinTime: Date,
   loggedinTimeFirst: Date
-};
-
-//チャンネル参加情報
-export interface IUserChannel {
-  userId: string,
-  channelIds: string[],
 };
