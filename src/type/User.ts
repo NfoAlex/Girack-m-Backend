@@ -2,7 +2,7 @@
 export interface IUserInfo {
   userId: string,
   name: string,
-  role: string,
+  role: string[],
   loggedin: string,
   banned: boolean,
   pw: string
