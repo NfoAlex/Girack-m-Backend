@@ -8,17 +8,28 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
     
     //ログイン認証
-    socket.on("authLogin", (dat:{username:string, password:string}) => {
+    socket.on("authLogin", async (dat:{username:string, password:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_WRONGINFO",
-        data: ServerInfoLimited<IServerInfo>
+        data: ServerInfoLimited<IServerInfo>|null
       }
       */
 
       console.log("auth :: authLogin : dat->", dat);
-      
-      const authResult:boolean = authLogin(dat.username, dat.password);
+      //認証処理
+      const authResult:boolean = await authLogin(dat.username, dat.password);
+
+      console.log("auth :: authLogin : authResult->", authResult);
+
+      //結果に応じて結果送信
+      if (authResult) {
+        //成功
+        socket.emit("RESULTauthLogin", {result:"SUCCESS", data:null});
+      } else {
+        //認証無理だったら
+        socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});
+      }
       
     });
 
