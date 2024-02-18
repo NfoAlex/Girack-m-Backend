@@ -1,3 +1,5 @@
+// 実行 :: npx ts-node ./src/INDEX.ts
+
 import fs from "fs";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
