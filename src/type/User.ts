@@ -14,6 +14,7 @@ export interface IUserInfoPublic {
   userId: string,
   name: string,
   role: string,
+  channelJoined: string[],
   loggedin: boolean,
   banned: boolean,
 };
