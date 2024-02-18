@@ -20,6 +20,7 @@ const io:Server = new Server(httpServer, {
 
 //SocketHandlerインポート
 require("./socketHandler/fetchInfo.ts")(io);
+require("./socketHandler/auth.ts")(io);
 
 //共通ハンドラ
 io.on("connection", (socket:Socket) => {
