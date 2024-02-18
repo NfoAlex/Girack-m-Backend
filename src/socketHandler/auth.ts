@@ -1,6 +1,8 @@
 import { Socket, Server } from "socket.io";
 
 import authLogin from "../actionHandler/auth/authLogin";
+import { IUserInfo } from "../type/User";
+import authRegister from "../actionHandler/auth/authRegister";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -18,6 +20,19 @@ module.exports = (io:Server) => {
       
       const authResult:boolean = authLogin(dat.username, dat.password);
       
+    });
+
+    //新規登録
+    socket.on("authRegister", async (dat:{username:string, inviteCode:string|null}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING",
+        data: datUser<IUserInfo>
+      }
+      */
+
+      const datUser = await authRegister(dat.username);
+      console.log("auth :: authRegister : dat->", datUser);
     });
 
   });
