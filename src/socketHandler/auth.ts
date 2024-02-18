@@ -31,7 +31,12 @@ module.exports = (io:Server) => {
       }
       */
 
-      const datUser = await authRegister(dat.username);
+      //登録処理
+      const datUser = await authRegister(dat.username)
+      .catch(
+        () => { socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null}); }
+      );
+      
       console.log("auth :: authRegister : dat->", datUser);
 
       //結果を返す
