@@ -16,17 +16,19 @@ module.exports = (io:Server) => {
       }
       */
 
-      console.log("auth :: authLogin : dat->", dat);
       try {
         //認証処理
-        const authResult:boolean = await authLogin(dat.username, dat.password);
+        const authResult:{
+          authResult:boolean,
+          UserInfo: IUserInfo|null
+        } = await authLogin(dat.username, dat.password);
 
         console.log("auth :: authLogin : authResult->", authResult);
 
         //結果に応じて結果送信
         if (authResult) {
           //成功
-          socket.emit("RESULTauthLogin", {result:"SUCCESS", data:null});
+          socket.emit("RESULTauthLogin", {result:"SUCCESS", data:authResult.UserInfo});
         } else {
           //認証無理だったら
           socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});

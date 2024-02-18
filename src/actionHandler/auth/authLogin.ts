@@ -4,7 +4,7 @@ import fetchUser from "../../db/fetchUser";
 
 import { IUserInfo } from "../../type/User";
 
-export default async function authLogin(username:string, password:string):Promise<boolean> {
+export default async function authLogin(username:string, password:string):Promise<{authResult:boolean, UserInfo:IUserInfo|null}> {
   //ユーザー検索、パスワードを比較する
   db.all("SELECT * FROM USERS_INFO WHERE name = ?", [username], (err:Error, datUser:IUserInfo) => {
     if (err) {
@@ -19,12 +19,12 @@ export default async function authLogin(username:string, password:string):Promis
 
   console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
-  if (RESULT.length === 0) return false;
+  if (RESULT.length === 0) return {authResult:false, UserInfo:null};
 
   //パスワード比較、結果を返す
   if (RESULT[0].password === password) {
-    return true;
+    return {authResult:true, UserInfo:RESULT[0]};
   } else {
-    return false;
+    return {authResult:false, UserInfo:null};
   }
 }
