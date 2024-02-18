@@ -33,9 +33,9 @@ module.exports = (io:Server) => {
 
       //登録処理
       try {
-      const datUser = await authRegister(dat.username);
-      socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
-      console.log("auth :: authRegister : dat->", datUser);
+        const datUser = await authRegister(dat.username);
+        socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
+        console.log("auth :: authRegister : dat->", datUser);
       }
       catch (e) {
         socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
