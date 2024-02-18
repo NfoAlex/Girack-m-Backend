@@ -3,7 +3,7 @@ export interface IUserInfo {
   userId: string,
   name: string,
   role: string[],
-  loggedin: string,
+  loggedin: boolean,
   banned: boolean,
   pw: string
 };
@@ -13,7 +13,7 @@ export interface IUserInfoPublic {
   userId: string,
   name: string,
   role: string,
-  loggedin: string,
+  loggedin: boolean,
   banned: boolean,
 };
 
