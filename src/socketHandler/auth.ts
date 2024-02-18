@@ -32,15 +32,17 @@ module.exports = (io:Server) => {
       */
 
       //登録処理
-      const datUser = await authRegister(dat.username)
-      .catch(
-        () => { socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null}); }
-      );
-
+      try {
+      const datUser = await authRegister(dat.username);
+      socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
       console.log("auth :: authRegister : dat->", datUser);
+      }
+      catch (e) {
+        socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
+      }
 
       //結果を返す
-      socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
+      //socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
     });
 
   });
