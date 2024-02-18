@@ -35,7 +35,7 @@ export default async function authRegister(username:string):Promise<IUserInfo | 
     channelJoined: ["0001"],
     loggedin: false,
     banned: false,
-    pw: passwordGenerated
+    password: passwordGenerated
   };
 }
 

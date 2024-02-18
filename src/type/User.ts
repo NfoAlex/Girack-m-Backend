@@ -6,7 +6,7 @@ export interface IUserInfo {
   channelJoined: string[],
   loggedin: boolean,
   banned: boolean,
-  pw: string
+  password: string
 };
 
 //他の人に共有する用のユーザー基本情報
