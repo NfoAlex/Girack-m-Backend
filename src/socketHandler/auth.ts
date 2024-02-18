@@ -33,8 +33,15 @@ module.exports = (io:Server) => {
 
       //登録処理
       try {
-        const datUser = await authRegister(dat.username);
-        socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
+        const datUser = await authRegister(dat.username, dat.inviteCode);
+
+        //エラー文ならそう返す
+        if (datUser === "ERROR_WRONGINVITECODE") {
+          socket.emit("RESULTauthRegister", {result:"ERROR_WRONGINVITECODE", data:null});
+        } else {
+          socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
+        }
+
         console.log("auth :: authRegister : dat->", datUser);
       }
       catch (e) {
