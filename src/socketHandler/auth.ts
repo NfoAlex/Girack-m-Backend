@@ -26,7 +26,7 @@ module.exports = (io:Server) => {
     socket.on("authRegister", async (dat:{username:string, inviteCode:string|null}) => {
       /*
       返し : {
-        result: "SUCCESS"|"ERROR_DB_THING",
+        result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGINVITECODE",
         data: datUser<IUserInfo>
       }
       */
@@ -36,7 +36,7 @@ module.exports = (io:Server) => {
       .catch(
         () => { socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null}); }
       );
-      
+
       console.log("auth :: authRegister : dat->", datUser);
 
       //結果を返す
