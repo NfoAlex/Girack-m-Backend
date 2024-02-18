@@ -29,7 +29,7 @@ module.exports = (io:Server) => {
     socket.on("fetchServerInfoFull", (RequestSender:IRequestSender) => {
       /*
       返し : {
-        result: "SUCCESS"|"FAIL_MISSINGROLE",
+        result: "SUCCESS"|"ERROR_MISSINGROLE",
         data: ServerInfoLimited<IServerInfo>
       }
       */
