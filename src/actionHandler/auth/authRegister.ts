@@ -4,13 +4,13 @@ import fetchUser from "../../db/fetchUser";
 
 import { IUserInfo } from "../../type/User";
 
-export default async function authRegister(username:string):Promise<IUserInfo | -1> {
+export default async function authRegister(username:string):Promise<IUserInfo> {
   //TODO :: 招待コードの確認
   
   const userIdGen = await getNewUserId();
 
   //ユーザーIDが空ならエラーとして停止
-  if (userIdGen === "") return -1;
+  if (userIdGen === "") throw Error;
 
   //パスワードを生成する
   const passwordGenerated:string = generateKey();
