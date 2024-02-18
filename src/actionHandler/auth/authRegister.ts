@@ -5,7 +5,7 @@ import fetchUser from "../../db/fetchUser";
 import { IUserInfo } from "../../type/User";
 
 export default async function authRegister(username:string):Promise<IUserInfo | -1> {
-  const userId = await getNewUserId();
+  const userIdGen = await getNewUserId();
 
   //ユーザーIDが空ならエラーとして停止
   if (userIdGen === "") return -1;
@@ -41,7 +41,7 @@ async function getNewUserId():Promise<string> {
 
   return new Promise<string>((resolve) => {
     const checkLoop = setInterval(async () => {
-      //生成したID
+      //生成するID
       let userIdGen = "";
       //9桁分の数字追加してIDにする
       for (let i=0; i<8; i++) {
