@@ -21,6 +21,7 @@ export interface IUserInfoPublic {
 //セッション情報
 export interface IUserSession {
   userId: string,
+  sessionId: string,
   name: string,
   loggedinTime: Date,
   loggedinTimeFirst: Date
