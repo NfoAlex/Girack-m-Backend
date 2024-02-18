@@ -13,7 +13,7 @@ db.serialize(() => {
     ChannelCreateAndDelete BOOLEAN NOT NULL,
     UserManage BOOLEAN NOT NULL,
     MessageDelete BOOLEAN NOT NULL,
-    MessageAttatchFile BOOLEAN NOT NULL,
+    MessageAttatchFile BOOLEAN NOT NULL
   )`);
 });
 
