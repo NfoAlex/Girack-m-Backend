@@ -7,7 +7,7 @@
   
 * 概要 - 招待コードを含むインスタンス情報、設定を返す
 * 必要パラメータ
-  - RequestSenser: IRequestSender
+  - RequestSenser: `IRequestSender`
  
 * 返り値の型
 ```
