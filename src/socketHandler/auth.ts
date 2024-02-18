@@ -40,9 +40,6 @@ module.exports = (io:Server) => {
       catch (e) {
         socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
       }
-
-      //結果を返す
-      //socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
     });
 
   });
