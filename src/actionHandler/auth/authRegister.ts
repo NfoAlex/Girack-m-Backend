@@ -1,11 +1,18 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../../db/fetchUser";
+import { ServerInfo } from "../../db/InitServer";
 
 import { IUserInfo } from "../../type/User";
 
-export default async function authRegister(username:string):Promise<IUserInfo> {
-  //TODO :: 招待コードの確認
+export default async function authRegister(username:string, inviteCode:string|null):Promise<IUserInfo|"ERROR_WRONGINVITECODE"> {
+  //招待コードの確認
+  if (ServerInfo.registration.invite.inviteOnly) { //招待制？
+    //コードが違うならエラー文を返す
+    if (ServerInfo.registration.invite.inviteCode !== inviteCode) {
+      return "ERROR_WRONGINVITECODE";
+    }
+  }
   
   const userIdGen = await getNewUserId();
 
