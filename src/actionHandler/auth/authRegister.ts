@@ -13,7 +13,11 @@ export default async function authRegister(username:string, inviteCode:string|nu
       return "ERROR_WRONGINVITECODE";
     }
   }
+
+  //ユーザー名の空きを確認
+  if ((await fetchUser(null, username)).length !== 0) throw Error;
   
+  //空いているユーザーIDを見つける
   const userIdGen = await getNewUserId();
 
   //ユーザーIDが空ならエラーとして停止
