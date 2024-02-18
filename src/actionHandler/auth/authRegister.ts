@@ -8,14 +8,14 @@ export default async function authRegister(username:string):Promise<IUserInfo | 
   const userId = await getNewUserId();
 
   //ユーザーIDが空ならエラーとして停止
-  if (userId === "") return -1;
+  if (userIdGen === "") return -1;
 
   //パスワードを生成する
   const passwordGenerated:string = generateKey();
 
   //ユーザー情報をDBへ作成
-  db.run("insert into USERS_INFO values (?)",
-    userId,
+  db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+    userIdGen,
     username,
     "MEMBER",
     false,
@@ -23,37 +23,49 @@ export default async function authRegister(username:string):Promise<IUserInfo | 
     passwordGenerated
   );
 
+  console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
+
   return {
-    userId: "12345678",
+    userId: userIdGen,
     name: username,
     role: ["MEMBER"],
     loggedin: false,
     banned: false,
-    pw: "password"
+    pw: passwordGenerated
   };
 }
 
+//ユーザーIDの空きを探す
 async function getNewUserId():Promise<string> {
-  const checkLoop = setInterval(async () => {
-    let userIdGen = "";
+  let tryCount:number = 0;
 
-    //9桁分の数字追加
-    for (let i=0; i<8; i++) {
-      userIdGen += Math.trunc(Math.random() * 9); //乱数を追加
-    }
-
-    //ユーザー検索、データ格納
-    const datUser:IUserInfo[] = await fetchUser(null, userIdGen);
-    console.log("authRegister :: getNewUserId : datUser->", datUser);
-    
-    //データ長さが0ならループ停止してIDを返す
-    if (datUser.length === 0) {
-      clearInterval(checkLoop);
-      return userIdGen;
-    }
-  }, 10);
-
-  return "";
+  return new Promise<string>((resolve) => {
+    const checkLoop = setInterval(async () => {
+      //生成したID
+      let userIdGen = "";
+      //9桁分の数字追加してIDにする
+      for (let i=0; i<8; i++) {
+        userIdGen += Math.trunc(Math.random() * 9); //乱数を追加
+      }
+  
+      //ユーザー検索、データ格納
+      const datUser:IUserInfo[] = await fetchUser(userIdGen, null);
+      console.log("authRegister :: getNewUserId : datUser->", datUser);
+      
+      //データ長さが0ならループ停止してIDを返す
+      if (datUser.length === 0) {
+        clearInterval(checkLoop);
+        resolve(userIdGen); //IDを返す
+      }
+      //10回試しても空きがないなら
+      if (tryCount === 10) {
+        clearInterval(checkLoop);
+        resolve(""); //空で返す
+      }
+      //試行回数加算
+      tryCount++;
+    }, 10);
+  });
 }
 
 //パスワード生成
