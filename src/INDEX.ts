@@ -1,3 +1,5 @@
+// 実行 :: npx ts-node ./src/INDEX.ts
+
 import fs from "fs";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
@@ -8,6 +10,7 @@ try{fs.mkdirSync("./records/");}catch(e){}
 //DB整備
 import "./db/InitUser";
 import "./db/InitServer";
+import "./db/InitRole";
 
 const httpServer = createServer();
 const io:Server = new Server(httpServer, {

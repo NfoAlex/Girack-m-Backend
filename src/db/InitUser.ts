@@ -14,6 +14,7 @@ db.serialize(() => {
   //ユーザーのセッション状態を保存するUSER_SESSIONテーブルを無ければ作成
   db.run(`create table if not exists USERS_SESSION(
     userId TEXT PRIMARY KEY,
+    sessionId TEXT NOT NULL,
     name TEXT NOT NULL,
     loggedinTime TEXT NOT NULL,
     loggedinTimeFirst TEXT NOT NULL,
