@@ -27,7 +27,7 @@ module.exports = (io:Server) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGINVITECODE",
-        data: datUser<IUserInfo>
+        data: datUser<IUserInfo>|null
       }
       */
 
