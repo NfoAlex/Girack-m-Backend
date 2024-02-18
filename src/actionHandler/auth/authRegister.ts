@@ -5,6 +5,8 @@ import fetchUser from "../../db/fetchUser";
 import { IUserInfo } from "../../type/User";
 
 export default async function authRegister(username:string):Promise<IUserInfo | -1> {
+  //TODO :: 招待コードの確認
+  
   const userIdGen = await getNewUserId();
 
   //ユーザーIDが空ならエラーとして停止
