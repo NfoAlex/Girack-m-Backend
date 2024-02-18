@@ -10,7 +10,7 @@ db.serialize(() => {
     channelJoined TEXT NOT NULL,
     loggedin BOOLEAN NOT NULL,
     banned BOOLEAN NOT NULL,
-    pw TEXT NOT NULL
+    password TEXT NOT NULL
   )`);
   //ユーザーのセッション状態を保存するUSER_SESSIONテーブルを無ければ作成
   db.run(`create table if not exists USERS_SESSION(
