@@ -5,7 +5,7 @@ db.serialize(() => {
   //ユーザー基本情報を保存するUSER_INFOテーブルを無ければ作成
   db.run(`create table if not exists USERS_INFO(
     userId TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
+    userName TEXT NOT NULL,
     role TEXT NOT NULL,
     channelJoined TEXT NOT NULL,
     loggedin BOOLEAN NOT NULL,
@@ -16,7 +16,7 @@ db.serialize(() => {
   db.run(`create table if not exists USERS_SESSION(
     userId TEXT PRIMARY KEY,
     sessionId TEXT NOT NULL,
-    name TEXT NOT NULL,
+    sessionName TEXT NOT NULL,
     loggedinTime TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     loggedinTimeFirst TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
