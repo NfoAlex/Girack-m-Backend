@@ -3,7 +3,8 @@ const db = new sqlite3.Database("./records/USER.db");
 
 import { IUserInfo } from "../type/User";
 
-export default async function fetchUser(userId:string|null, username:string|null):Promise<IUserInfo[]> {
+export default async function fetchUser(userId:string|null, username:string|null)
+:Promise<IUserInfo[]> {
   return new Promise<IUserInfo[]>((resolve) => {
     //ユーザーIDが引数に無かったらIDで検索する
     if (userId === null) {

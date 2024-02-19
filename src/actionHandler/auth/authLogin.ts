@@ -4,7 +4,8 @@ import fetchUser from "../../db/fetchUser";
 
 import { IUserInfo } from "../../type/User";
 
-export default async function authLogin(username:string, password:string):Promise<{authResult:boolean, UserInfo:IUserInfo|null}> {
+export default async function authLogin(username:string, password:string)
+:Promise<{authResult:boolean, UserInfo:IUserInfo|null}> {
   //ユーザー検索、パスワードを比較する
   db.all("SELECT * FROM USERS_INFO WHERE name = ?", [username], (err:Error, datUser:IUserInfo) => {
     if (err) {
