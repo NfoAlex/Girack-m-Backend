@@ -22,21 +22,21 @@ module.exports = (io:Server) => {
       delete ServerInfoLimited.registration.invite.inviteCode;
 
       //返す
-      socket.emit("ServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
+      socket.emit("RESULTfetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
     });
 
     //全てのインスタンス情報を取得
     socket.on("fetchServerInfoFull", (RequestSender:IRequestSender) => {
       /*
       返し : {
-        result: "SUCCESS"|"FAIL_MISSINGROLE",
+        result: "SUCCESS"|"ERROR_MISSINGROLE",
         data: ServerInfoLimited<IServerInfo>
       }
       */
 
       /* ...ToDo :: 権限チェック */
 
-      socket.emit("ServerInfoFull", { result:"SUCCESS", data:ServerInfo });
+      socket.emit("RESULTfetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
     });
 
   });
