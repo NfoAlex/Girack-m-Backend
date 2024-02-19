@@ -9,12 +9,12 @@ export default async function fetchUser(userId:string|null, username:string|null
     //ユーザーIDが引数に無かったらIDで検索する
     if (userId === null) {
       //ユーザーを名前で検索
-      db.all("SELECT * FROM USERS_INFO WHERE name = ?", [username], (err:Error, datUser:IUserInfo[]) => {
+      db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo[]) => {
         if (err) {
-          console.log("fetchUser(username) :: ERROR ->", err);
+          console.log("fetchUser(userName) :: ERROR ->", err);
           resolve([]);
         } else {
-          console.log("fetchUser(username) :: 検索結果->", username, datUser);
+          console.log("fetchUser(userName) :: 検索結果->", username, datUser);
           resolve(datUser);
         }
       });

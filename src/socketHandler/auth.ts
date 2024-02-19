@@ -36,6 +36,7 @@ module.exports = (io:Server) => {
       } catch(e) {
         //認証無理だったら
         socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});
+        console.log("auth :: socket(authLogin) : error->", e);
       }
     });
 
@@ -63,6 +64,7 @@ module.exports = (io:Server) => {
       }
       catch (e) {
         socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
+        console.log("auth :: socket(authRegister) : error->", e);
       }
     });
 
