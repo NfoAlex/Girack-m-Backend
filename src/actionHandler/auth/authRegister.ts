@@ -41,7 +41,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
 
   return {
     userId: userIdGen,
-    name: username,
+    userName: username,
     role: ["MEMBER"],
     channelJoined: ["0001"],
     loggedin: false,
