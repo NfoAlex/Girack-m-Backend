@@ -25,8 +25,9 @@ db.serialize(() => {
   db.run(`create table if not exists USERS_CONFIG(
     userId TEXT PRIMARY KEY,
     notification: TEXT NOT NULL,
-    channel: TEXT NOT NULL,
-    sidebar: TEXT NOT NULL,
+    theme TEXT NOT NULL,
+    channel TEXT NOT NULL,
+    sidebar TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });
