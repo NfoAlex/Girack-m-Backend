@@ -3,7 +3,7 @@ import IServerInfo from "../type/Server";
 import mergeDeeply from "../util/mergeDeeply";
 
 //サーバー設定テンプレ
-const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./defaultValues/ServerInfo.json', 'utf-8'));
+const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./src/db/defaultValues/ServerInfo.json', 'utf-8'));
 
 //サーバー設定適用用変数
 let ServerInfoLoading:IServerInfo = {
