@@ -21,6 +21,14 @@ db.serialize(() => {
     loggedinTimeFirst TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
+  //ユーザーの設定データを保存するUSER_CONFIGテーブルを無ければ作成
+  db.run(`create table if not exists USERS_CONFIG(
+    userId TEXT PRIMARY KEY,
+    notification: TEXT NOT NULL,
+    channel: TEXT NOT NULL,
+    sidebar: TEXT NOT NULL,
+    FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
+  )`);
 });
 
 console.log("InitUser :: ユーザーDB作成完了");
