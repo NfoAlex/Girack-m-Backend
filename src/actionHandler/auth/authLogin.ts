@@ -5,7 +5,7 @@ import fetchUser from "../../db/fetchUser";
 import { IUserInfo } from "../../type/User";
 
 export default async function authLogin(username:string, password:string)
-:Promise<{authResult:boolean, UserInfo:IUserInfo|null}> {
+:Promise<{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null}> {
   //ユーザー検索、パスワードを比較する
   db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo) => {
     if (err) {
@@ -21,7 +21,7 @@ export default async function authLogin(username:string, password:string)
   console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
   //そもそもユーザーが見つからないなら失敗として返す
-  if (RESULT.length === 0) return {authResult:false, UserInfo:null};
+  if (RESULT.length === 0) return {authResult:false, UserInfo:null, sessionId:null};
 
   //セッション情報を作成してDBへ挿入
   const sessionIdGen = generateSessionId();
@@ -33,9 +33,9 @@ export default async function authLogin(username:string, password:string)
 
   //パスワード比較、結果を返す
   if (RESULT[0].password === password) {
-    return {authResult:true, UserInfo:RESULT[0]};
+    return {authResult:true, UserInfo:RESULT[0], sessionId:null};
   } else {
-    return {authResult:false, UserInfo:null};
+    return {authResult:false, UserInfo:null, sessionId:sessionIdGen};
   }
 }
 
