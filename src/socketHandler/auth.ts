@@ -20,7 +20,8 @@ module.exports = (io:Server) => {
         //認証処理
         const authData:{
           authResult:boolean,
-          UserInfo: IUserInfo|null
+          UserInfo: IUserInfo|null,
+          sessionId: string|null
         } = await authLogin(dat.username, dat.password);
 
         console.log("auth :: authLogin : authResult->", authData);
@@ -28,7 +29,13 @@ module.exports = (io:Server) => {
         //結果に応じて結果送信
         if (authData.authResult) {
           //成功
-          socket.emit("RESULTauthLogin", {result:"SUCCESS", data:authData.UserInfo});
+          socket.emit("RESULTauthLogin", {
+            result:"SUCCESS",
+            data:{
+              UserInfo: authData.UserInfo,
+              sessionId: authData.sessionId
+            }
+          });
         } else {
           //認証無理だったら
           socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});
