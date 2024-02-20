@@ -3,30 +3,7 @@ import IServerInfo from "../type/Server";
 import mergeDeeply from "../util/mergeDeeply";
 
 //サーバー設定テンプレ
-const ServerInfoTemplate:IServerInfo = {
-  servername: "Girack(m)",
-  registration: {
-    available: true,
-    invite: {
-      inviteOnly: true,
-      inviteCode: ""
-    }
-  },
-  config: {
-    PROFILE: {
-      iconMaxSize: 1e7,
-      usernameMaxLength: 12
-    },
-    CHANNEL: {
-      channelIdAnnounceRegistration: "0001",
-      defaultJoinOnRegister: ["0001"]
-    },
-    MESSAGE: {
-      TxtMaxLength: 300,
-      FileMaxSize: 3e7
-    }
-  }
-};
+const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./defaultValues/ServerInfo.json', 'utf-8'));
 
 //サーバー設定適用用変数
 let ServerInfoLoading:IServerInfo = {
