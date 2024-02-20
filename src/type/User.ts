@@ -27,3 +27,22 @@ export interface IUserSession {
   loggedinTime: Date,
   loggedinTimeFirst: Date
 };
+
+//設定情報
+export interface IUserConfig {
+  userId: string,
+  notification: {
+    enabled: boolean,
+    notifyAllMessages: boolean,
+    notifyMention: boolean
+  },
+  theme: "dark"|"light",
+  channel: {
+    displayRole: boolean,
+    displayAttatchmentSizeLimit: number,
+  },
+  sidebar: {
+    ReadAllButtonEnabled: boolean,
+    ReadAllButtonByShiftKey: boolean
+  }
+}
