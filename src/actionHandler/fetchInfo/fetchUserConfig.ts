@@ -19,7 +19,6 @@ export default function fetchUserConfig(userId:string)
         resolve(null);
       } else {
         console.log("fetchUserConfig :: 検索結果->", userId, datConfig);
-        console.log("fetchUserConfig :: JSONdefault ->", defaultConfigData);
         //設定データをデフォルトにマージする形で形成させる
         const datConfigResult = mergeDeeply(defaultConfigData, datConfig[0]);
         resolve(datConfigResult);
