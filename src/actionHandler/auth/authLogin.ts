@@ -33,9 +33,9 @@ export default async function authLogin(username:string, password:string)
 
   //パスワード比較、結果を返す
   if (RESULT[0].password === password) {
-    return {authResult:true, UserInfo:RESULT[0], sessionId:null};
+    return {authResult:true, UserInfo:RESULT[0], sessionId:sessionIdGen};
   } else {
-    return {authResult:false, UserInfo:null, sessionId:sessionIdGen};
+    return {authResult:false, UserInfo:null, sessionId:null};
   }
 }
 
