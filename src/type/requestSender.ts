@@ -1,4 +1,4 @@
 export default interface IRequestSender {
-  userid: string,
-  sessionid: string
+  userId: string,
+  sessionId: string
 };
