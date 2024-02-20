@@ -19,7 +19,6 @@ export interface IUserInfoPublic {
   banned: boolean,
 };
 
-
 //セッション情報
 export interface IUserSession {
   userId: string,
