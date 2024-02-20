@@ -7,7 +7,7 @@ import { IUserInfo } from "../../type/User";
 export default async function authLogin(username:string, password:string)
 :Promise<{authResult:boolean, UserInfo:IUserInfo|null}> {
   //ユーザー検索、パスワードを比較する
-  db.all("SELECT * FROM USERS_INFO WHERE name = ?", [username], (err:Error, datUser:IUserInfo) => {
+  db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo) => {
     if (err) {
       console.log("authLogin :: ERROR ->", err);
     } else {
