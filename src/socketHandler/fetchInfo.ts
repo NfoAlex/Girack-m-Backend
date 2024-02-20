@@ -52,8 +52,9 @@ module.exports = (io:Server) => {
       */
 
       /* TODO :: セッション認証 */
-      if (await checkSession(RequestSender.userId, RequestSender.sessionId)) {
+      if (!(await checkSession(RequestSender.userId, RequestSender.sessionId))) {
         socket.emit("RESULTfetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
       }
 
       try {
