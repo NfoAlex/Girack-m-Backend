@@ -6,7 +6,7 @@ import type { IUserSession } from "../../type/User";
 export default async function checkSession(userId:string, sessionId:string)
 :Promise<boolean> {
   return new Promise<boolean> ((resolve) => {
-    //ユーザー検索、パスワードを比較する
+    //ユーザーIdで検索、セッションIDを一致を探す
     db.all("SELECT * FROM USERS_SESSION WHERE userId = ?", [userId], (err:Error, datSession:IUserSession[]) => {
       if (err) {
         console.log("checkSession :: ERROR ->", err);
