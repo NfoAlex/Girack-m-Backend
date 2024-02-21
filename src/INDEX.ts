@@ -19,7 +19,8 @@ const io:Server = new Server(httpServer, {
 });
 
 //SocketHandlerインポート
-require("./socketHandler/fetchInfo.ts")(io);
+require("./socketHandler/Server.ts")(io);
+require("./socketHandler/User.ts")(io);
 require("./socketHandler/auth.ts")(io);
 
 //共通ハンドラ
