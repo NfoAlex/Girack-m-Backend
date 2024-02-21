@@ -1,5 +1,5 @@
 import { Socket, Server } from "socket.io";
-import fetchUserConfig from "../actionHandler/fetchInfo/fetchUserConfig";
+import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import checkSession from "../actionHandler/auth/checkSession";
 
 import type IRequestSender from "../type/requestSender";
