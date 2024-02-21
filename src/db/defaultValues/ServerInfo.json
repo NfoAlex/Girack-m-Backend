@@ -1,0 +1,24 @@
+{
+  "servername": "Girack(m)",
+  "registration": {
+    "available": true,
+    "invite": {
+      "inviteOnly": true,
+      "inviteCode": ""
+    }
+  },
+  "config": {
+    "PROFILE": {
+      "iconMaxSize": 1e7,
+      "usernameMaxLength": 12
+    },
+    "CHANNEL": {
+      "channelIdAnnounceRegistration": "0001",
+      "defaultJoinOnRegister": ["0001"]
+    },
+    "MESSAGE": {
+      "TxtMaxLength": 300,
+      "FileMaxSize": 3e7
+    }
+  }
+}

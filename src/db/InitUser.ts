@@ -14,11 +14,20 @@ db.serialize(() => {
   )`);
   //ユーザーのセッション状態を保存するUSER_SESSIONテーブルを無ければ作成
   db.run(`create table if not exists USERS_SESSION(
-    userId TEXT PRIMARY KEY,
-    sessionId TEXT NOT NULL,
+    sessionId TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
     sessionName TEXT NOT NULL,
     loggedinTime TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     loggedinTimeFirst TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+    FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
+  )`);
+  //ユーザーの設定データを保存するUSER_CONFIGテーブルを無ければ作成
+  db.run(`create table if not exists USERS_CONFIG(
+    userId TEXT PRIMARY KEY,
+    notification TEXT NOT NULL,
+    theme TEXT NOT NULL,
+    channel TEXT NOT NULL,
+    sidebar TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });

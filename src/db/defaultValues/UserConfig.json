@@ -1,0 +1,16 @@
+{
+  "notification": {
+    "enabled": true,
+    "notifyAllMessages": false,
+    "notifyMention": true
+  },
+  "theme": "dark",
+  "channel": {
+    "displayRole": true,
+    "displayAttatchmentSizeLimit": 1e7
+  },
+  "sidebar": {
+    "ReadAllButtonEnabled": true,
+    "ReadAllButtonByShiftKey": true
+  }
+}
