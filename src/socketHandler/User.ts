@@ -45,6 +45,12 @@ module.exports = (io:Server) => {
       }
       */
 
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULTfetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
       try {
         //変更
         changeUserName(dat.RequestSender.userId, dat.userName);
