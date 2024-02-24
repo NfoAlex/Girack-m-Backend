@@ -53,7 +53,7 @@ module.exports = (io:Server) => {
 
       try {
         //変更
-        changeUserName(dat.RequestSender.userId, dat.userName);
+        await changeUserName(dat.RequestSender.userId, dat.userName);
 
         socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
       } catch(e) {
