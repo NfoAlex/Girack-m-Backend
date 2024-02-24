@@ -4,6 +4,8 @@ import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
 
 import type IRequestSender from "../type/requestSender";
+import fetchUser from "../db/fetchUser";
+import type { IUserInfo, IUserInfoPublic } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -34,6 +36,35 @@ module.exports = (io:Server) => {
         //返す
         socket.emit("RESULTfetchUserConfig", { result:"ERROR_DB_THING", data:null });
       }
+    });
+
+    //一人分のユーザー情報取得(ユーザーIDから)
+    socket.on("fetchUserInfo", async (dat:{RequestSender:IRequestSender, userId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: {UserInfo:IUserInfoPublic, UserSession:IUserSession}|null
+      }
+      */
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::fetchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        const userInfo:IUserInfo[] = await fetchUser(dat.RequestSender.userId, null);
+        
+        //一旦ユーザー情報をクローンしてパスワードを削除
+        //型はIUserInfoPublic
+        let userInfoSingle:any = structuredClone(userInfo[0]);
+        delete userInfoSingle.password;
+
+        socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfoSingle });
+      } catch(e) {
+        socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
+      }
+
     });
 
     //ユーザー名の変更
