@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
+import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
 
 import type IRequestSender from "../type/requestSender";
@@ -33,6 +34,26 @@ module.exports = (io:Server) => {
         //返す
         socket.emit("RESULTfetchUserConfig", { result:"ERROR_DB_THING", data:null });
       }
+    });
+
+    //ユーザー名の変更
+    socket.on("changeUserName", async (dat:{RequestSender:IRequestSender, userName:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: null
+      }
+      */
+
+      try {
+        //変更
+        changeUserName(dat.RequestSender.userId, dat.userName);
+
+        socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
+      } catch(e) {
+        socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
+      }
+
     });
 
   });
