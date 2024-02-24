@@ -6,6 +6,7 @@ import checkSession from "../actionHandler/auth/checkSession";
 import type IRequestSender from "../type/requestSender";
 import fetchUser from "../db/fetchUser";
 import type { IUserInfo, IUserInfoPublic } from "../type/User";
+import searchUser from "../db/searchUser";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -65,6 +66,24 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
       }
 
+    });
+
+    //ユーザー名で検索して一括取得
+    socket.on("searchUserInfo", async (dat:{RequestSender:IRequestSender, userName:string}) => {
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //情報検索、取得
+        const userInfos = await searchUser(dat.userName);
+
+        socket.emit("RESULT::searchUserInfo", { result:"SUCCESS", data:userInfos })
+      } catch(e) {
+        socket.emit("RESULT::searchUserInfo", { result:"ERROR_DB_THING", data:null });
+      }
     });
 
     //ユーザー名の変更
