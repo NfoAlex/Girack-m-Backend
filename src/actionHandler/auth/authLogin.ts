@@ -16,7 +16,7 @@ export default async function authLogin(username:string, password:string)
   });
 
   //ユーザー情報取得
-  const RESULT = await fetchUser(null, username);
+  const RESULT = await fetchUser(null, username, false);
 
   console.log("authLogin :: authLogin : RESULT ->", RESULT);
 

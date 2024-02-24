@@ -54,14 +54,8 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const userInfo:IUserInfo[] = await fetchUser(dat.RequestSender.userId, null);
-        
-        //一旦ユーザー情報をクローンしてパスワードを削除
-        //型はIUserInfoPublic
-        let userInfoSingle:any = structuredClone(userInfo[0]);
-        delete userInfoSingle.password;
-
-        socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfoSingle });
+        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
       }

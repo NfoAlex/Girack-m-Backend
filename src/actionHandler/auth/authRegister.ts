@@ -15,7 +15,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
   }
 
   //ユーザー名の空きを確認
-  if ((await fetchUser(null, username)).length !== 0) throw Error;
+  if ((await fetchUser(null, username, true)) !== null) throw Error;
   
   //空いているユーザーIDを見つける
   const userIdGen = await getNewUserId();
@@ -64,11 +64,11 @@ async function getNewUserId():Promise<string> {
       }
   
       //ユーザー検索、データ格納
-      const datUser:IUserInfo[] = await fetchUser(userIdGen, null);
+      const datUser = await fetchUser(userIdGen, null, false);
       console.log("authRegister :: getNewUserId : datUser->", datUser);
       
       //データ長さが0ならループ停止してIDを返す
-      if (datUser.length === 0) {
+      if (datUser === null) {
         clearInterval(checkLoop);
         resolve(userIdGen); //IDを返す
       }
