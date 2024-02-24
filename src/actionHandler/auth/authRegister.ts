@@ -5,7 +5,8 @@ import { ServerInfo } from "../../db/InitServer";
 
 import { IUserInfo } from "../../type/User";
 
-export default async function authRegister(username:string, inviteCode:string|null):Promise<IUserInfo|"ERROR_WRONGINVITECODE"> {
+export default async function authRegister(username:string, inviteCode:string|null)
+:Promise<IUserInfo|"ERROR_WRONGINVITECODE"> {
   //招待コードの確認
   if (ServerInfo.registration.invite.inviteOnly) { //招待制？
     //コードが違うならエラー文を返す
