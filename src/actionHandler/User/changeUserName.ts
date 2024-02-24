@@ -14,6 +14,6 @@ export default async function changeUserName(userId:string, userName:string):Pro
         //成功と返す
         resolve(true);
       }
-    })
+    });
   });
 }
