@@ -3,7 +3,7 @@ const db = new sqlite3.Database("./records/USER.db");
 
 import { IUserInfo } from "../type/User";
 
-export default async function fetchUser(userId:string|null, username:string|null)
+export default async function fetchUser(userId:string|null, username:string|null, forPublic:boolean)
 :Promise<IUserInfo|null> {
   return new Promise<IUserInfo|null>((resolve) => {
     //ユーザーIDが引数に無かったらIDで検索する
@@ -15,10 +15,18 @@ export default async function fetchUser(userId:string|null, username:string|null
           resolve(null);
         } else {
           console.log("fetchUser(userName) :: 検索結果->", username, datUser);
-          //クローンしてパスワードを削除、返す
-          const datUserSingle:any = structuredClone(datUser[0]);
-          delete datUserSingle.password;
-          resolve(datUserSingle);
+          //そもそも結果が無いならそう返す
+          if (datUser.length === 0) resolve(null);
+
+          //フロント用ならパスワードを削除
+          if (forPublic) {
+            //クローンしてパスワードを削除、返す
+            const datUserSingle:any = structuredClone(datUser[0]);
+            delete datUserSingle.password;
+            resolve(datUserSingle);
+          } else {
+            resolve(datUser[0]);
+          }
         }
       });
     } else {
@@ -29,10 +37,18 @@ export default async function fetchUser(userId:string|null, username:string|null
           resolve(null);
         } else {
           console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
-          //クローンしてパスワードを削除、返す
-          const datUserSingle:any = structuredClone(datUser[0]);
-          delete datUserSingle.password;
-          resolve(datUserSingle);
+          //そもそも結果が無いならそう返す
+          if (datUser.length === 0) resolve(null);
+
+          //フロント用ならパスワードを削除
+          if (forPublic) {
+            //クローンしてパスワードを削除、返す
+            const datUserSingle:any = structuredClone(datUser[0]);
+            delete datUserSingle.password;
+            resolve(datUserSingle);
+          } else {
+            resolve(datUser[0]);
+          }
         }
       });
     }
