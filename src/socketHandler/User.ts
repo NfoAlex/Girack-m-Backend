@@ -47,7 +47,7 @@ module.exports = (io:Server) => {
 
       //セッション確認
       if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
-        socket.emit("RESULTfetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
+        socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
@@ -59,7 +59,6 @@ module.exports = (io:Server) => {
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
       }
-
     });
 
   });
