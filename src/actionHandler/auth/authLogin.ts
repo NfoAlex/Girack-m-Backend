@@ -21,19 +21,19 @@ export default async function authLogin(username:string, password:string)
   console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
   //そもそもユーザーが見つからないなら失敗として返す
-  if (RESULT.length === 0) return {authResult:false, UserInfo:null, sessionId:null};
+  if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
 
   //セッション情報を作成してDBへ挿入
   const sessionIdGen = generateSessionId();
   db.run("insert into USERS_SESSION(userId, sessionId, sessionName) values(?,?,?)",
-    RESULT[0].userId,
+    RESULT.userId,
     sessionIdGen,
     "ログイン"
   );
 
   //パスワード比較、結果を返す
-  if (RESULT[0].password === password) {
-    return {authResult:true, UserInfo:RESULT[0], sessionId:sessionIdGen};
+  if (RESULT.password === password) {
+    return {authResult:true, UserInfo:RESULT, sessionId:sessionIdGen};
   } else {
     return {authResult:false, UserInfo:null, sessionId:null};
   }
