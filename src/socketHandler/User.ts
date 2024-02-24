@@ -1,8 +1,12 @@
 import { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
+import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
 
 import type IRequestSender from "../type/requestSender";
+import fetchUser from "../db/fetchUser";
+import type { IUserInfo, IUserInfoPublic } from "../type/User";
+import searchUser from "../db/searchUser";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -32,6 +36,75 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULTfetchUserConfig", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //一人分のユーザー情報取得(ユーザーIDから)
+    socket.on("fetchUserInfo", async (dat:{RequestSender:IRequestSender, userId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: {UserInfo:IUserInfoPublic, UserSession:IUserSession}|null
+      }
+      */
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::fetchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
+      } catch(e) {
+        socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
+      }
+
+    });
+
+    //ユーザー名で検索して一括取得
+    socket.on("searchUserInfo", async (dat:{RequestSender:IRequestSender, userName:string, rule:"FULL"|"PARTIAL"}) => {
+      console.log("User :: searchUserInfo : data->", dat);
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //情報検索、取得
+        const userInfos = await searchUser(dat.userName, dat.rule);
+
+        socket.emit("RESULT::searchUserInfo", { result:"SUCCESS", data:userInfos })
+      } catch(e) {
+        socket.emit("RESULT::searchUserInfo", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザー名の変更
+    socket.on("changeUserName", async (dat:{RequestSender:IRequestSender, userName:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザー名を変更
+        await changeUserName(dat.RequestSender.userId, dat.userName);
+        socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
+        //現在のユーザー情報を取得して送信
+        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
+      } catch(e) {
+        socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
       }
     });
 

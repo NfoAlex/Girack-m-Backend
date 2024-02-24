@@ -13,7 +13,7 @@ export interface IUserInfo {
 export interface IUserInfoPublic {
   userId: string,
   userName: string,
-  role: string,
+  role: string[],
   channelJoined: string[],
   loggedin: boolean,
   banned: boolean,
