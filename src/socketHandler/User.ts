@@ -69,7 +69,8 @@ module.exports = (io:Server) => {
     });
 
     //ユーザー名で検索して一括取得
-    socket.on("searchUserInfo", async (dat:{RequestSender:IRequestSender, userName:string}) => {
+    socket.on("searchUserInfo", async (dat:{RequestSender:IRequestSender, userName:string, rule:"FULL"|"PARTIAL"}) => {
+      console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
       if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
         socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
@@ -78,7 +79,7 @@ module.exports = (io:Server) => {
 
       try {
         //情報検索、取得
-        const userInfos = await searchUser(dat.userName);
+        const userInfos = await searchUser(dat.userName, dat.rule);
 
         socket.emit("RESULT::searchUserInfo", { result:"SUCCESS", data:userInfos })
       } catch(e) {
