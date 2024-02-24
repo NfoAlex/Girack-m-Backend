@@ -29,6 +29,9 @@ export default async function changePassword(
           return;
         }
       });
+    } else { //失敗ならそう返す
+      resolve(false);
+      return;
     }
   });
 }
