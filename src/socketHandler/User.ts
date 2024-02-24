@@ -97,10 +97,12 @@ module.exports = (io:Server) => {
       }
 
       try {
-        //変更
+        //ユーザー名を変更
         await changeUserName(dat.RequestSender.userId, dat.userName);
-
         socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
+        //現在のユーザー情報を取得して送信
+        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
       }
