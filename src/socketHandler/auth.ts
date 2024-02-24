@@ -88,10 +88,10 @@ module.exports = (io:Server) => {
         data: null
       }
       */
-
+     
       //セッション確認
       if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
-        socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
+        socket.emit("RESULT::changePassword", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
