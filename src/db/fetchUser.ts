@@ -16,7 +16,12 @@ export default async function fetchUser(userId:string|null, username:string|null
         } else {
           console.log("fetchUser(userName) :: 検索結果->", username, datUser);
           //そもそも結果が無いならそう返す
-          if (datUser.length === 0) resolve(null);
+          if (datUser.length === 0) {
+            resolve(null);
+            return;
+          }
+
+          console.log("fetchUser(userName) :: データ長->", datUser.length);
 
           //フロント用ならパスワードを削除
           if (forPublic) {
@@ -38,7 +43,10 @@ export default async function fetchUser(userId:string|null, username:string|null
         } else {
           console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
           //そもそも結果が無いならそう返す
-          if (datUser.length === 0) resolve(null);
+          if (datUser.length === 0) {
+            resolve(null);
+            return;
+          }
 
           //フロント用ならパスワードを削除
           if (forPublic) {
