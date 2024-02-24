@@ -11,18 +11,24 @@ export default async function checkSession(userId:string, sessionId:string)
       if (err) {
         console.log("checkSession :: ERROR ->", err);
       } else {
-        console.log("checkSession :: 検索結果->", datSession);
-        if (datSession.length === 0) resolve(false);
+        //console.log("checkSession :: 検索結果->", datSession);
+        //データが空なら終わらせる
+        if (datSession.length === 0) {
+          resolve(false);
+          return;
+        }
 
         //セッションデータ分ループしてセッションIDの一致を探す
         for (let dat of datSession) {
           if (dat.sessionId === sessionId) {
             resolve(true);
+            return;
           }
         }
 
         //ループ抜けちゃったら失敗として返す
         resolve(false);
+        return;
       }
     });
   });
