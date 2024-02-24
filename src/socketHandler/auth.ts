@@ -3,6 +3,9 @@ import { Socket, Server } from "socket.io";
 import authLogin from "../actionHandler/auth/authLogin";
 import { IUserInfo } from "../type/User";
 import authRegister from "../actionHandler/auth/authRegister";
+import IRequestSender from "../type/requestSender";
+import changePassword from "../actionHandler/auth/changePassword";
+import checkSession from "../actionHandler/auth/checkSession";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -72,6 +75,43 @@ module.exports = (io:Server) => {
       catch (e) {
         socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
         console.log("auth :: socket(authRegister) : error->", e);
+      }
+    });
+
+    //パスワード変更
+    socket.on("changePassword", async (
+      dat:{RequestSender:IRequestSender, currentPassword:string, newPassword:string}
+    ) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGPASSWORD"|"ERROR_SESSION_ERROR",
+        data: null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //パスワードを変更し結果を受け取る
+        const changePasswordResult = 
+          await changePassword(
+            dat.RequestSender.userId,
+            dat.currentPassword,
+            dat.newPassword
+          );
+          
+        //結果を返すだけ
+        if (changePasswordResult) {
+          socket.emit("RESULT::changePassword", { result:"SUCCESS", data:null });
+        } else {
+          socket.emit("RESULT::changePassword", { result:"ERROR_WRONGPASSWORD", data:null });
+        }
+      } catch(e) {
+        socket.emit("RESULT::changePassword", { result:"ERROR_SESSION_ERROR", data:null });
       }
     });
 
