@@ -15,7 +15,9 @@ export default async function fetchUser(userId:string|null, username:string|null
           resolve(null);
         } else {
           console.log("fetchUser(userName) :: 検索結果->", username, datUser);
+          //クローンしてパスワードを削除、返す
           const datUserSingle:any = structuredClone(datUser[0]);
+          delete datUserSingle.password;
           resolve(datUserSingle);
         }
       });
@@ -27,7 +29,9 @@ export default async function fetchUser(userId:string|null, username:string|null
           resolve(null);
         } else {
           console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
+          //クローンしてパスワードを削除、返す
           const datUserSingle:any = structuredClone(datUser[0]);
+          delete datUserSingle.password;
           resolve(datUserSingle);
         }
       });
