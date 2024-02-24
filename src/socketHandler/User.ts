@@ -2,11 +2,11 @@ import { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
+import fetchUser from "../db/fetchUser";
+import searchUser from "../db/searchUser";
 
 import type IRequestSender from "../type/requestSender";
-import fetchUser from "../db/fetchUser";
 import type { IUserInfo, IUserInfoPublic } from "../type/User";
-import searchUser from "../db/searchUser";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -63,7 +63,9 @@ module.exports = (io:Server) => {
     });
 
     //ユーザー名で検索して一括取得
-    socket.on("searchUserInfo", async (dat:{RequestSender:IRequestSender, userName:string, rule:"FULL"|"PARTIAL"}) => {
+    socket.on("searchUserInfo", async (
+      dat:{RequestSender:IRequestSender, userName:string, rule:"FULL"|"PARTIAL"}
+    ) => {
       console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
       if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
