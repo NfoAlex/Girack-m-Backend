@@ -57,17 +57,16 @@ module.exports = (io:Server) => {
 
       try {
         //書き込み
-        const saveUserConfigResult = await saveUserConfig(dat.RequestSender.userId, dat.config);
+        const saveUserConfigResult:boolean = await saveUserConfig(dat.RequestSender.userId, dat.config);
+        //結果に応じて結果と設定データを返す
         if (saveUserConfigResult) {
           socket.emit("RESULT::saveUserConfig", { result:"SUCCESS", data:dat.config});
         } else {
-          socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:dat.config});
+          socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:null});
         }
       } catch(e) {
         socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:null });
       }
-
-
     });
 
     //一人分のユーザー情報取得(ユーザーIDから)
