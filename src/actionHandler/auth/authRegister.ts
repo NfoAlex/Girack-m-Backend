@@ -43,7 +43,6 @@ export default async function authRegister(username:string, inviteCode:string|nu
   const defaultConfigData:IUserConfig = JSON.parse(
     fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')
   );
-
   //デフォルトの設定の値をDBへ挿入
   db.run("INSERT INTO USERS_CONFIG (userId, notification, theme, channel, sidebar) values (?,?,?,?,?)",
     userIdGen,
