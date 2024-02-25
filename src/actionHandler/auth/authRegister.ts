@@ -39,7 +39,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
     passwordGenerated
   );
 
-  //サーバー情報のJSON読み込み
+  //デフォルトのユーザー設定のJSON読み込み
   const defaultConfigData:IUserConfig = JSON.parse(
     fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')
   );
