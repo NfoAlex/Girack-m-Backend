@@ -22,7 +22,7 @@ module.exports = (io:Server) => {
 
       /* TODO :: セッション認証 */
       if (!(await checkSession(RequestSender.userId, RequestSender.sessionId))) {
-        socket.emit("RESULTfetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
+        socket.emit("RESULT::fetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
@@ -32,10 +32,10 @@ module.exports = (io:Server) => {
         console.log("fetchInfo :: socket(fetchUserConfig) : configData ->", configData);
 
         //返す
-        socket.emit("RESULTfetchUserConfig", { result:"SUCCESS", data:configData });
+        socket.emit("RESULT::fetchUserConfig", { result:"SUCCESS", data:configData });
       } catch(e) {
         //返す
-        socket.emit("RESULTfetchUserConfig", { result:"ERROR_DB_THING", data:null });
+        socket.emit("RESULT::fetchUserConfig", { result:"ERROR_DB_THING", data:null });
       }
     });
 
