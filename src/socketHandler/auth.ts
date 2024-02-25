@@ -32,7 +32,7 @@ module.exports = (io:Server) => {
         //結果に応じて結果送信
         if (authData.authResult) {
           //成功
-          socket.emit("RESULTauthLogin", {
+          socket.emit("RESULT::authLogin", {
             result:"SUCCESS",
             data:{
               UserInfo: authData.UserInfo,
@@ -41,11 +41,11 @@ module.exports = (io:Server) => {
           });
         } else {
           //認証無理だったら
-          socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});
+          socket.emit("RESULT::authLogin", {result:"ERROR_WRONGINFO", data:null});
         }
       } catch(e) {
         //認証無理だったら
-        socket.emit("RESULTauthLogin", {result:"ERROR_WRONGINFO", data:null});
+        socket.emit("RESULT::authLogin", {result:"ERROR_WRONGINFO", data:null});
         console.log("auth :: socket(authLogin) : error->", e);
       }
     });
@@ -65,15 +65,15 @@ module.exports = (io:Server) => {
 
         //エラー文ならそう返す
         if (datUser === "ERROR_WRONGINVITECODE") {
-          socket.emit("RESULTauthRegister", {result:"ERROR_WRONGINVITECODE", data:null});
+          socket.emit("RESULT::authRegister", {result:"ERROR_WRONGINVITECODE", data:null});
         } else {
-          socket.emit("RESULTauthRegister", {result:"SUCCESS", data:datUser});
+          socket.emit("RESULT::authRegister", {result:"SUCCESS", data:datUser});
         }
 
         console.log("auth :: authRegister : dat->", datUser);
       }
       catch (e) {
-        socket.emit("RESULTauthRegister", {result:"ERROR_DB_THING", data:null});
+        socket.emit("RESULT::authRegister", {result:"ERROR_DB_THING", data:null});
         console.log("auth :: socket(authRegister) : error->", e);
       }
     });
