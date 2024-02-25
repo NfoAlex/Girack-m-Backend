@@ -22,7 +22,7 @@ module.exports = (io:Server) => {
       delete ServerInfoLimited.registration.invite.inviteCode;
 
       //返す
-      socket.emit("RESULTfetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
+      socket.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
     });
 
     //全てのインスタンス情報を取得
@@ -36,7 +36,7 @@ module.exports = (io:Server) => {
 
       /* ...ToDo :: 権限チェック */
 
-      socket.emit("RESULTfetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
+      socket.emit("RESULT::fetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
     });
 
   });
