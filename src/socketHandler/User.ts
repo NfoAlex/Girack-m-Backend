@@ -4,9 +4,10 @@ import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
 import fetchUser from "../db/fetchUser";
 import searchUser from "../db/searchUser";
+import saveUserConfig from "../actionHandler/User/saveUserConfig";
 
 import type IRequestSender from "../type/requestSender";
-import type { IUserInfo, IUserInfoPublic } from "../type/User";
+import type { IUserConfig, IUserInfo, IUserInfoPublic } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -37,6 +38,36 @@ module.exports = (io:Server) => {
         //返す
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_DB_THING", data:null });
       }
+    });
+    
+    //設定データを保存する
+    socket.on("saveUserConfig", async (dat:{RequestSender:IRequestSender, config:IUserConfig}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: dat.config<IUserConfig>|null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+        socket.emit("RESULT::saveUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //書き込み
+        const saveUserConfigResult = await saveUserConfig(dat.RequestSender.userId, dat.config);
+        if (saveUserConfigResult) {
+          socket.emit("RESULT::saveUserConfig", { result:"SUCCESS", data:dat.config});
+        } else {
+          socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:dat.config});
+        }
+      } catch(e) {
+        socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:null });
+      }
+
+
     });
 
     //一人分のユーザー情報取得(ユーザーIDから)
