@@ -9,7 +9,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
 :Promise<IUserInfo|"ERROR_WRONGINVITECODE"> {
   //招待コードの確認
   if (ServerInfo.registration.invite.inviteOnly) { //招待制？
-    //コードが違うならエラー文を返す
+    //招待コードが違うならエラー文を返す
     if (ServerInfo.registration.invite.inviteCode !== inviteCode) {
       return "ERROR_WRONGINVITECODE";
     }
