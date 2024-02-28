@@ -47,7 +47,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
   db.run("INSERT INTO USERS_CONFIG (userId, notification, theme, channel, sidebar) values (?,?,?,?,?)",
     userIdGen,
     JSON.stringify(defaultConfigData.notification),
-    JSON.stringify(defaultConfigData.theme),
+    defaultConfigData.theme,
     JSON.stringify(defaultConfigData.channel),
     JSON.stringify(defaultConfigData.sidebar),
   );
