@@ -11,10 +11,10 @@ export default async function saveUserConfig(userId:string, datConfig:IUserConfi
     //設定データを書き込み更新
     db.run(sqlContext,
       [
-        datConfig.notification,
+        JSON.stringify(datConfig.notification),
         datConfig.theme,
-        datConfig.channel,
-        datConfig.sidebar,
+        JSON.stringify(datConfig.channel),
+        JSON.stringify(datConfig.sidebar),
         userId //書き込み先のユーザーID
       ],
     (err) => {
