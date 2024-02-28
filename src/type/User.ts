@@ -46,3 +46,11 @@ export interface IUserConfig {
     ReadAllButtonByShiftKey: boolean
   }
 }
+
+//DBに保存される設定用文字列
+export interface IUserConfigBeforeParsing {
+  notification: string,
+  theme: "dark"|"light",
+  channel: string,
+  sidebar: string
+}
