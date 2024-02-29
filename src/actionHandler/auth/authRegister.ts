@@ -1,15 +1,16 @@
+import fs from "fs";
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../../db/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
-import { IUserInfo } from "../../type/User";
+import { IUserConfig, IUserInfo } from "../../type/User";
 
 export default async function authRegister(username:string, inviteCode:string|null)
 :Promise<IUserInfo|"ERROR_WRONGINVITECODE"> {
   //招待コードの確認
   if (ServerInfo.registration.invite.inviteOnly) { //招待制？
-    //コードが違うならエラー文を返す
+    //招待コードが違うならエラー文を返す
     if (ServerInfo.registration.invite.inviteCode !== inviteCode) {
       return "ERROR_WRONGINVITECODE";
     }
@@ -36,6 +37,19 @@ export default async function authRegister(username:string, inviteCode:string|nu
     false,
     false,
     passwordGenerated
+  );
+
+  //デフォルトのユーザー設定のJSON読み込み
+  const defaultConfigData:IUserConfig = JSON.parse(
+    fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')
+  );
+  //デフォルトの設定の値をDBへ挿入
+  db.run("INSERT INTO USERS_CONFIG (userId, notification, theme, channel, sidebar) values (?,?,?,?,?)",
+    userIdGen,
+    JSON.stringify(defaultConfigData.notification),
+    defaultConfigData.theme,
+    JSON.stringify(defaultConfigData.channel),
+    JSON.stringify(defaultConfigData.sidebar),
   );
 
   console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
