@@ -90,7 +90,7 @@ module.exports = (io:Server) => {
       */
      
       //セッション確認
-      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::changePassword", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
