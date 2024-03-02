@@ -15,22 +15,28 @@ export default async function authLogin(username:string, password:string)
     //そもそもユーザーが見つからないなら失敗として返す
     if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
 
-    //認証結果保存用
-    let authResult:boolean = false;
-    //パスワードを比較する
-    db.all("SELECT * FROM USERS_PASSWORD WHERE userId = ?", [RESULT.userId], (err:Error, datUser:IUserPassword[]) => {
-      if (err) {
-        console.log("authLogin :: ERROR ->", err);
-      } else {
-        console.log("authLogin :: 検索結果->", datUser);
-        //パスワードが合っているならtrueに
-        if (datUser[0].password === password) {
-          authResult = true;
-        } else { //違うなら失敗結果を返す
-          return {authResult:false, UserInfo:null, sessionId:null};
+    //パスワードを比較して結果保存
+    const authResult:boolean = await new Promise(async (resolve) => {
+      db.all("SELECT * FROM USERS_PASSWORD WHERE userId = ?", [RESULT.userId], (err:Error, datUser:IUserPassword[]) => {
+        if (err) {
+          console.log("authLogin :: authLogin(db) : ERROR ->", err);
+          resolve(false);
+        } else {
+          console.log("authLogin :: authLogin(db) : 検索結果->", datUser);
+          //パスワードが合っているならtrueに
+          if (datUser[0].password === password) {
+            console.log("authLogin :: authLogin(db) : パスワード合ってるね")
+            resolve(true);
+          } else {
+            console.log("authLogin :: authLogin(db) : パスワード違う");
+            resolve(false);
+          }
         }
-      }
+      });
     });
+
+    //違うなら失敗結果を返す
+    if (authResult === false) return {authResult:false, UserInfo:null, sessionId:null};
 
     //セッション情報を作成してDBへ挿入
     const sessionIdGen = generateSessionId();
