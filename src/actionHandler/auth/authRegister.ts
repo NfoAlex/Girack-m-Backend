@@ -31,15 +31,17 @@ export default async function authRegister(username:string, inviteCode:string|nu
     const passwordGenerated:string = generateKey();
 
     //ユーザー情報をDBへ作成
-    db.run("insert into USERS_INFO values (?,?,?,?,?,?,?)",
+    db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
       userIdGen,
       username,
       "MEMBER",
       "0001",
       false,
-      false,
-      passwordGenerated
+      false
     );
+
+    //生成したパスワードを記録
+    db.run("insert into USERS_PASSWORD values (?,?)", userIdGen, passwordGenerated);
 
     //デフォルトのユーザー設定のJSON読み込み
     const defaultConfigData:IUserConfig = JSON.parse(
