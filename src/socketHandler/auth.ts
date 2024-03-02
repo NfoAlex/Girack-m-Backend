@@ -72,7 +72,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::authRegister", {result:"SUCCESS", data:datUserResult});
         }
 
-        console.log("auth :: authRegister : dat->", datUserResult);
+        //console.log("auth :: authRegister : dat->", datUserResult);
       }
       catch (e) {
         socket.emit("RESULT::authRegister", {result:"ERROR_DB_THING", data:null});
