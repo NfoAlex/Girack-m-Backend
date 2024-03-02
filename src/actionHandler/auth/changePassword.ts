@@ -2,7 +2,7 @@ import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../../db/fetchUser";
 
-import { IUserInfo } from "../../type/User";
+import { IUserInfo, IUserPassword } from "../../type/User";
 
 export default async function changePassword(
   userId:string, currentPasword:string, newPassword:string
@@ -49,7 +49,7 @@ export default async function changePassword(
 //現在のパスワード確認用処理
 async function checkPassword(userId:string, currentPassword:string):Promise<boolean> {
   return new Promise((resolve) => {
-    db.all("SELECT * FROM USERS_INFO WHERE userId=?", [userId], (err, datUser:IUserInfo[]) => {
+    db.all("SELECT * FROM USERS_PASSWORD WHERE userId=?", [userId], (err, datUser:IUserPassword[]) => {
       //エラーならエラーと返す
       if (err) {
         resolve(false);
