@@ -10,7 +10,7 @@ export default function fetchUserConfig(userId:string)
   //ユーザー情報取得
   return new Promise<IUserConfig|null>((resolve) => {
     try {
-      
+
       //デフォルトの設定値取得
       const defaultConfigData:IUserConfig = JSON.parse(fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')); //サーバー情報のJSON読み込み
 
@@ -20,7 +20,7 @@ export default function fetchUserConfig(userId:string)
           console.log("fetchUserConfig :: ERROR ->", err);
           resolve(null);
         } else {
-          console.log("fetchUserConfig :: 検索結果->", userId, datConfig);
+          //console.log("fetchUserConfig :: 検索結果->", userId, datConfig);
           //DBでは設定の値がstringで保存されているためJSONへ
           datConfig[0].channel = JSON.parse(datConfig[0].channel);
           datConfig[0].notification = JSON.parse(datConfig[0].notification);
