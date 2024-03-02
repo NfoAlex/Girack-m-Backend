@@ -22,7 +22,7 @@ module.exports = (io:Server) => {
       */
 
       /* TODO :: セッション認証 */
-      if (!(await checkSession(RequestSender.userId, RequestSender.sessionId))) {
+      if (!(await checkSession(RequestSender))) {
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -50,7 +50,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::saveUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -78,7 +78,7 @@ module.exports = (io:Server) => {
       }
       */
       //セッション確認
-      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -98,7 +98,7 @@ module.exports = (io:Server) => {
     ) => {
       console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
-      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -123,7 +123,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender.userId, dat.RequestSender.sessionId))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
