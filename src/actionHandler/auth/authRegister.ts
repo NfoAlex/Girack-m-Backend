@@ -64,8 +64,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
       role: ["MEMBER"],
       channelJoined: ["0001"],
       loggedin: false,
-      banned: false,
-      password: passwordGenerated
+      banned: false
     };
 
   } catch(e) {
