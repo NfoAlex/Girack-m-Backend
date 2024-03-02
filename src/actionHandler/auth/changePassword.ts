@@ -8,30 +8,40 @@ export default async function changePassword(
   userId:string, currentPasword:string, newPassword:string
 ):Promise<boolean> {
   return new Promise(async (resolve) => {
-    //認証結果保存用
-    let authResult:boolean = false;
+    try {
 
-    //データ検索してパスワードを比較
-    authResult = await checkPassword(userId, currentPasword);
+      //認証結果保存用
+      let authResult:boolean = false;
 
-    //console.log("changePassword :: authResult->", authResult);
+      //データ検索してパスワードを比較
+      authResult = await checkPassword(userId, currentPasword);
 
-    //認証できたならパスワード変更
-    if (authResult) {
-      //パスワードを変更
-      db.run("UPDATE USERS_INFO SET password=? WHERE userId=?", [newPassword, userId], (err) => {
-        if (err) {
-          //エラーを投げる
-          throw err;
-        } else {
-          //成功と返す
-          resolve(true);
-          return;
-        }
-      });
-    } else { //失敗ならそう返す
+      //console.log("changePassword :: authResult->", authResult);
+
+      //認証できたならパスワード変更
+      if (authResult) {
+        //パスワードを変更
+        db.run("UPDATE USERS_INFO SET password=? WHERE userId=?", [newPassword, userId], (err) => {
+          if (err) {
+            //エラーを投げる
+            throw err;
+          } else {
+            //成功と返す
+            resolve(true);
+            return;
+          }
+        });
+      } else { //失敗ならそう返す
+        resolve(false);
+        return;
+      }
+
+    } catch(e) {
+
+      console.log("changePassword :: changePassword : エラー->", e);
       resolve(false);
       return;
+
     }
   });
 }
