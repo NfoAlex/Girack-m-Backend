@@ -21,7 +21,7 @@ export default async function changePassword(
       //認証できたならパスワード変更
       if (authResult) {
         //パスワードを変更
-        db.run("UPDATE USERS_INFO SET password=? WHERE userId=?", [newPassword, userId], (err) => {
+        db.run("UPDATE USERS_PASSWORD SET password=? WHERE userId=?", [newPassword, userId], (err) => {
           if (err) {
             //エラーを投げる
             throw err;
