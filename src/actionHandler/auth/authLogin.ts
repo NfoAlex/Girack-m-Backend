@@ -2,7 +2,7 @@ import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../../db/fetchUser";
 
-import { IUserInfo } from "../../type/User";
+import { IUserInfo, IUserPassword } from "../../type/User";
 
 export default async function authLogin(username:string, password:string)
 :Promise<{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null}> {
@@ -18,7 +18,7 @@ export default async function authLogin(username:string, password:string)
     //認証結果保存用
     let authResult:boolean = false;
     //パスワードを比較する
-    db.all("SELECT * FROM USERS_PASSWORD WHERE userId = ?", [RESULT.userId], (err:Error, datUser:IUserInfo[]) => {
+    db.all("SELECT * FROM USERS_PASSWORD WHERE userId = ?", [RESULT.userId], (err:Error, datUser:IUserPassword[]) => {
       if (err) {
         console.log("authLogin :: ERROR ->", err);
       } else {
