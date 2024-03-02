@@ -7,7 +7,7 @@ import searchUser from "../db/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
 
 import type IRequestSender from "../type/requestSender";
-import type { IUserConfig, IUserInfo, IUserInfoPublic } from "../type/User";
+import type { IUserConfig } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
