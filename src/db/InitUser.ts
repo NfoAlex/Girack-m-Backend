@@ -14,7 +14,7 @@ db.serialize(() => {
   //ユーザーのパスワードを保存するUSERS_PASSWORDテーブルを無ければ作成
   db.run(`create table if not exists USERS_PASSWORD(
     userId TEXT PRIMARY KEY,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
   //ユーザーのセッション状態を保存するUSERS_SESSIONテーブルを無ければ作成
