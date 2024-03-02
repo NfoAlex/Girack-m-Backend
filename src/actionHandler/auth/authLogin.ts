@@ -10,7 +10,7 @@ export default async function authLogin(username:string, password:string)
 
     //ユーザー情報取得
     const RESULT = await fetchUser(null, username, false);
-    console.log("authLogin :: authLogin : RESULT ->", RESULT);
+    //console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
     //そもそもユーザーが見つからないなら失敗として返す
     if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
@@ -22,13 +22,13 @@ export default async function authLogin(username:string, password:string)
           console.log("authLogin :: authLogin(db) : ERROR ->", err);
           resolve(false);
         } else {
-          console.log("authLogin :: authLogin(db) : 検索結果->", datUser);
+          //console.log("authLogin :: authLogin(db) : 検索結果->", datUser);
           //パスワードが合っているならtrueに
           if (datUser[0].password === password) {
-            console.log("authLogin :: authLogin(db) : パスワード合ってるね")
+            //console.log("authLogin :: authLogin(db) : パスワード合ってるね")
             resolve(true);
           } else {
-            console.log("authLogin :: authLogin(db) : パスワード違う");
+            //console.log("authLogin :: authLogin(db) : パスワード違う");
             resolve(false);
           }
         }
