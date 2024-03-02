@@ -6,36 +6,45 @@ import { IUserInfo } from "../../type/User";
 
 export default async function authLogin(username:string, password:string)
 :Promise<{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null}> {
-  //ユーザー検索、パスワードを比較する
-  db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo) => {
-    if (err) {
-      console.log("authLogin :: ERROR ->", err);
+  try {
+
+    //ユーザー検索、パスワードを比較する
+    db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo) => {
+      if (err) {
+        console.log("authLogin :: ERROR ->", err);
+      } else {
+        console.log("authLogin :: 検索結果->", datUser);
+      }
+    });
+
+    //ユーザー情報取得
+    const RESULT = await fetchUser(null, username, false);
+
+    console.log("authLogin :: authLogin : RESULT ->", RESULT);
+
+    //そもそもユーザーが見つからないなら失敗として返す
+    if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
+
+    //セッション情報を作成してDBへ挿入
+    const sessionIdGen = generateSessionId();
+    db.run("insert into USERS_SESSION(userId, sessionId, sessionName) values(?,?,?)",
+      RESULT.userId,
+      sessionIdGen,
+      "ログイン"
+    );
+
+    //パスワード比較、結果を返す
+    if (RESULT.password === password) {
+      return {authResult:true, UserInfo:RESULT, sessionId:sessionIdGen};
     } else {
-      console.log("authLogin :: 検索結果->", datUser);
+      return {authResult:false, UserInfo:null, sessionId:null};
     }
-  });
 
-  //ユーザー情報取得
-  const RESULT = await fetchUser(null, username, false);
+  } catch(e) {
 
-  console.log("authLogin :: authLogin : RESULT ->", RESULT);
-
-  //そもそもユーザーが見つからないなら失敗として返す
-  if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
-
-  //セッション情報を作成してDBへ挿入
-  const sessionIdGen = generateSessionId();
-  db.run("insert into USERS_SESSION(userId, sessionId, sessionName) values(?,?,?)",
-    RESULT.userId,
-    sessionIdGen,
-    "ログイン"
-  );
-
-  //パスワード比較、結果を返す
-  if (RESULT.password === password) {
-    return {authResult:true, UserInfo:RESULT, sessionId:sessionIdGen};
-  } else {
+    console.log("authLogin :: authLogin : エラー->", e);
     return {authResult:false, UserInfo:null, sessionId:null};
+
   }
 }
 
