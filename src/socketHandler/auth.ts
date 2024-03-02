@@ -55,22 +55,24 @@ module.exports = (io:Server) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGINVITECODE",
-        data: datUser<IUserInfo>|null
+        data: {datUser:IUserInfo, password:string}|null
       }
       */
 
       //登録処理
       try {
-        const datUser = await authRegister(dat.username, dat.inviteCode);
+        const datUserResult:
+        {userInfo:IUserInfo, password:string}|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING" =
+          await authRegister(dat.username, dat.inviteCode);
 
         //エラー文ならそう返す
-        if (datUser === "ERROR_WRONGINVITECODE") {
-          socket.emit("RESULT::authRegister", {result:"ERROR_WRONGINVITECODE", data:null});
+        if (datUserResult === "ERROR_WRONGINVITECODE" || datUserResult === "ERROR_DB_THING") {
+          socket.emit("RESULT::authRegister", {result:datUserResult, data:null});
         } else {
-          socket.emit("RESULT::authRegister", {result:"SUCCESS", data:datUser});
+          socket.emit("RESULT::authRegister", {result:"SUCCESS", data:datUserResult});
         }
 
-        console.log("auth :: authRegister : dat->", datUser);
+        console.log("auth :: authRegister : dat->", datUserResult);
       }
       catch (e) {
         socket.emit("RESULT::authRegister", {result:"ERROR_DB_THING", data:null});
