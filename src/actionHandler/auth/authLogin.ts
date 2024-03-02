@@ -8,22 +8,29 @@ export default async function authLogin(username:string, password:string)
 :Promise<{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null}> {
   try {
 
-    //ユーザー検索、パスワードを比較する
-    db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [username], (err:Error, datUser:IUserInfo) => {
-      if (err) {
-        console.log("authLogin :: ERROR ->", err);
-      } else {
-        console.log("authLogin :: 検索結果->", datUser);
-      }
-    });
-
     //ユーザー情報取得
     const RESULT = await fetchUser(null, username, false);
-
     console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
     //そもそもユーザーが見つからないなら失敗として返す
     if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
+
+    //認証結果保存用
+    let authResult:boolean = false;
+    //パスワードを比較する
+    db.all("SELECT * FROM USERS_PASSWORD WHERE userId = ?", [RESULT.userId], (err:Error, datUser:IUserInfo[]) => {
+      if (err) {
+        console.log("authLogin :: ERROR ->", err);
+      } else {
+        console.log("authLogin :: 検索結果->", datUser);
+        //パスワードが合っているならtrueに
+        if (datUser[0].password === password) {
+          authResult = true;
+        } else { //違うなら失敗結果を返す
+          return {authResult:false, UserInfo:null, sessionId:null};
+        }
+      }
+    });
 
     //セッション情報を作成してDBへ挿入
     const sessionIdGen = generateSessionId();
@@ -32,13 +39,8 @@ export default async function authLogin(username:string, password:string)
       sessionIdGen,
       "ログイン"
     );
-
-    //パスワード比較、結果を返す
-    if (RESULT.password === password) {
-      return {authResult:true, UserInfo:RESULT, sessionId:sessionIdGen};
-    } else {
-      return {authResult:false, UserInfo:null, sessionId:null};
-    }
+    
+    return {authResult:true, UserInfo:RESULT, sessionId:sessionIdGen};
 
   } catch(e) {
 
