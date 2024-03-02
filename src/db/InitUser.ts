@@ -9,8 +9,7 @@ db.serialize(() => {
     role TEXT NOT NULL,
     channelJoined TEXT NOT NULL,
     loggedin BOOLEAN NOT NULL,
-    banned BOOLEAN NOT NULL,
-    password TEXT NOT NULL
+    banned BOOLEAN NOT NULL
   )`);
   //ユーザーのパスワードを保存するUSERS_PASSWORDテーブルを無ければ作成
   db.run(`create table if not exists USERS_PASSWORD(
