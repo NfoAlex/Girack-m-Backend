@@ -1,5 +1,6 @@
 import { Socket, Server } from "socket.io";
 import checkSession from "../actionHandler/auth/checkSession";
+import createChannel from "../actionHandler/Channel/createChannel";
 import fetchChannel from "../actionHandler/Channel/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 
@@ -8,8 +9,15 @@ import type IRequestSender from "../type/requestSender";
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
 
-    //基本インスタンス情報(招待コードなど省く)を取得
-    socket.on("createChannel", ({RequestSender:IRequestSender, channelName:) => {
+    //チャンネル作成
+    socket.on("createChannel", async (dat:
+      {
+        RequestSender:IRequestSender,
+        channelName:string,
+        description:string,
+        isPrivate:boolean,
+      }
+    ) => {
       /*
       返し : {
         result: "SUCCESS",
@@ -17,10 +25,21 @@ module.exports = (io:Server) => {
       }
       */
 
-      
+      try {
+        //チャンネルを作成する
+        const createChannelResult = await createChannel(
+          dat.channelName,
+          dat.description,
+          dat.RequestSender.userId
+        );
 
-      //返す
-      socket.emit("RESULT::createChannel", { result:"SUCCESS", data:null });
+        //返す
+        socket.emit("RESULT::createChannel", { result:"SUCCESS", data:createChannelResult });
+      } catch(e) {
+        socket.emit("RESULT::createChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
     //チャンネル情報を取得する
     socket.on("fetchChannelInfo", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
       const channelInfo = await fetchChannel(dat.channelId);
