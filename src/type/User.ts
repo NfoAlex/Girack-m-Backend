@@ -8,6 +8,15 @@ export interface IUserInfo {
   banned: boolean,
 };
 
+export interface IUserInfoBeforeParsing {
+  userId: string,
+  userName: string,
+  role: string,
+  channelJoined: string,
+  loggedin: boolean,
+  banned: boolean,
+};
+
 //ユーザーが持つ権限情報
 export interface IUserRole {
   ServerManage: boolean,
