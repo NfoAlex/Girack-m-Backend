@@ -20,7 +20,13 @@ module.exports = (io:Server) => {
       socket.emit("RESULT::createChannel", { result:"SUCCESS", data:null });
     });
 
-    socket.on("fetchChannelList", (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchChannelList", async (dat:{RequestSender:IRequestSender}) => {
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchChannelList", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
       try {
         const channelList = fetchChannelList();
         socket.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
