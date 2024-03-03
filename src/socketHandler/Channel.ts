@@ -21,7 +21,7 @@ module.exports = (io:Server) => {
     ) => {
       /*
       返し : {
-        result: "SUCCESS"|"ERROR_ROLE"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING",
+        result: "SUCCESS"|"ERROR_ROLE"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_CHANNELNAME_BLANK",
         data: createChannelResult<boolean>|null
       }
       */
@@ -33,6 +33,12 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //チャンネル名が空ならエラーを返して終了
+        if (dat.channelName.length === 0 ) {
+          socket.emit("RESULT::createChannel", { result:"ERROR_CHANNELNAME_BLANK", data:null });
+          return;
+        }
+
         //ロール権限を確認する
         const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
         if (!roleCheckResult) {
