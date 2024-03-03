@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
 import checkSession from "../actionHandler/auth/checkSession";
-import fetchChannel from "../db/fetchChannel";
+import fetchChannel from "../actionHandler/Channel/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 
 import type IRequestSender from "../type/requestSender";
@@ -21,6 +21,9 @@ module.exports = (io:Server) => {
 
       //返す
       socket.emit("RESULT::createChannel", { result:"SUCCESS", data:null });
+    //チャンネル情報を取得する
+    socket.on("fetchChannelInfo", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+      const channelInfo = await fetchChannel(dat.channelId);
     });
 
     socket.on("fetchChannelList", async (dat:{RequestSender:IRequestSender}) => {
