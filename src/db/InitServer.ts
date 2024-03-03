@@ -80,10 +80,11 @@ db.serialize(() => {
     countUsed INTEGER NOT NULL
   )`);
 
-  //Randomチャンネルを最初に作成する
+  //無かったらRandomチャンネルを最初に作成
   db.run(`
-    insert into CHANNELS (channelId, name, createdBy, isPrivate, speakableRole) 
-    values (?,?,?,?,?)
+    INSERT INTO CHANNELS (channelId, name, createdBy, isPrivate, speakableRole)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(channelId) DO NOTHING;
   `,
     "0001",
     "Random",
