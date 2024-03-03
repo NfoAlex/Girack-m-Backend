@@ -16,6 +16,35 @@ db.serialize(() => {
     MessageDelete BOOLEAN NOT NULL,
     MessageAttatchFile BOOLEAN NOT NULL
   )`);
+
+  //無かったらMEMBERロールを挿入する
+  db.run(`
+    INSERT INTO ROLES (
+      roleId,
+      name,
+      ServerManage,
+      RoleManage,
+      ChannelRename,
+      ChannelViewPrivate,
+      ChannelCreateAndDelete,
+      UserManage,
+      MessageDelete,
+      MessageAttatchFile
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(roleId) DO NOTHING;
+    `,
+    "MEMBER",
+    "Member",
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  );
 });
 
 console.log("InitRole :: ロールDB作成完了");
