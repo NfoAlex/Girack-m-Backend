@@ -1,5 +1,8 @@
 import { Socket, Server } from "socket.io";
+import checkSession from "../actionHandler/auth/checkSession";
+import fetchChannel from "../db/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
+
 import type IRequestSender from "../type/requestSender";
 
 module.exports = (io:Server) => {
