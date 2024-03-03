@@ -21,7 +21,7 @@ module.exports = (io:Server) => {
       }
       */
 
-      /* TODO :: セッション認証 */
+      /* セッション認証 */
       if (!(await checkSession(RequestSender))) {
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
