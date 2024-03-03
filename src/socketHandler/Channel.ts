@@ -18,5 +18,14 @@ module.exports = (io:Server) => {
       socket.emit("RESULT::createChannel", { result:"SUCCESS", data:null });
     });
 
+    socket.on("fetchChannelList", (dat:{RequestSender:IRequestSender}) => {
+      try {
+        const channelList = fetchChannelList();
+        socket.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
+      } catch(e) {
+        socket.emit("RESULT::fetchChannelList", {result:"ERROR_DB_THING", data:null});
+      }
+    });
+
   });
 }
