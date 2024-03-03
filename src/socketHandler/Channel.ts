@@ -30,7 +30,8 @@ module.exports = (io:Server) => {
         const createChannelResult = await createChannel(
           dat.channelName,
           dat.description,
-          dat.RequestSender.userId
+          dat.isPrivate,
+          dat.RequestSender.userId,
         );
 
         //返す

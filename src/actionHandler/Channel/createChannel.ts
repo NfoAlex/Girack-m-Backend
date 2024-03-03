@@ -6,27 +6,42 @@ import fetchChannel from "./fetchChannel";
 export default async function createChannel(
     channelName:string,
     description:string,
-    userId:string
+    isPrivate:boolean,
+    userId:string,
   ):Promise<boolean> {
   try {
 
-    //TODO :: ロールチェック
+    return new Promise(async (resolve) => {
+      //TODO :: ロールチェック
 
-    //空いているチャンネルIDを探して取得
-    const channelIdGen = await getNewChannelId();
+      //空いているチャンネルIDを探して取得
+      const channelIdGen = await getNewChannelId();
+      //IDが空なら失敗として返す
+      if (channelIdGen === "") return false;
 
-    //チャンネルデータを挿入
-    db.run(
-      "INSERT INTO CHANNELS (channelId, channelName, description, createdBy, isPrivate, speakableRole)",
-      channelIdGen,
-      channelName,
-      description,
-      userId,
-      false,
-      "MEMBER"
-    );
-
-    return true;
+      //チャンネルデータを挿入
+      return db.run(`
+        INSERT INTO CHANNELS (
+          channelId, channelName, description, createdBy, isPrivate, speakableRole
+        )
+        values (?,?,?,?,?,?)
+        `,
+        channelIdGen,
+        channelName,
+        description,
+        userId,
+        isPrivate,
+        "MEMBER",
+        (err:Error) => { //結果処理
+          //エラーなら失敗と返し、無事ならtrueを返す
+          if (err) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        }
+      );
+    });
 
   } catch(e) {
 
@@ -52,11 +67,17 @@ async function getNewChannelId():Promise<string> {
         }
     
         //チャンネル検索、データ格納
-        const datUser = await fetchChannel(channelIdGen);
-        console.log("authRegister :: getNewUserId : datUser->", datUser);
+        const datChannel = await fetchChannel(channelIdGen);
+        console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
+
+        //nullなら処理を停止する
+        if (datChannel === null) {
+          resolve("");
+          return;
+        }
         
         //データ長さが0ならループ停止してIDを返す
-        if (datUser === null) {
+        if (datChannel.length === 0) {
           clearInterval(checkLoop);
           resolve(channelIdGen); //IDを返す
         }
