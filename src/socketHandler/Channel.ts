@@ -1,4 +1,6 @@
 import { Socket, Server } from "socket.io";
+import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
+import type IRequestSender from "../type/requestSender";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
