@@ -1,7 +1,7 @@
 import fs from "fs";
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
-import fetchUser from "../../db/fetchUser";
+import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
 import { IUserConfig, IUserInfo } from "../../type/User";

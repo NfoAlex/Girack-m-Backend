@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/SERVER.db");
-import fetchUser from "../../db/fetchUser";
+import fetchUser from "../User/fetchUser";
 import fetchChannel from "./fetchChannel";
 
 export default async function createChannel(

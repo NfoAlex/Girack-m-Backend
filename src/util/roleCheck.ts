@@ -1,7 +1,7 @@
 //権限チェック
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/ROLE.db");
-import fetchUser from "../db/fetchUser";
+import fetchUser from "../actionHandler/User/fetchUser";
 import { IUserRole } from "../type/User";
 
 //ロールのJSONデータをキーで参照できるように

@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 
-import { IUserInfo, IUserInfoBeforeParsing } from "../type/User";
+import { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
 
 export default async function fetchUser(userId:string|null, username:string|null)
 :Promise<IUserInfo|null> {

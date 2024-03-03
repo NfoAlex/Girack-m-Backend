@@ -2,7 +2,7 @@ import { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
-import fetchUser from "../db/fetchUser";
+import fetchUser from "../actionHandler/User/fetchUser";
 import searchUser from "../db/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
 
