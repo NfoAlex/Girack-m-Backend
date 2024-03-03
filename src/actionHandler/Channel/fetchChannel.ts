@@ -4,7 +4,7 @@ const db = new sqlite3.Database("./records/SERVER.db");
 export default async function fetchChannel(channelId:string)
 :Promise<any[]|null> {
   return new Promise<any[]|null>((resolve) => {
-    db.all("SELECT * FROM CHANNEL WHERE channelId = ?", [channelId], (err:Error, datChannels:any[]) => {
+    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], (err:Error, datChannels:any[]) => {
       if (err) {
         console.log("fetchChannel :: db : エラー->", err);
         resolve(null);
