@@ -21,8 +21,8 @@ module.exports = (io:Server) => {
     ) => {
       /*
       返し : {
-        result: "SUCCESS",
-        data: null
+        result: "SUCCESS"|"ERROR_ROLE"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING",
+        data: createChannelResult<boolean>|null
       }
       */
 
