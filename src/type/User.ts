@@ -8,6 +8,18 @@ export interface IUserInfo {
   banned: boolean,
 };
 
+//ユーザーが持つ権限情報
+export interface IUserRole {
+  ServerManage: boolean,
+  RoleManage: boolean,
+  ChannelRename: boolean,
+  ChannelViewPrivate: boolean,
+  ChannelCreateAndDelete: boolean,
+  UserManage: boolean,
+  MessageDelete: boolean,
+  MessageAttatchFile: boolean
+}
+
 //ユーザーのパスワード
 export interface IUserPassword {
   userId: string,
