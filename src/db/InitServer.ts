@@ -66,7 +66,8 @@ db.serialize(() => {
   db.run(
   `create table if not exists CHANNELS(
     channelId TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
+    channelName TEXT NOT NULL,
+    description TEXT NOT NULL,
     createdBy TEXT NOT NULL,
     isPrivate BOOLEAN NOT NULL,
     speakableRole TEXT NOT NULL
@@ -82,12 +83,13 @@ db.serialize(() => {
 
   //無かったらRandomチャンネルを最初に作成
   db.run(`
-    INSERT INTO CHANNELS (channelId, name, createdBy, isPrivate, speakableRole)
+    INSERT INTO CHANNELS (channelId, channelName, description, createdBy, isPrivate, speakableRole)
     VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(channelId) DO NOTHING;
   `,
     "0001",
     "Random",
+    "雑談チャンネル。",
     "SYSTEM",
     false,
     "MEMBER"
