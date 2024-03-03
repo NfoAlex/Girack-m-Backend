@@ -26,6 +26,12 @@ module.exports = (io:Server) => {
       }
       */
 
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::createChannel", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
       try {
         //ロール権限を確認する
         const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
