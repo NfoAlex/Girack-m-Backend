@@ -7,7 +7,7 @@ import { ServerInfo } from "../../db/InitServer";
 import { IUserConfig, IUserInfo } from "../../type/User";
 
 export default async function authRegister(username:string, inviteCode:string|null)
-:Promise<IUserInfo|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING"> {
+:Promise<{userInfo:IUserInfo, password:string}|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING"> {
   try {
 
     //招待コードの確認
@@ -31,15 +31,17 @@ export default async function authRegister(username:string, inviteCode:string|nu
     const passwordGenerated:string = generateKey();
 
     //ユーザー情報をDBへ作成
-    db.run("insert into USERS_INFO values (?,?,?,?,?,?,?)",
+    db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
       userIdGen,
       username,
       "MEMBER",
       "0001",
       false,
-      false,
-      passwordGenerated
+      false
     );
+
+    //生成したパスワードを記録
+    db.run("insert into USERS_PASSWORD values (?,?)", userIdGen, passwordGenerated);
 
     //デフォルトのユーザー設定のJSON読み込み
     const defaultConfigData:IUserConfig = JSON.parse(
@@ -57,12 +59,14 @@ export default async function authRegister(username:string, inviteCode:string|nu
     console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
 
     return {
-      userId: userIdGen,
-      userName: username,
-      role: ["MEMBER"],
-      channelJoined: ["0001"],
-      loggedin: false,
-      banned: false,
+      userInfo: {
+        userId: userIdGen,
+        userName: username,
+        role: ["MEMBER"],
+        channelJoined: ["0001"],
+        loggedin: false,
+        banned: false,
+      },
       password: passwordGenerated
     };
 

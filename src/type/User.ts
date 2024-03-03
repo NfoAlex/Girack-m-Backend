@@ -6,18 +6,13 @@ export interface IUserInfo {
   channelJoined: string[],
   loggedin: boolean,
   banned: boolean,
-  password: string
 };
 
-//他の人に共有する用のユーザー基本情報
-export interface IUserInfoPublic {
+//ユーザーのパスワード
+export interface IUserPassword {
   userId: string,
-  userName: string,
-  role: string[],
-  channelJoined: string[],
-  loggedin: boolean,
-  banned: boolean,
-};
+  password:string
+}
 
 //セッション情報
 export interface IUserSession {
