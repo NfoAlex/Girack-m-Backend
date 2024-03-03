@@ -19,7 +19,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
     }
 
     //ユーザー名の空きを確認
-    if ((await fetchUser(null, username, true)) !== null) throw Error;
+    if ((await fetchUser(null, username)) !== null) throw Error;
     
     //空いているユーザーIDを見つける
     const userIdGen = await getNewUserId();
@@ -94,7 +94,7 @@ async function getNewUserId():Promise<string> {
         }
     
         //ユーザー検索、データ格納
-        const datUser = await fetchUser(userIdGen, null, false);
+        const datUser = await fetchUser(userIdGen, null);
         console.log("authRegister :: getNewUserId : datUser->", datUser);
         
         //データ長さが0ならループ停止してIDを返す
