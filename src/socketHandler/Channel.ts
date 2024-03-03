@@ -28,7 +28,7 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const channelList = fetchChannelList();
+        const channelList = await fetchChannelList();
         socket.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
       } catch(e) {
         socket.emit("RESULT::fetchChannelList", {result:"ERROR_DB_THING", data:null});
