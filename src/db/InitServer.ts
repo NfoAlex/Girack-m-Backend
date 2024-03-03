@@ -84,7 +84,7 @@ db.serialize(() => {
   //無かったらRandomチャンネルを最初に作成
   db.run(`
     INSERT INTO CHANNELS (channelId, channelName, description, createdBy, isPrivate, speakableRole)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?)
     ON CONFLICT(channelId) DO NOTHING;
   `,
     "0001",
