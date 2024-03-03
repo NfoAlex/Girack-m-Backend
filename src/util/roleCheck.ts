@@ -10,19 +10,7 @@ type UserRoleKey = keyof IUserRole;
 export async function roleCheck(userId:string, termChecking:UserRoleKey):Promise<boolean> {
   try {
 
-    return new Promise(async (resolve) => {
-      //ユーザーが持つ総合的な権限データ
-      let userRolePower:IUserRole = {
-        ServerManage: false,
-        RoleManage: false,
-        ChannelRename: false,
-        ChannelViewPrivate: false,
-        ChannelCreateAndDelete: false,
-        UserManage: false,
-        MessageDelete: false,
-        MessageAttatchFile: false
-      };
-    
+    return new Promise(async (resolve) => {    
       //ユーザー情報を取得する
       const userInfo = await fetchUser(userId, null);
       //ユーザーがなければ取りやめ
