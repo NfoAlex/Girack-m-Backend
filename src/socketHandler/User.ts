@@ -84,7 +84,7 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        const userInfo = await fetchUser(dat.RequestSender.userId, null);
         socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
@@ -133,7 +133,7 @@ module.exports = (io:Server) => {
         await changeUserName(dat.RequestSender.userId, dat.userName);
         socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
         //現在のユーザー情報を取得して送信
-        const userInfo = await fetchUser(dat.RequestSender.userId, null, true);
+        const userInfo = await fetchUser(dat.RequestSender.userId, null);
         io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
