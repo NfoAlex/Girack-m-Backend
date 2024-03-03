@@ -9,7 +9,7 @@ export default async function authLogin(username:string, password:string)
   try {
 
     //ユーザー情報取得
-    const RESULT = await fetchUser(null, username, false);
+    const RESULT = await fetchUser(null, username);
     //console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
     //そもそもユーザーが見つからないなら失敗として返す
