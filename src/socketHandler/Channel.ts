@@ -5,6 +5,7 @@ import fetchChannel from "../actionHandler/Channel/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 
 import type IRequestSender from "../type/requestSender";
+import { roleCheck } from "../util/roleCheck";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -26,6 +27,13 @@ module.exports = (io:Server) => {
       */
 
       try {
+        //ロール権限を確認する
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        if (!roleCheckResult) {
+          socket.emit("RESULT::createChannel", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
         //チャンネルを作成する
         const createChannelResult = await createChannel(
           dat.channelName,
@@ -46,6 +54,7 @@ module.exports = (io:Server) => {
       const channelInfo = await fetchChannel(dat.channelId);
     });
 
+    //チャンネルを一覧で取得
     socket.on("fetchChannelList", async (dat:{RequestSender:IRequestSender}) => {
       /* セッション認証 */
       if (!(await checkSession(dat.RequestSender))) {
