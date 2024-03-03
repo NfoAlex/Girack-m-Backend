@@ -79,6 +79,18 @@ db.serialize(() => {
     countUsable INTEGER NOT NULL,
     countUsed INTEGER NOT NULL
   )`);
+
+  //Randomチャンネルを最初に作成する
+  db.run(`
+    insert into CHANNELS (channelId, name, createdBy, isPrivate, speakableRole) 
+    values (?,?,?,?,?)
+  `,
+    "0001",
+    "Random",
+    "SYSTEM",
+    false,
+    "MEMBER"
+  );
 });
 
 console.log("InitServer :: サーバー情報認識");
