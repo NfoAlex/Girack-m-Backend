@@ -6,6 +6,7 @@ import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 
 import type IRequestSender from "../type/requestSender";
 import { roleCheck } from "../util/roleCheck";
+import joinChannel from "../actionHandler/Channel/joinChannel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -99,7 +100,7 @@ module.exports = (io:Server) => {
 
       try {
         //参加処理
-        const joinChannelResult:boolean = false;
+        const joinChannelResult:boolean = await joinChannel(dat.RequestSender.userId, dat.channelId);
 
         //結果を送信
         if (joinChannelResult) {
