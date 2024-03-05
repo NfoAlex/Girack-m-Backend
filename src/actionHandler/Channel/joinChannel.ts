@@ -27,11 +27,11 @@ export default async function joinChannel(userId:string, channelId:string)
       const channelJoinedArr = userInfo.channelJoined;
       
       //参加チャンネル配列にすでにチャンネルIDが入ってるなら停止
-      if (!channelJoinedArr.includes(channelId)) {
+      if (channelJoinedArr.includes(channelId)) {
         resolve(false);
         return;
       }
-      
+
       //チャンネルIDを配列へ追加
       channelJoinedArr.push(channelId);
 
