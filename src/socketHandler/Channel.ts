@@ -82,5 +82,35 @@ module.exports = (io:Server) => {
       }
     });
 
+    //チャンネルへ参加
+    socket.on("joinChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: boolean|null
+      }
+      */
+
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::joinChannel", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //参加処理
+        const joinChannelResult:boolean = false;
+
+        //結果を送信
+        if (joinChannelResult) {
+          socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:joinChannelResult });
+        } else {
+          socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:joinChannelResult });
+        }
+      } catch(e) {
+        socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
   });
 }
