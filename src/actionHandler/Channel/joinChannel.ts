@@ -25,8 +25,11 @@ export default async function joinChannel(userId:string, channelId:string) {
 
     //DBにて更新
     db.run(
-      "UPDATE USERS_INFO SET channelJoined=?",
-      channelJoinedArr,
+      "UPDATE USERS_INFO SET channelJoined=? WHERE userId=?",
+      [
+        channelJoinedArr, //更新した参加チャンネル配列
+        userId //参加するユーザーID
+      ],
       (err) => {
         if (err) {
           console.log("joinChannel :: db : エラー->", err);
