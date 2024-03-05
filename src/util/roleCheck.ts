@@ -51,7 +51,8 @@ export async function roleCheck(userId:string, termChecking:UserRoleKey):Promise
           //ロール分調べて権限が足りるか調べる
           for (let role of datRoles) {
             //権限の値がtrueなら「できる」と返す
-            if (role[termChecking] === true) {
+              //SQLiteでのboolは数字なので=が二つ
+            if (role[termChecking] == true) {
               resolve(true);
               return;
             }
