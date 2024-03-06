@@ -3,10 +3,11 @@ import checkSession from "../actionHandler/auth/checkSession";
 import createChannel from "../actionHandler/Channel/createChannel";
 import fetchChannel from "../actionHandler/Channel/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
+import joinChannel from "../actionHandler/Channel/joinChannel";
+import leaveChannel from "../actionHandler/Channel/leaveChannel";
+import { roleCheck } from "../util/roleCheck";
 
 import type IRequestSender from "../type/requestSender";
-import { roleCheck } from "../util/roleCheck";
-import joinChannel from "../actionHandler/Channel/joinChannel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -110,6 +111,36 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //チャンネルから脱退
+    socket.on("leaveChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: boolean|null
+      }
+      */
+
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::leaveChannel", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //脱退処理
+        const leaveChannelResult:boolean = await leaveChannel(dat.RequestSender.userId, dat.channelId);
+
+        //結果を送信
+        if (leaveChannelResult) {
+          socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:leaveChannelResult });
+        } else {
+          socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:leaveChannelResult });
+        }
+      } catch(e) {
+        socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:null });
       }
     });
 
