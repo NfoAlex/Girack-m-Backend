@@ -45,6 +45,35 @@ db.serialize(() => {
     false,
     false
   );
+
+  //無かったらMEMBERロールを挿入する
+  db.run(`
+    INSERT INTO ROLES (
+      roleId,
+      name,
+      ServerManage,
+      RoleManage,
+      ChannelRename,
+      ChannelViewPrivate,
+      ChannelCreateAndDelete,
+      UserManage,
+      MessageDelete,
+      MessageAttatchFile
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(roleId) DO NOTHING;
+    `,
+    "HOST",
+    "Host",
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  );
 });
 
 console.log("InitRole :: ロールDB作成完了");
