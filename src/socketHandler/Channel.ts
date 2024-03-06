@@ -72,7 +72,7 @@ module.exports = (io:Server) => {
     socket.on("deleteChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
       /*
       返し : {
-        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_CANNOT_DELETE_RANDOM",
         data: boolean|null
       }
       */
@@ -84,6 +84,12 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //Randomチャンネルは削除できないようにするため
+        if (dat.channelId === "0001") {
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_CANNOT_DELETE_RANDOM", data:null });
+          return;
+        }
+
         //ロール権限を確認する
         const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
         if (!roleCheckResult) { //falseなら停止
