@@ -59,6 +59,10 @@ module.exports = (io:Server) => {
 
         //返す
         socket.emit("RESULT::createChannel", { result:"SUCCESS", data:createChannelResult });
+
+        //最新のチャンネル情報を全員に送る
+        const channelList = await fetchChannelList();
+        io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
       } catch(e) {
         socket.emit("RESULT::createChannel", { result:"ERROR_DB_THING", data:null });
       }
@@ -95,6 +99,10 @@ module.exports = (io:Server) => {
 
         //返す
         socket.emit("RESULT::deleteChannel", { result:"SUCCESS", data:deleteChannelResult });
+
+        //最新のチャンネル情報を全員に送る
+        const channelList = await fetchChannelList();
+        io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
       } catch(e) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
       }
