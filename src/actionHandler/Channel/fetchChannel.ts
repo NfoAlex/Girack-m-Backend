@@ -12,13 +12,21 @@ export default async function fetchChannel(channelId:string)
         resolve(null);
       } else {
         console.log("fetchChannel :: db : 取得結果->", datChannels);
-        //チャンネル情報を整形する
-        const infoGotIt:IChannel = {
-          ...datChannels[0],
-          isPrivate: datChannels[0].isPrivate==="1"?true:false,
-          speakableRole: datChannels[0].speakableRole.split(",")
-        };
-        resolve(infoGotIt);
+        //チャンネルデータが無ければnull、あれば整形して返す
+        if (datChannels.length === 0) {
+          resolve(null);
+          return;
+        } else {
+          //チャンネル情報を整形する
+          const infoGotIt:IChannel = {
+            ...datChannels[0],
+            isPrivate: datChannels[0].isPrivate==="1"?true:false,
+            speakableRole: datChannels[0].speakableRole.split(",")
+          };
+          //返す
+          resolve(infoGotIt);
+          return;
+        }
       }
     });
   });
