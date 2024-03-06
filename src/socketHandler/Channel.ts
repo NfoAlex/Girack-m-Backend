@@ -6,6 +6,7 @@ import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 import joinChannel from "../actionHandler/Channel/joinChannel";
 import leaveChannel from "../actionHandler/Channel/leaveChannel";
 import { roleCheck } from "../util/roleCheck";
+import deleteChannel from "../actionHandler/Channel/deleteChannel";
 
 import type IRequestSender from "../type/requestSender";
 
@@ -60,6 +61,42 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::createChannel", { result:"SUCCESS", data:createChannelResult });
       } catch(e) {
         socket.emit("RESULT::createChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //チャンネル削除
+    socket.on("deleteChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: boolean|null
+      }
+      */
+
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::deleteChannel", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロール権限を確認する
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        if (!roleCheckResult) { //falseなら停止
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
+        //チャンネルを削除する
+        const deleteChannelResult = await deleteChannel(
+          dat.RequestSender.userId,
+          dat.channelId,
+        );
+
+        //返す
+        socket.emit("RESULT::deleteChannel", { result:"SUCCESS", data:deleteChannelResult });
+      } catch(e) {
+        socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
       }
     });
 
