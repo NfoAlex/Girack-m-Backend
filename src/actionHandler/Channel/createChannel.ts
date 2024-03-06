@@ -69,15 +69,9 @@ async function getNewChannelId():Promise<string> {
         //チャンネル検索、データ格納
         const datChannel = await fetchChannel(channelIdGen);
         console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
-
-        //nullなら処理を停止する
-        if (datChannel === null) {
-          resolve("");
-          return;
-        }
         
         //データ長さが0ならループ停止してIDを返す
-        if (datChannel.length === 0) {
+        if (datChannel === null) {
           clearInterval(checkLoop);
           resolve(channelIdGen); //IDを返す
         }
