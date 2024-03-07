@@ -70,6 +70,13 @@ module.exports = (io:Server) => {
         //結果に応じてそれを送信
         if (updateServerConfigResult) {
           socket.emit("RESULT::updateServerConfig", {result:"SUCCESS", data:true});
+
+          //転送するインスタンス情報を削るためにクローンする
+          const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
+          //招待コードを削除
+          delete ServerInfoLimited.registration.invite.inviteCode;
+          //サーバー情報を返す
+          io.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
         } else {
           socket.emit("RESULT::updateServerConfig", {result:"ERROR_INTERNAL_ERROR", data:false});
         }
