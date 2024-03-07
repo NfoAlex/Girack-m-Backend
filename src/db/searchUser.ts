@@ -6,7 +6,7 @@ import { IUserInfo } from "../type/User";
 export default async function searchUser(userName:string, rule:"FULL"|"PARTIAL")
 :Promise<IUserInfo[]> {
   return new Promise<IUserInfo[]>((resolve) => {
-    if (rule === "PARTIAL") {
+    if (rule === "PARTIAL") { //部分検索
       //検索用クエリー
       const searchQuery = "%" + userName + "%";
       //ユーザー名でクエリが含まれるものを取得
@@ -19,8 +19,7 @@ export default async function searchUser(userName:string, rule:"FULL"|"PARTIAL")
           resolve(datUser);
         }
       });
-    } else {
-      //検索用クエリー
+    } else { //完全検索
       //ユーザー名でクエリが含まれるものを取得
       db.all("SELECT * FROM USERS_INFO WHERE userName = ?", [userName], (err:Error, datUser:IUserInfo[]) => {
         if (err) {
