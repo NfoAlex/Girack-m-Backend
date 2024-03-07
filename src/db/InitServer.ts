@@ -1,6 +1,8 @@
 import fs from "fs";
 import IServerInfo from "../type/Server";
 import mergeDeeply from "../util/mergeDeeply";
+import sqlite3 from "sqlite3";
+const db = new sqlite3.Database("./records/SERVER.db");
 
 //サーバー設定テンプレ
 const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./src/db/defaultValues/ServerInfo.json', 'utf-8'));
@@ -31,7 +33,7 @@ let ServerInfoLoading:IServerInfo = {
   }
 };
 
-try { //読み込んでみる
+try { //サーバー設定を読み込んでみる
   //serverデータを読み取り
   ServerInfoLoading = JSON.parse(fs.readFileSync('./records/server.json', 'utf-8')); //サーバー情報のJSON読み込み
   //テンプレに上書きする感じでサーバー情報を取り込む
@@ -57,5 +59,41 @@ try { //読み込んでみる
 export const ServerInfo = ServerInfoLoading;
 //この時点で一度書き込み保存
 fs.writeFileSync("./records/server.json", JSON.stringify(ServerInfo, null, 4));
+
+//チャンネル情報、招待コード用DB
+db.serialize(() => {
+  //チャンネル情報を保存するCHANNELSテーブルを無ければ作成
+  db.run(
+  `create table if not exists CHANNELS(
+    channelId TEXT PRIMARY KEY,
+    channelName TEXT NOT NULL,
+    description TEXT NOT NULL,
+    createdBy TEXT NOT NULL,
+    isPrivate BOOLEAN NOT NULL,
+    speakableRole TEXT NOT NULL
+  )`);
+  //招待コードを保存するINVITE_CODESテーブルを無ければ作成
+  db.run(
+    `create table if not exists INVITE_CODES(
+    codeManageId TEXT PRIMARY KEY,
+    inviteCode TEXT NOT NULL,
+    countUsable INTEGER NOT NULL,
+    countUsed INTEGER NOT NULL
+  )`);
+
+  //無かったらRandomチャンネルを最初に作成
+  db.run(`
+    INSERT INTO CHANNELS (channelId, channelName, description, createdBy, isPrivate, speakableRole)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(channelId) DO NOTHING;
+  `,
+    "0001",
+    "Random",
+    "雑談チャンネル。",
+    "SYSTEM",
+    false,
+    "MEMBER"
+  );
+});
 
 console.log("InitServer :: サーバー情報認識");

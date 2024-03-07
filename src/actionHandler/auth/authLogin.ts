@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
-import fetchUser from "../../db/fetchUser";
+import fetchUser from "../User/fetchUser";
 
 import { IUserInfo, IUserPassword } from "../../type/User";
 
@@ -9,7 +9,7 @@ export default async function authLogin(username:string, password:string)
   try {
 
     //ユーザー情報取得
-    const RESULT = await fetchUser(null, username, false);
+    const RESULT = await fetchUser(null, username);
     //console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
     //そもそもユーザーが見つからないなら失敗として返す

@@ -1,7 +1,7 @@
 import fs from "fs";
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
-import fetchUser from "../../db/fetchUser";
+import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
 import { IUserConfig, IUserInfo } from "../../type/User";
@@ -18,27 +18,52 @@ export default async function authRegister(username:string, inviteCode:string|nu
       }
     }
 
+    //一番最初のユーザーを登録するのかどうか
+      //最後に返すロールの内容用
+    let isFirstUser:boolean = false;
+
     //ユーザー名の空きを確認
-    if ((await fetchUser(null, username, true)) !== null) throw Error;
+    if ((await fetchUser(null, username)) !== null) throw Error;
     
     //空いているユーザーIDを見つける
     const userIdGen = await getNewUserId();
-
     //ユーザーIDが空ならエラーとして停止
     if (userIdGen === "") throw Error;
 
     //パスワードを生成する
     const passwordGenerated:string = generateKey();
 
-    //ユーザー情報をDBへ作成
-    db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
-      userIdGen,
-      username,
-      "MEMBER",
-      "0001",
-      false,
-      false
-    );
+    //一番最初のユーザーかどうかを調べてそうならHostロールを付与して登録
+    db.all("SELECT COUNT(*) FROM USERS_INFO", (err:Error, num:{"COUNT(*)":number}[]) => {
+      if (err) {
+        console.log("authRegister :: db : エラー->", err);
+      } else {
+        console.log("authRegister :: db : num->", num, typeof(num[0]["COUNT(*)"]), (num[0]["COUNT(*)"] === 0));
+        //最初のユーザーだからHostロールを付与
+        if (num[0]["COUNT(*)"] === 0) {
+          //ユーザー情報をDBへ作成
+          db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+            userIdGen,
+            username,
+            "HOST",
+            "0001",
+            false,
+            false
+          );
+          //最初のユーザーであることを設定
+          isFirstUser = true;
+        } else { //ユーザーがいたからMember
+          db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+            userIdGen,
+            username,
+            "MEMBER",
+            "0001",
+            false,
+            false
+          );
+        }
+      }
+    });
 
     //生成したパスワードを記録
     db.run("insert into USERS_PASSWORD values (?,?)", userIdGen, passwordGenerated);
@@ -56,13 +81,13 @@ export default async function authRegister(username:string, inviteCode:string|nu
       JSON.stringify(defaultConfigData.sidebar),
     );
 
-    console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
+    //console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
 
     return {
       userInfo: {
         userId: userIdGen,
         userName: username,
-        role: ["MEMBER"],
+        role: isFirstUser?["HOST"]:["MEMBER"], //最初のユーザーならHOST
         channelJoined: ["0001"],
         loggedin: false,
         banned: false,
@@ -94,7 +119,7 @@ async function getNewUserId():Promise<string> {
         }
     
         //ユーザー検索、データ格納
-        const datUser = await fetchUser(userIdGen, null, false);
+        const datUser = await fetchUser(userIdGen, null);
         console.log("authRegister :: getNewUserId : datUser->", datUser);
         
         //データ長さが0ならループ停止してIDを返す
