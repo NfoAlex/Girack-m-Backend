@@ -2,9 +2,9 @@ import { Socket, Server } from "socket.io";
 import fetchRoles from "../actionHandler/Role/fetchRoles";
 import checkSession from "../actionHandler/auth/checkSession";
 import { roleCheck } from "../util/roleCheck";
+import createRole from "../actionHandler/Role/createRole";
 
 import IRequestSender from "../type/requestSender";
-import createRole from "../actionHandler/Role/createRole";
 import { IUserRole } from "../type/User";
 
 module.exports = (io:Server) => {
