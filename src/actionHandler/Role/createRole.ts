@@ -1,6 +1,5 @@
 import sqlite3 from "sqlite3";
 import { IUserRole } from "../../type/User";
-import fetchRoles from "./fetchRoles";
 const db = new sqlite3.Database("./records/ROLE.db");
 
 export default async function createRole(
