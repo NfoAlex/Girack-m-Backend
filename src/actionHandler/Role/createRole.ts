@@ -13,6 +13,10 @@ export default async function createRole(
 
     //空いているロールIDを生成
     const roleIdNew = await getNewRoleId();
+    //IDが空ならエラーとして処理を停止
+    if (roleIdNew === "") {
+      return false;
+    }
 
     //書き込み結果を待ってそれを返す
     return new Promise((resolve) => {
