@@ -17,6 +17,7 @@ module.exports = (io:Server) => {
       //セッション認証
       if (!(await checkSession(RequestSender))) {
         socket.emit("RESULT::fetchRoles", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
       }
 
       try {
