@@ -4,6 +4,8 @@ import checkSession from "../actionHandler/auth/checkSession";
 import { roleCheck } from "../util/roleCheck";
 
 import IRequestSender from "../type/requestSender";
+import createRole from "../actionHandler/Role/createRole";
+import { IUserRole } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -40,7 +42,7 @@ module.exports = (io:Server) => {
     });
 
     //ロールを作成
-    socket.on("createRole", async (dat:{RequestSender:IRequestSender, roleData:any}) => {
+    socket.on("createRole", async (dat:{RequestSender:IRequestSender, roleData:IUserRole}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE",
@@ -61,11 +63,11 @@ module.exports = (io:Server) => {
           return;
         }
 
-        //全ロールを取得
-        const roles = await fetchRoles();
-        //nullじゃないならそれを返す
-        if (roles !== null) {
-          socket.emit("RESULT::createRole", { result:"SUCCESS", data:roles });
+        //ロールを作成
+        const createRoleResult:boolean = await createRole(dat.RequestSender.userId, dat.roleData);
+        //結果に応じてそう返す
+        if (createRoleResult) {
+          socket.emit("RESULT::createRole", { result:"SUCCESS", data:null });
         } else {
           socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
         }

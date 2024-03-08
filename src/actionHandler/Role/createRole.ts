@@ -79,7 +79,7 @@ async function getNewRoleId():Promise<string> {
           roleIdGen += Math.trunc(Math.random() * 9); //乱数を追加
         }
     
-        //ロールデータを取得する
+        //そのIDのロールデータを取得してみる
         const datRole = await new Promise((resolve) => {
           db.all(
             "SELECT * FROM ROLES WHERE roleId=?",
@@ -91,7 +91,7 @@ async function getNewRoleId():Promise<string> {
         });
         console.log("createRole :: getNewRoleId : datRole->", datRole);
         
-        //データ長さが0ならループ停止してIDを返す
+        //取得したロールデータの長さが0ならループ停止してIDを返す
         if (datRole === null) {
           clearInterval(checkLoop);
           resolve(roleIdGen); //IDを返す
