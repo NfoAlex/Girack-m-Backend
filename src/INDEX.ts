@@ -23,6 +23,7 @@ require("./socketHandler/Server.ts")(io);
 require("./socketHandler/User.ts")(io);
 require("./socketHandler/Channel.ts")(io);
 require("./socketHandler/auth.ts")(io);
+require("./socketHandler/Role.ts")(io);
 
 //共通ハンドラ
 io.on("connection", (socket:Socket) => {
