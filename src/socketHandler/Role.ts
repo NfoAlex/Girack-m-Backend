@@ -9,7 +9,7 @@ module.exports = (io:Server) => {
     socket.on("fetchRoles", async (RequestSender) => {
       /*
       返し : {
-        result: "SUCCESS",
+        result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING",
         data: IUserRole[]|null
       }
       */
