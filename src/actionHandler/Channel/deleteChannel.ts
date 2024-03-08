@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/SERVER.db");
 import fetchChannel from "./fetchChannel";
-import { roleCheck } from "../../util/roleCheck";
+import roleCheck from "../../util/roleCheck";
 
 export default async function deleteChannel(
     userId: string,

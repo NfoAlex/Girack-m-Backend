@@ -7,7 +7,7 @@ import { IUserRole } from "../type/User";
 //ロールのJSONデータをキーで参照できるように
 type UserRoleKey = keyof IUserRole;
 
-export async function roleCheck(userId:string, termChecking:UserRoleKey):Promise<boolean> {
+export default async function roleCheck(userId:string, termChecking:UserRoleKey):Promise<boolean> {
   try {
 
     return new Promise(async (resolve) => {    

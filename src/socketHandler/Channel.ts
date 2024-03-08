@@ -5,7 +5,7 @@ import fetchChannel from "../actionHandler/Channel/fetchChannel";
 import fetchChannelList from "../actionHandler/Channel/fetchChannelList";
 import joinChannel from "../actionHandler/Channel/joinChannel";
 import leaveChannel from "../actionHandler/Channel/leaveChannel";
-import { roleCheck } from "../util/roleCheck";
+import roleCheck from "../util/roleCheck";
 import deleteChannel from "../actionHandler/Channel/deleteChannel";
 
 import type IRequestSender from "../type/requestSender";
