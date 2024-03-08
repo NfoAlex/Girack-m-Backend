@@ -19,6 +19,8 @@ export interface IUserInfoBeforeParsing {
 
 //ユーザーが持つ権限情報
 export interface IUserRole {
+  roleId: string,
+  name: string,
   ServerManage: boolean,
   RoleManage: boolean,
   ChannelRename: boolean,
