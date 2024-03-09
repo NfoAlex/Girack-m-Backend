@@ -11,7 +11,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
 
     //ロール情報をすべて取得
-    socket.on("fetchRoles", async (RequestSender) => {
+    socket.on("fetchRoles", async (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING",
@@ -20,7 +20,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(RequestSender))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchRoles", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
