@@ -21,14 +21,14 @@ export interface IUserInfoBeforeParsing {
 export interface IUserRoleBeforeParsing {
   roleId: string,
   name: string,
-  ServerManage: "1"|"0",
-  RoleManage: "1"|"0",
-  ChannelRename: "1"|"0",
-  ChannelViewPrivate: "1"|"0",
-  ChannelCreateAndDelete: "1"|"0",
-  UserManage: "1"|"0",
-  MessageDelete: "1"|"0",
-  MessageAttatchFile: "1"|"0"
+  ServerManage: 1|0,
+  RoleManage: 1|0,
+  ChannelRename: 1|0,
+  ChannelViewPrivate: 1|0,
+  ChannelCreateAndDelete: 1|0,
+  UserManage: 1|0,
+  MessageDelete: 1|0,
+  MessageAttatchFile: 1|0
 }
 
 //ユーザーが持つ権限情報

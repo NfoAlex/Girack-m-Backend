@@ -20,14 +20,14 @@ export default async function fetchRoles():Promise<IUserRole[] | null> {
             roleDataParsed.push({
               roleId: role.roleId,
               name: role.name,
-              ServerManage: role.ServerManage==="1"?true:false,
-              RoleManage: role.RoleManage==="1"?true:false,
-              ChannelRename: role.ChannelRename==="1"?true:false,
-              ChannelViewPrivate: role.ChannelViewPrivate==="1"?true:false,
-              ChannelCreateAndDelete: role.ChannelCreateAndDelete==="1"?true:false,
-              UserManage: role.UserManage==="1"?true:false,
-              MessageDelete: role.MessageDelete==="1"?true:false,
-              MessageAttatchFile: role.MessageAttatchFile==="1"?true:false
+              ServerManage: role.ServerManage===1?true:false,
+              RoleManage: role.RoleManage===1?true:false,
+              ChannelRename: role.ChannelRename===1?true:false,
+              ChannelViewPrivate: role.ChannelViewPrivate===1?true:false,
+              ChannelCreateAndDelete: role.ChannelCreateAndDelete===1?true:false,
+              UserManage: role.UserManage===1?true:false,
+              MessageDelete: role.MessageDelete===1?true:false,
+              MessageAttatchFile: role.MessageAttatchFile===1?true:false
             });
           }
           resolve(roleDataParsed);
