@@ -9,7 +9,6 @@ export default async function fetchChannelList()
         console.log("fetchChannelList :: db : エラー->", err);
         resolve(null);
       } else {
-        console.log("fetchChannelList :: db : 取得結果->", datChannels);
         resolve(datChannels);
       }
     });
