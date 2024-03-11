@@ -42,7 +42,14 @@ module.exports = (io:Server) => {
     });
 
     //ロールを作成
-    socket.on("createRole", async (dat:{RequestSender:IRequestSender, roleData:IUserRole}) => {
+    socket.on("createRole", async (
+      dat:{
+        RequestSender:IRequestSender,
+        roleData: {
+          name: string,
+          color: string
+        }
+    }) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE",
