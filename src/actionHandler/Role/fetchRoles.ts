@@ -20,6 +20,7 @@ export default async function fetchRoles():Promise<IUserRole[] | null> {
             roleDataParsed.push({
               roleId: role.roleId,
               name: role.name,
+              color: role.color,
               ServerManage: role.ServerManage===1?true:false,
               RoleManage: role.RoleManage===1?true:false,
               ChannelRename: role.ChannelRename===1?true:false,
