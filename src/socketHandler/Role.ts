@@ -6,6 +6,7 @@ import createRole from "../actionHandler/Role/createRole";
 
 import IRequestSender from "../type/requestSender";
 import { IUserRole } from "../type/User";
+import updateRole from "../actionHandler/Role/updateRole";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -81,6 +82,36 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ロールを更新
+    socket.on("updateRole", async (dat:{RequestSender:IRequestSender, roleData:IUserRole}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE",
+        data: IUserRole[]|null
+      }
+      */
+
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::updateRole", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロールの更新、結果を格納
+        const updateRoleResult = await updateRole(dat.RequestSender.userId, dat.roleData);
+        //結果に応じて送信
+        if (updateRoleResult) {
+          socket.emit("RESULT::updateRole", {result:"SUCCESS", data:null});
+        } else {
+          socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
+        }
+
+      } catch(e) {
+        socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
       }
     });
 
