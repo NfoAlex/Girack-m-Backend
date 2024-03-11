@@ -9,8 +9,8 @@ export default async function updateRole(userId:string, roleData:IUserRole)
 
     // ToDo :: ロールの確認(つけられる権限の制限)
 
-    //ロール名は32文字まで
-    if (roleData.name.length > 32) {
+    //ロール名は32文字まで、0もだめ
+    if (roleData.name.length > 32 || roleData.name.length === 0) {
       return false;
     }
 
