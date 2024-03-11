@@ -14,14 +14,14 @@ export default async function fetchUser(userId:string|null, username:string|null
           console.log("fetchUser(userName) :: ERROR ->", err);
           resolve(null);
         } else {
-          console.log("fetchUser(userName) :: 検索結果->", username, datUser);
+          //console.log("fetchUser(userName) :: 検索結果->", username, datUser);
           //そもそも結果が無いならそう返す
           if (datUser.length === 0) {
             resolve(null);
             return;
           }
 
-          console.log("fetchUser(userName) :: データ長->", datUser.length);
+          //console.log("fetchUser(userName) :: データ長->", datUser.length);
 
           //ユーザー情報を取得して利用できるに整備
           let datUserParsed:IUserInfo = {
@@ -44,7 +44,7 @@ export default async function fetchUser(userId:string|null, username:string|null
           console.log("fetchUser(userId) :: ERROR ->", err);
           resolve(null);
         } else {
-          console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
+          //console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
           //そもそも結果が無いならそう返す
           if (datUser.length === 0) {
             resolve(null);
