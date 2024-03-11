@@ -7,6 +7,7 @@ db.serialize(() => {
   `create table if not exists ROLES(
     roleId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
+    color TEXT NOT NULL DEFAULT 'ffffff'
     ServerManage BOOLEAN NOT NULL,
     RoleManage BOOLEAN NOT NULL,
     ChannelRename BOOLEAN NOT NULL,
