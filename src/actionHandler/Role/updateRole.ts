@@ -9,6 +9,11 @@ export default async function updateRole(userId:string, roleData:IUserRole)
 
     // ToDo :: ロールの確認(つけられる権限の制限)
 
+    //ロール名は32文字まで
+    if (roleData.name.length > 32) {
+      return false;
+    }
+
     return new Promise((resolve) => {
       //更新
       db.run(
