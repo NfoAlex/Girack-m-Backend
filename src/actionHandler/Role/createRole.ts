@@ -83,8 +83,8 @@ async function getNewRoleId():Promise<string> {
         });
         console.log("createRole :: getNewRoleId : datRole->", datRole);
         
-        //取得したロールデータの長さが0ならループ停止してIDを返す
-        if (datRole === null) {
+        //取得したロールデータが無効ならループ停止してIDを返す
+        if (datRole === undefined) {
           clearInterval(checkLoop);
           resolve(roleIdGen); //IDを返す
         }
