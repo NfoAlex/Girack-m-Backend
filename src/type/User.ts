@@ -22,6 +22,7 @@ export interface IUserInfoBeforeParsing {
 export interface IUserRole {
   roleId: string,
   name: string,
+  color: string,
   ServerManage: boolean,
   RoleManage: boolean,
   ChannelRename: boolean,
@@ -36,6 +37,7 @@ export interface IUserRole {
 export interface IUserRoleBeforeParsing {
   roleId: string,
   name: string,
+  color: string,
   ServerManage: 1|0,
   RoleManage: 1|0,
   ChannelRename: 1|0,
