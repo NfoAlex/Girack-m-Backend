@@ -89,7 +89,7 @@ module.exports = (io:Server) => {
     socket.on("updateRole", async (dat:{RequestSender:IRequestSender, roleData:IUserRole}) => {
       /*
       返し : {
-        result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE",
+        result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE"|"ERROR_CANNOT_EDIT_THIS",
         data: IUserRole[]|null
       }
       */
@@ -101,6 +101,17 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //HOSTかMEMBERロールを更新しようとしているなら停止
+        if (dat.roleData.roleId === "MEMBER" || dat.roleData.roleId === "HOST") {
+          socket.emit("RESULT::updateRole", { result:"ERROR_CANNOT_EDIT_THIS", data:null });
+          return;
+        }
+
+        //ロール権限の確認
+        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+          socket.emit("RESULT::updateRole", { result:"ERROR_ROLE", data:null });
+          return;
+        }
         //ロールの更新、結果を格納
         const updateRoleResult = await updateRole(dat.RequestSender.userId, dat.roleData);
         //結果に応じて送信
