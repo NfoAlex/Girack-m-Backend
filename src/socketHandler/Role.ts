@@ -7,6 +7,7 @@ import createRole from "../actionHandler/Role/createRole";
 import IRequestSender from "../type/requestSender";
 import { IUserRole } from "../type/User";
 import updateRole from "../actionHandler/Role/updateRole";
+import deleteRole from "../actionHandler/Role/deleteRole";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -112,6 +113,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::updateRole", { result:"ERROR_ROLE", data:null });
           return;
         }
+
         //ロールの更新、結果を格納
         const updateRoleResult = await updateRole(dat.RequestSender.userId, dat.roleData);
         //結果に応じて送信
@@ -123,6 +125,48 @@ module.exports = (io:Server) => {
 
       } catch(e) {
         socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
+      }
+    });
+
+    //ロールを更新
+    socket.on("deleteRole", async (dat:{RequestSender:IRequestSender, roleId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_ROLE"|"ERROR_CANNOT_DELETE_THIS",
+        data: IUserRole[]|null
+      }
+      */
+
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::deleteRole", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //HOSTかMEMBERロールを削除しようとしているなら停止
+        if (dat.roleId === "MEMBER" || dat.roleId === "HOST") {
+          socket.emit("RESULT::deleteRole", { result:"ERROR_CANNOT_DELETE_THIS", data:null });
+          return;
+        }
+
+        //ロール権限の確認
+        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+          socket.emit("RESULT::deleteRole", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
+        //ロールの更新、結果を格納
+        const deleteRoleResult = await deleteRole(dat.roleId);
+        //結果に応じて送信
+        if (deleteRoleResult) {
+          socket.emit("RESULT::deleteRole", {result:"SUCCESS", data:null});
+        } else {
+          socket.emit("RESULT::deleteRole", {result:"ERROR_DB_THING", data:null});
+        }
+
+      } catch(e) {
+        socket.emit("RESULT::deleteRole", {result:"ERROR_DB_THING", data:null});
       }
     });
 
