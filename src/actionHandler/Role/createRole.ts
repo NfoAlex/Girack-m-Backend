@@ -4,11 +4,14 @@ const db = new sqlite3.Database("./records/ROLE.db");
 
 export default async function createRole(
   userId: string,
-  roleDataCreating: IUserRole
+  roleDataCreating: {
+    name: string,
+    color: string
+  }
 ):Promise<boolean> {
   try {
 
-    // ToDo :: ロールの確認
+    // ToDo :: ロールの確認(つけられる権限の制限)
 
     //空いているロールIDを生成
     const roleIdNew = await getNewRoleId();
@@ -24,28 +27,14 @@ export default async function createRole(
         INSERT INTO ROLES (
           roleId,
           name,
-          ServerManage,
-          RoleManage,
-          ChannelRename,
-          ChannelViewPrivate,
-          ChannelCreateAndDelete,
-          UserManage,
-          MessageDelete,
-          MessageAttatchFile
+          color
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?)
         `,
         [
           roleIdNew, //生成したロールID
           roleDataCreating.name, //名前
-          roleDataCreating.ServerManage, //その他権限...
-          roleDataCreating.RoleManage,
-          roleDataCreating.ChannelRename,
-          roleDataCreating.ChannelViewPrivate,
-          roleDataCreating.ChannelCreateAndDelete,
-          roleDataCreating.UserManage,
-          roleDataCreating.MessageDelete,
-          roleDataCreating.MessageAttatchFile
+          roleDataCreating.color //ロールの色
         ],
         (err) => {
           if (err) {
