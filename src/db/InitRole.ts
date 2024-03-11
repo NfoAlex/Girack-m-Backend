@@ -7,7 +7,7 @@ db.serialize(() => {
   `create table if not exists ROLES(
     roleId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    color TEXT NOT NULL DEFAULT 'ffffff',
+    color TEXT NOT NULL DEFAULT '#ffffff',
     ServerManage BOOLEAN NOT NULL DEFAULT '0',
     RoleManage BOOLEAN NOT NULL DEFAULT '0',
     ChannelRename BOOLEAN NOT NULL DEFAULT '0',
@@ -22,15 +22,13 @@ db.serialize(() => {
   db.run(`
     INSERT INTO ROLES (
       roleId,
-      name,
-      color
+      name
     )
-    VALUES (?, ?, ?)
+    VALUES (?, ?)
     ON CONFLICT(roleId) DO NOTHING;
     `,
     "MEMBER",
-    "Member",
-    "ffffff"
+    "Member"
   );
 
   //無かったらMEMBERロールを挿入する
@@ -53,7 +51,7 @@ db.serialize(() => {
     `,
     "HOST",
     "Host",
-    "7E097E",
+    "#7E097E",
     true,
     true,
     true,
