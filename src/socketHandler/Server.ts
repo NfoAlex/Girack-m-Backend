@@ -44,6 +44,13 @@ module.exports = (io:Server) => {
         return;
       }
 
+      //権限確認
+      const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+      if (!roleCheckResult) {
+        socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_ROLE", data:null });
+        return;
+      }
+
       socket.emit("RESULT::fetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
     });
 
