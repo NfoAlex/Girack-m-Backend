@@ -3,9 +3,9 @@ import { ServerInfo } from "../../db/InitServer";
 
 import IServerInfo from "../../type/Server";
 
-export default async function updateServerConfig(
+export default function updateServerConfig(
   ServerConfigUpdating: IServerInfo["config"]
-):Promise<boolean> {
+):boolean {
   try {
 
     //サーバー設定を更新
