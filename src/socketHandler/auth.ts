@@ -6,6 +6,7 @@ import authRegister from "../actionHandler/auth/authRegister";
 import IRequestSender from "../type/requestSender";
 import changePassword from "../actionHandler/auth/changePassword";
 import checkSession from "../actionHandler/auth/checkSession";
+import { ServerInfo } from "../db/InitServer";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -54,15 +55,24 @@ module.exports = (io:Server) => {
     socket.on("authRegister", async (dat:{username:string, inviteCode:string|null}) => {
       /*
       返し : {
-        result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGINVITECODE",
+        result: "SUCCESS"|"ERROR_DB_THING|"ERROR_WRONGINVITECODE"|"ERROR_REGISTER_DISABLED",
         data: {datUser:IUserInfo, password:string}|null
       }
       */
 
       //登録処理
       try {
-        const datUserResult:
-        {userInfo:IUserInfo, password:string}|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING" =
+        //登録がそもそも無効化ならエラーを返して停止
+        if (!ServerInfo.registration.available) {
+          socket.emit("RESULT::authRegister", {result:"ERROR_REGISTER_DISABLED", data:null});
+          return;
+        }
+
+        //登録、結果格納
+        const datUserResult:{
+          userInfo:IUserInfo,
+          password:string
+        }|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING" =
           await authRegister(dat.username, dat.inviteCode);
 
         //エラー文ならそう返す
