@@ -61,7 +61,7 @@ async function getNewChannelId():Promise<string> {
       const checkLoop = setInterval(async () => {
         //生成するID
         let channelIdGen = "";
-        //9桁分の数字追加してIDにする
+        //4桁分の数字追加してIDにする
         for (let i=0; i<4; i++) {
           channelIdGen += Math.trunc(Math.random() * 9); //乱数を追加
         }

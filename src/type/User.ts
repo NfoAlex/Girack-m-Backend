@@ -8,6 +8,7 @@ export interface IUserInfo {
   banned: boolean,
 };
 
+//SQKから抜き出した生のユーザー情報
 export interface IUserInfoBeforeParsing {
   userId: string,
   userName: string,
@@ -19,6 +20,9 @@ export interface IUserInfoBeforeParsing {
 
 //ユーザーが持つ権限情報
 export interface IUserRole {
+  roleId: string,
+  name: string,
+  color: string,
   ServerManage: boolean,
   RoleManage: boolean,
   ChannelRename: boolean,
@@ -27,6 +31,21 @@ export interface IUserRole {
   UserManage: boolean,
   MessageDelete: boolean,
   MessageAttatchFile: boolean
+}
+
+//SQLから抜き出した生のロールデータ
+export interface IUserRoleBeforeParsing {
+  roleId: string,
+  name: string,
+  color: string,
+  ServerManage: 1|0,
+  RoleManage: 1|0,
+  ChannelRename: 1|0,
+  ChannelViewPrivate: 1|0,
+  ChannelCreateAndDelete: 1|0,
+  UserManage: 1|0,
+  MessageDelete: 1|0,
+  MessageAttatchFile: 1|0
 }
 
 //ユーザーのパスワード

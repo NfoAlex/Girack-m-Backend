@@ -8,6 +8,8 @@ export default function updateServerConfig(
 ):boolean {
   try {
 
+    // ToDo :: ロール確認
+
     //サーバー設定を更新
     ServerInfo.config = ServerConfigUpdating;
     //JSONファイルへ書き込み

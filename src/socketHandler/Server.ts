@@ -2,7 +2,7 @@ import { Socket, Server } from "socket.io";
 import { ServerInfo } from "../db/InitServer";
 import checkSession from "../actionHandler/auth/checkSession";
 import updateServerConfig from "../actionHandler/Server/updateServerConfig";
-import { roleCheck } from "../util/roleCheck";
+import roleCheck from "../util/roleCheck";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";

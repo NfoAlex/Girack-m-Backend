@@ -1,6 +1,4 @@
-import fs from "fs";
 import sqlite3 from "sqlite3";
-import mergeDeeply from "../../util/mergeDeeply";
 const db = new sqlite3.Database("./records/USER.db");
 
 export default async function changeUserName(userId:string, userName:string):Promise<boolean> {
