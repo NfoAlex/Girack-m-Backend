@@ -114,13 +114,17 @@ module.exports = (io:Server) => {
 
         //更新処理
         const updateServerInfoResult:boolean = updateServerInfo(dat.servername, dat.registration);
+        //もし成功なら現在のサーバー情報を返す
         if (updateServerInfoResult) {
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
           //招待コードを削除
           delete ServerInfoLimited.registration.invite.inviteCode;
-          //サーバー情報を返す
-          io.emit("RESULT::updateServerInfo", { result:"SUCCESS", data:ServerInfoLimited });
+          
+          //全員にサーバー情報を返す
+          io.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
+          //サーバー情報編集者にすべてのサーバー情報を返す
+          socket.emit("RESULT::fetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
         } else {
           socket.emit("RESULT::updateServerInfo", { result:"ERROR_DB_THING", data:null });
         }
