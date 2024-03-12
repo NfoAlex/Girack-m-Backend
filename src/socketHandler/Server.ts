@@ -30,7 +30,7 @@ module.exports = (io:Server) => {
     });
 
     //全てのインスタンス情報を取得
-    socket.on("fetchServerInfoFull", (RequestSender:IRequestSender) => {
+    socket.on("fetchServerInfoFull", async (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_MISSINGROLE",
@@ -38,7 +38,11 @@ module.exports = (io:Server) => {
       }
       */
 
-      /* ...ToDo :: 権限チェック */
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
 
       socket.emit("RESULT::fetchServerInfoFull", { result:"SUCCESS", data:ServerInfo });
     });
