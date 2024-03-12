@@ -3,6 +3,7 @@ import { ServerInfo } from "../db/InitServer";
 import checkSession from "../actionHandler/auth/checkSession";
 import updateServerConfig from "../actionHandler/Server/updateServerConfig";
 import roleCheck from "../util/roleCheck";
+import updateServerInfo from "../actionHandler/Server/updateServerInfo";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
@@ -82,6 +83,45 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::updateServerConfig", {result:"ERROR_DB_THING", data:null});
+      }
+    });
+
+    //インスタンスの基本情報の更新
+    socket.on("updateServerInfo", async (
+      dat:{
+        RequestSender: IRequestSender,
+        servername: IServerInfo["servername"]
+        registration: IServerInfo["registration"]
+      }
+    ) => {
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::updateServerInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //権限確認
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+        if (!roleCheckResult) {
+          socket.emit("RESULT::updateServerInfo", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
+        //更新処理
+        const updateServerInfoResult:boolean = updateServerInfo(dat.servername, dat.registration);
+        if (updateServerInfoResult) {
+          //転送するインスタンス情報を削るためにクローンする
+          const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
+          //招待コードを削除
+          delete ServerInfoLimited.registration.invite.inviteCode;
+          //サーバー情報を返す
+          io.emit("RESULT::updateServerInfo", { result:"SUCCESS", data:ServerInfoLimited });
+        } else {
+          socket.emit("RESULT::updateServerInfo", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        socket.emit("RESULT::updateServerInfo", { result:"ERROR_DB_THING", data:null });
       }
     });
 
