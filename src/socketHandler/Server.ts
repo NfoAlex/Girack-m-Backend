@@ -66,7 +66,7 @@ module.exports = (io:Server) => {
         }
 
         //更新処理
-        const updateServerConfigResult = updateServerConfig(dat.ServerConfig);
+        const updateServerConfigResult = await updateServerConfig(dat.RequestSender.userId, dat.ServerConfig);
         //結果に応じてそれを送信
         if (updateServerConfigResult) {
           socket.emit("RESULT::updateServerConfig", {result:"SUCCESS", data:true});
