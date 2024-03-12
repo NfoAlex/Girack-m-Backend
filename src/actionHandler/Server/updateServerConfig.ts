@@ -7,7 +7,6 @@ import IServerInfo from "../../type/Server";
 //サーバー設定テンプレ
 const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./src/db/defaultValues/ServerInfo.json', 'utf-8'));
 
-
 export default function updateServerConfig(
   ServerConfigUpdating: IServerInfo["config"]
 ):boolean {
