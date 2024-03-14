@@ -8,6 +8,7 @@ import saveUserConfig from "../actionHandler/User/saveUserConfig";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
+import fetchUserAll from "../actionHandler/User/fetchUserAll";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -90,6 +91,31 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
       }
 
+    });
+
+    //複数ユーザーの取得
+    socket.on("fetchUserAll", async (dat:{RequestSender:IRequestSender, indexPage:number}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: {[key: string]: IUserInfo}|null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchUserAll", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザーを取得
+        const datUser = fetchUserAll(dat.indexPage);
+        //送信
+        socket.emit("RESULT::fetchUserAll", { result:"SUCCESS", data:datUser });
+      } catch(e) {
+        socket.emit("RESULT::fetchUserAll", { result:"ERROR_DB_THING", data:null });
+      }
     });
 
     //ユーザー名で検索して一括取得
