@@ -110,7 +110,7 @@ module.exports = (io:Server) => {
 
       try {
         //ユーザーを取得
-        const datUser = fetchUserAll(dat.indexPage);
+        const datUser = await fetchUserAll(dat.indexPage);
         //送信
         socket.emit("RESULT::fetchUserAll", { result:"SUCCESS", data:datUser });
       } catch(e) {
