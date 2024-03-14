@@ -110,9 +110,19 @@ module.exports = (io:Server) => {
 
       try {
         //ユーザーを取得
-        const datUser = await fetchUserAll(dat.indexPage);
-        //送信
-        socket.emit("RESULT::fetchUserAll", { result:"SUCCESS", data:datUser });
+        const fetchUserAllResult = await fetchUserAll(dat.indexPage);
+        //結果に応じてデータを送信
+        if (fetchUserAllResult !== null) {
+          socket.emit("RESULT::fetchUserAll", {
+            result: "SUCCESS",
+            data: {
+              datUser: fetchUserAllResult.datUser,
+              userCount: fetchUserAllResult.countUser
+            } 
+          });
+        } else {
+          socket.emit("RESULT::fetchUserAll", { result:"ERROR_DB_THING", data:null });
+        }
       } catch(e) {
         socket.emit("RESULT::fetchUserAll", { result:"ERROR_DB_THING", data:null });
       }

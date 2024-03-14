@@ -4,13 +4,36 @@ const db = new sqlite3.Database("./records/USER.db");
 import type { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
 
 export default async function fetchUserAll(indexPage:number)
-:Promise<{[key: string]: IUserInfo} | null> {
+:Promise<
+  {
+    datUser: {
+      [key: string]: IUserInfo;
+    } | null;
+    countUser: number;
+  } | null
+>{
   try {
 
     //ユーザーを取得し始める位置(1ページ30人)
     const indexStarting:number = 30 * (indexPage - 1);
-    
-    return new Promise((resolve) => {
+
+    //ユーザーの数を数える
+    const countUser:number = await new Promise((resolve) => {
+      db.all("SELECT * FROM USERS_INFO LIMIT 30 OFFSET ? ", indexStarting, (err:Error, countUser:number) => {
+        if (err) {
+          console.log("fetchUser(userId) :: ERROR ->", err);
+          resolve(0);
+        } else {
+          //ユーザーの数を返す
+          resolve(countUser);
+          return;
+        }
+      });
+    });
+    //ユーザー情報取得、パース
+    const datUser:{
+      [key: string]: IUserInfo
+    }|null = await new Promise((resolve) => {
       db.all("SELECT * FROM USERS_INFO LIMIT 30 OFFSET ? ", indexStarting, (err:Error, datUser:IUserInfoBeforeParsing[]) => {
         if (err) {
           console.log("fetchUser(userId) :: ERROR ->", err);
@@ -47,6 +70,9 @@ export default async function fetchUserAll(indexPage:number)
         }
       });
     });
+
+    //返す
+    return {datUser: datUser, countUser: countUser}
 
   } catch(e) {
 
