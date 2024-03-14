@@ -42,11 +42,11 @@ module.exports = (io:Server) => {
           });
         } else {
           //認証無理だったら
-          socket.emit("RESULT::authLogin", {result:"ERROR_WRONGINFO", data:null});
+          socket.emit("RESULT::authLogin", { result:"ERROR_WRONGINFO", data:null });
         }
       } catch(e) {
         //認証無理だったら
-        socket.emit("RESULT::authLogin", {result:"ERROR_WRONGINFO", data:null});
+        socket.emit("RESULT::authLogin", { result:"ERROR_WRONGINFO", data:null });
         console.log("auth :: socket(authLogin) : error->", e);
       }
     });
@@ -64,7 +64,7 @@ module.exports = (io:Server) => {
       try {
         //登録がそもそも無効化ならエラーを返して停止
         if (!ServerInfo.registration.available) {
-          socket.emit("RESULT::authRegister", {result:"ERROR_REGISTER_DISABLED", data:null});
+          socket.emit("RESULT::authRegister", { result:"ERROR_REGISTER_DISABLED", data:null });
           return;
         }
 
@@ -77,15 +77,15 @@ module.exports = (io:Server) => {
 
         //エラー文ならそう返す
         if (datUserResult === "ERROR_WRONGINVITECODE" || datUserResult === "ERROR_DB_THING") {
-          socket.emit("RESULT::authRegister", {result:datUserResult, data:null});
+          socket.emit("RESULT::authRegister", { result:datUserResult, data:null });
         } else {
-          socket.emit("RESULT::authRegister", {result:"SUCCESS", data:datUserResult});
+          socket.emit("RESULT::authRegister", { result:"SUCCESS", data:datUserResult });
         }
 
         //console.log("auth :: authRegister : dat->", datUserResult);
       }
       catch (e) {
-        socket.emit("RESULT::authRegister", {result:"ERROR_DB_THING", data:null});
+        socket.emit("RESULT::authRegister", { result:"ERROR_DB_THING", data:null });
         console.log("auth :: socket(authRegister) : error->", e);
       }
     });

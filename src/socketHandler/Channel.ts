@@ -62,7 +62,7 @@ module.exports = (io:Server) => {
 
         //最新のチャンネル情報を全員に送る
         const channelList = await fetchChannelList();
-        io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
+        io.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
       } catch(e) {
         socket.emit("RESULT::createChannel", { result:"ERROR_DB_THING", data:null });
       }
@@ -129,14 +129,14 @@ module.exports = (io:Server) => {
 
       try {
         const channelList = await fetchChannelList();
-        socket.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
+        socket.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
       } catch(e) {
-        socket.emit("RESULT::fetchChannelList", {result:"ERROR_DB_THING", data:null});
+        socket.emit("RESULT::fetchChannelList", { result:"ERROR_DB_THING", data:null });
       }
     });
 
     //チャンネルへ参加
-    socket.on("joinChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+    socket.on("joinChannel", async (dat:{ RequestSender:IRequestSender, channelId:string }) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -166,7 +166,7 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルから脱退
-    socket.on("leaveChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+    socket.on("leaveChannel", async (dat:{ RequestSender:IRequestSender, channelId:string }) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",

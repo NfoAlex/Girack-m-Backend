@@ -81,7 +81,7 @@ module.exports = (io:Server) => {
         const updateServerConfigResult = updateServerConfig(dat.ServerConfig);
         //結果に応じてそれを送信
         if (updateServerConfigResult) {
-          socket.emit("RESULT::updateServerConfig", {result:"SUCCESS", data:true});
+          socket.emit("RESULT::updateServerConfig", { result:"SUCCESS", data:true });
 
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
@@ -90,10 +90,10 @@ module.exports = (io:Server) => {
           //サーバー情報を返す
           io.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
         } else {
-          socket.emit("RESULT::updateServerConfig", {result:"ERROR_INTERNAL_ERROR", data:false});
+          socket.emit("RESULT::updateServerConfig", { result:"ERROR_INTERNAL_ERROR", data:false });
         }
       } catch(e) {
-        socket.emit("RESULT::updateServerConfig", {result:"ERROR_DB_THING", data:null});
+        socket.emit("RESULT::updateServerConfig", { result:"ERROR_DB_THING", data:null });
       }
     });
 
