@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 
-import { IUserInfo } from "../type/User";
+import { IUserInfo } from "../../type/User";
 
 export default async function searchUser(userName:string, rule:"FULL"|"PARTIAL")
 :Promise<IUserInfo[]> {

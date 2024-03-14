@@ -3,7 +3,7 @@ import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
 import fetchUser from "../actionHandler/User/fetchUser";
-import searchUser from "../db/searchUser";
+import searchUser from "../actionHandler/User/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
 
 import type IRequestSender from "../type/requestSender";
