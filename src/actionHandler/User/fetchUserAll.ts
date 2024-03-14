@@ -19,14 +19,14 @@ export default async function fetchUserAll(indexPage:number)
 
     //ユーザーの数を数える
     const countUser:number = await new Promise((resolve) => {
-      db.all("SELECT * FROM USERS_INFO LIMIT 30 OFFSET ? ", indexStarting, (err:Error, countUser:number) => {
+      db.all("SELECT count(*) FROM USERS_INFO ", (err:Error, countUser:[{"count(*)":number}]) => {
         if (err) {
           console.log("fetchUser(userId) :: ERROR ->", err);
           resolve(0);
         } else {
+          console.log("fetchUserAll :: countUser(db) : countUser[count(*)]->", countUser);
           //ユーザーの数を返す
-          resolve(countUser);
-          return;
+          resolve(countUser[0]["count(*)"]);
         }
       });
     });
