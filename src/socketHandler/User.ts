@@ -117,7 +117,7 @@ module.exports = (io:Server) => {
             result: "SUCCESS",
             data: {
               datUser: fetchUserAllResult.datUser,
-              userCount: fetchUserAllResult.countUser
+              countUser: fetchUserAllResult.countUser
             } 
           });
         } else {
