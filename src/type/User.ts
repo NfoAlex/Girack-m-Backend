@@ -14,8 +14,8 @@ export interface IUserInfoBeforeParsing {
   userName: string,
   role: string,
   channelJoined: string,
-  loggedin: boolean,
-  banned: boolean,
+  loggedin: 1|0,
+  banned: 1|0
 };
 
 //ユーザーが持つ権限情報
