@@ -33,7 +33,7 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
         if (isLastRole) {
           sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "'";
         } else {
-          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "' AND ";
+          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "' OR ";
         }
 
         sqlContextWhereFull += sqlContextWhereSingle;
