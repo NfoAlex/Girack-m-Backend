@@ -47,6 +47,7 @@ export default async function fetchUser(userId:string|null, username:string|null
           //console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
           //そもそも結果が無いならそう返す
           if (datUser.length === 0) {
+            console.log("fetchUser(userId) :: ERROR -> データが空");
             resolve(null);
             return;
           }
