@@ -24,7 +24,7 @@ export default async function fetchUserAll(indexPage:number)
           console.log("fetchUser(userId) :: ERROR ->", err);
           resolve(0);
         } else {
-          console.log("fetchUserAll :: countUser(db) : countUser[count(*)]->", countUser);
+          //console.log("fetchUserAll :: countUser(db) : countUser[count(*)]->", countUser);
           //ユーザーの数を返す
           resolve(countUser[0]["count(*)"]);
         }
