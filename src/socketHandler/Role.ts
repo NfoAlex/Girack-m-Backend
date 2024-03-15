@@ -69,7 +69,7 @@ module.exports = (io:Server) => {
       try {
         //ロール権限の確認
         if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
-          socket.emit("RESULT::addRole", { result:"ERROR_ROLE", data:null });
+          socket.emit("RESULT::addRole", { result:"ERROR_ROLE", data:false });
           return;
         }
 
@@ -87,7 +87,7 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         //返す
-        socket.emit("RESULT::addRole", { result:"ERROR_DB_THING", data:null });
+        socket.emit("RESULT::addRole", { result:"ERROR_DB_THING", data:false });
       }
     });
 
