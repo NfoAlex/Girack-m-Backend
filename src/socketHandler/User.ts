@@ -85,7 +85,7 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const userInfo = await fetchUser(dat.RequestSender.userId, null);
+        const userInfo = await fetchUser(dat.userId, null);
         socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
