@@ -39,15 +39,13 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
         sqlContextWhereFull += sqlContextWhereSingle;
       }
 
-      console.log("SELECT * FROM ROLES WHERE " + sqlContextWhereFull);
-
       //ユーザーが持つロールの権限データをすべて取得する
       db.all("SELECT * FROM ROLES WHERE " + sqlContextWhereFull, (err:Error, datRoles:IUserRole[]) => {
         if (err) {
           console.log("roleCheck :: db : エラー->", err);
           resolve(false);
         } else {
-          console.log("roleCheck :: db : 結果->", datRoles);
+          //console.log("roleCheck :: db : 結果->", datRoles);
           //ロール分調べて権限が足りるか調べる
           for (let role of datRoles) {
             //権限の値がtrueなら「できる」と返す
