@@ -3,11 +3,11 @@ import fetchRoles from "../actionHandler/Role/fetchRoles";
 import checkSession from "../actionHandler/auth/checkSession";
 import roleCheck from "../util/roleCheck";
 import createRole from "../actionHandler/Role/createRole";
-
-import IRequestSender from "../type/requestSender";
-import { IUserRole } from "../type/User";
 import updateRole from "../actionHandler/Role/updateRole";
 import deleteRole from "../actionHandler/Role/deleteRole";
+
+import type IRequestSender from "../type/requestSender";
+import type { IUserRole } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
