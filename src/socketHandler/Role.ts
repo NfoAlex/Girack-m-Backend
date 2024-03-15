@@ -7,6 +7,7 @@ import updateRole from "../actionHandler/Role/updateRole";
 import deleteRole from "../actionHandler/Role/deleteRole";
 import addRole from "../actionHandler/Role/addRole";
 import unlinkRole from "../actionHandler/Role/unlinkRole";
+import fetchUser from "../actionHandler/User/fetchUser";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserRole } from "../type/User";
@@ -77,6 +78,10 @@ module.exports = (io:Server) => {
         //結果に応じてそう返す
         if (addRoleResult) {
           socket.emit("RESULT::addRole", { result:"SUCCESS", data:addRoleResult });
+
+          //成功したのならそのユーザーの情報を全体に送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::addRole", { result:"ERROR_DB_THING", data:addRoleResult });
         }
@@ -118,6 +123,10 @@ module.exports = (io:Server) => {
         //結果に応じてそう返す
         if (unlinkRoleResult) {
           socket.emit("RESULT::unlinkRole", { result:"SUCCESS", data:unlinkRoleResult });
+
+          //成功したのならそのユーザーの情報を全体に送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::unlinkRole", { result:"ERROR_DB_THING", data:unlinkRoleResult });
         }
