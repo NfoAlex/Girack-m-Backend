@@ -59,8 +59,8 @@ export default async function fetchUserAll(indexPage:number)
               userName: user.userName,
               role: user.role.split(","),
               channelJoined: user.channelJoined.split(","),
-              loggedin: user.loggedin,
-              banned: user.banned
+              loggedin: user.loggedin===1?true:false,
+              banned: user.banned===1?true:false
             };
           }
 
