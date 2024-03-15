@@ -20,7 +20,7 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
       }
 
       //SQLでWHERE条件を指定するためのSQL文用変数
-        //👇これを使ってロールIDに引っかかるROLEをすべて取得する
+        //👇このSQL文を使ってロールIDに引っかかるROLEをすべて取得する
       let sqlContextWhereFull = "";
       //ロールの数分条件文追加
       for (let index in userInfo.role) {
