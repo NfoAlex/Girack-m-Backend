@@ -7,6 +7,7 @@ import searchUser from "../actionHandler/User/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
 import fetchUserAll from "../actionHandler/User/fetchUserAll";
 import banUser from "../actionHandler/User/banUser";
+import pardonUser from "../actionHandler/User/pardonUser";
 import roleCheck from "../util/roleCheck";
 
 import type IRequestSender from "../type/requestSender";
@@ -218,6 +219,49 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("User :: banUser : エラー->", e);
         socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+      }
+    });
+
+    //ユーザーのBAN状態を解除する
+    socket.on("pardonUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
+        data: <boolean>
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::pardonUser", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザー情報が空なら停止
+        const userInfo = await fetchUser(dat.targetUserId, null);
+        if (userInfo === null) {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
+        //権限確認
+        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_ROLE", data:false });
+          return;
+        }
+
+        //BANの解除処理
+        const pardonUserResult = await pardonUser(dat.RequestSender.userId, dat.targetUserId);
+        //結果を返す
+        if (pardonUserResult) {
+          socket.emit("RESULT::pardonUser", { result:"SUCCESS", data:true });
+        } else {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
+        }
+      } catch(e) {
+        console.log("User :: pardonUser : エラー->", e);
+        socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
       }
     });
 
