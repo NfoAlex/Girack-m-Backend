@@ -219,6 +219,10 @@ module.exports = (io:Server) => {
         //結果を返す
         if (banUserResult) {
           socket.emit("RESULT::banUser", { result:"SUCCESS", data:true });
+
+          //現在のユーザー情報を取得して送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
         }
@@ -262,6 +266,10 @@ module.exports = (io:Server) => {
         //結果を返す
         if (pardonUserResult) {
           socket.emit("RESULT::pardonUser", { result:"SUCCESS", data:true });
+
+          //現在のユーザー情報を取得して送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
         }
