@@ -204,6 +204,7 @@ module.exports = (io:Server) => {
         //権限確認
         if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
           socket.emit("RESULT::banUser", { result:"ERROR_ROLE", data:false });
+          return;
         }
 
         //BAN処理
