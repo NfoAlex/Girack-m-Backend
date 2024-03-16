@@ -1,7 +1,8 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 
-export default async function banUser(sendersUserId:string, targetUserId:string) {
+export default async function banUser(sendersUserId:string, targetUserId:string)
+:Promise<boolean> {
   try {
     
     // ToDo :: 権限レベルの確認
