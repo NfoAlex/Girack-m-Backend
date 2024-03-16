@@ -5,10 +5,12 @@ import checkSession from "../actionHandler/auth/checkSession";
 import fetchUser from "../actionHandler/User/fetchUser";
 import searchUser from "../actionHandler/User/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
+import fetchUserAll from "../actionHandler/User/fetchUserAll";
+import banUser from "../actionHandler/User/banUser";
+import roleCheck from "../util/roleCheck";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
-import fetchUserAll from "../actionHandler/User/fetchUserAll";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -173,6 +175,48 @@ module.exports = (io:Server) => {
         io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーをBANする
+    socket.on("banUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
+        data: <boolean>
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::banUser", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザー情報が空、あるいはホスト権限を持つユーザーなら停止
+        const userInfo = await fetchUser(dat.targetUserId, null);
+        if (userInfo === null || userInfo.userId === "HOST") {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
+        //権限確認
+        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+          socket.emit("RESULT::banUser", { result:"ERROR_ROLE", data:false });
+        }
+
+        //BAN処理
+        const banUserResult = await banUser(dat.RequestSender.userId, dat.targetUserId);
+        //結果を返す
+        if (banUserResult) {
+          socket.emit("RESULT::banUser", { result:"SUCCESS", data:true });
+        } else {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+        }
+      } catch(e) {
+        console.log("User :: banUser : エラー->", e);
+        socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
       }
     });
 
