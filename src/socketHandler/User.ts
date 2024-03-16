@@ -195,6 +195,12 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //もし操作者と標的が一緒なら停止
+        if (dat.RequestSender.userId === dat.targetUserId) {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
         //ユーザー情報が空、あるいはホスト権限を持つユーザーなら停止
         const userInfo = await fetchUser(dat.targetUserId, null);
         if (userInfo === null || userInfo.userId === "HOST") {
