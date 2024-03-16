@@ -30,8 +30,8 @@ export default async function fetchUser(userId:string|null, username:string|null
             userName: datUser[0].userName,
             role: datUser[0].role.split(","),
             channelJoined: datUser[0].channelJoined.split(","),
-            loggedin: false,
-            banned: false
+            loggedin: datUser[0].loggedin===1?true:false,
+            banned: datUser[0].banned===1?true:false
           };
 
           //ユーザー情報を返す
@@ -59,8 +59,8 @@ export default async function fetchUser(userId:string|null, username:string|null
             userName: datUser[0].userName,
             role: datUser[0].role.split(","),
             channelJoined: datUser[0].channelJoined.split(","),
-            loggedin: false,
-            banned: false
+            loggedin: datUser[0].loggedin===1?true:false,
+            banned: datUser[0].banned===1?true:false
           };
 
           //ユーザー情報を返す
