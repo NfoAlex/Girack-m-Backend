@@ -1,6 +1,9 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../User/fetchUser";
+import calcRoleUser from "./calcRoleUser";
+import calcRoleData from "./calcRoleData";
+import fetchRoleSingle from "./fetchRoleSingle";
 
 export default async function unlinkRole(
   sendersUserId: string,
@@ -10,6 +13,18 @@ export default async function unlinkRole(
   try {
     
     // ToDo :: ロールのレベルを計算
+
+    //操作者と外すロールのレベル確認
+    const sendersRoleLevel = await calcRoleUser(sendersUserId);
+    const unlinkingDataRoleLevel = await calcRoleData(
+      await fetchRoleSingle(roleId)
+    );
+    console.log("unlinkRole :: 操作者レベル->", sendersRoleLevel);
+    console.log("unlinkRole :: 外すロールのレベル->", unlinkingDataRoleLevel);
+    //もし操作者のロールレベルが外すロールレベルより低ければ停止
+    if (unlinkingDataRoleLevel > sendersRoleLevel) {
+      return false;
+    }
 
     //ユーザー情報を取得してnullなら停止
     const userInfo = await fetchUser(targetUserId, null);
