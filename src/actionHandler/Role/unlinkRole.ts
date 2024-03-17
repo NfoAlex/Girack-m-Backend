@@ -20,7 +20,7 @@ export default async function unlinkRole(
     console.log("unlinkRole :: 操作者レベル->", sendersRoleLevel);
     console.log("unlinkRole :: 外すロールのレベル->", unlinkingDataRoleLevel);
     //もし操作者のロールレベルが外すロールレベルより低ければ停止
-    if (unlinkingDataRoleLevel > sendersRoleLevel) {
+    if (unlinkingDataRoleLevel >= sendersRoleLevel) {
       return false;
     }
 
