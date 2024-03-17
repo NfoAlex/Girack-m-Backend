@@ -17,6 +17,7 @@ export default async function fetchUser(userId:string|null, username:string|null
           //console.log("fetchUser(userName) :: 検索結果->", username, datUser);
           //そもそも結果が無いならそう返す
           if (datUser.length === 0) {
+            console.log("fetchUser(userName) :: ERROR -> データが空");
             resolve(null);
             return;
           }
@@ -29,8 +30,8 @@ export default async function fetchUser(userId:string|null, username:string|null
             userName: datUser[0].userName,
             role: datUser[0].role.split(","),
             channelJoined: datUser[0].channelJoined.split(","),
-            loggedin: false,
-            banned: false
+            loggedin: datUser[0].loggedin===1?true:false,
+            banned: datUser[0].banned===1?true:false
           };
 
           //ユーザー情報を返す
@@ -47,6 +48,7 @@ export default async function fetchUser(userId:string|null, username:string|null
           //console.log("fetchUser(userId) :: 検索結果->", userId, datUser);
           //そもそも結果が無いならそう返す
           if (datUser.length === 0) {
+            console.log("fetchUser(userId) :: ERROR -> データが空");
             resolve(null);
             return;
           }
@@ -57,8 +59,8 @@ export default async function fetchUser(userId:string|null, username:string|null
             userName: datUser[0].userName,
             role: datUser[0].role.split(","),
             channelJoined: datUser[0].channelJoined.split(","),
-            loggedin: false,
-            banned: false
+            loggedin: datUser[0].loggedin===1?true:false,
+            banned: datUser[0].banned===1?true:false
           };
 
           //ユーザー情報を返す

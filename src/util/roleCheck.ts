@@ -20,7 +20,7 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
       }
 
       //SQLでWHERE条件を指定するためのSQL文用変数
-        //👇これを使ってロールIDに引っかかるROLEをすべて取得する
+        //👇このSQL文を使ってロールIDに引っかかるROLEをすべて取得する
       let sqlContextWhereFull = "";
       //ロールの数分条件文追加
       for (let index in userInfo.role) {
@@ -33,13 +33,11 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
         if (isLastRole) {
           sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "'";
         } else {
-          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "' AND ";
+          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "' OR ";
         }
 
         sqlContextWhereFull += sqlContextWhereSingle;
       }
-
-      console.log("SELECT * FROM ROLES WHERE " + sqlContextWhereFull);
 
       //ユーザーが持つロールの権限データをすべて取得する
       db.all("SELECT * FROM ROLES WHERE " + sqlContextWhereFull, (err:Error, datRoles:IUserRole[]) => {
@@ -47,7 +45,7 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
           console.log("roleCheck :: db : エラー->", err);
           resolve(false);
         } else {
-          console.log("roleCheck :: db : 結果->", datRoles);
+          //console.log("roleCheck :: db : 結果->", datRoles);
           //ロール分調べて権限が足りるか調べる
           for (let role of datRoles) {
             //権限の値がtrueなら「できる」と返す

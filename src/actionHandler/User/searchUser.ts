@@ -15,7 +15,7 @@ export default async function searchUser(userName:string, rule:"FULL"|"PARTIAL")
           console.log("searchUser :: ERROR ->", err);
           resolve([]);
         } else {
-          console.log("searchUser :: 検索結果->", userName, datUser);
+          //console.log("searchUser :: 検索結果->", userName, datUser);
           resolve(datUser);
         }
       });
@@ -26,7 +26,7 @@ export default async function searchUser(userName:string, rule:"FULL"|"PARTIAL")
           console.log("searchUser :: ERROR ->", err);
           resolve([]);
         } else {
-          console.log("searchUser :: 検索結果->", userName, datUser);
+          //console.log("searchUser :: 検索結果->", userName, datUser);
           resolve(datUser);
         }
       });

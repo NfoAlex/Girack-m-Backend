@@ -6,13 +6,18 @@ import type IRequestSender from "../../type/requestSender";
 
 export default async function checkSession(RequestSender:IRequestSender)
 :Promise<boolean> {
-  return new Promise<boolean> ((resolve) => {
+  return new Promise<boolean> (async (resolve) => {
     try {
 
       //データ確認
       if (RequestSender.userId === undefined && RequestSender.sessionId === undefined) {
         resolve(false);
       }
+
+      //ユーザー情報があるか、BANされているかどうかを確認
+      const userInfo = await fetchUser(RequestSender.userId, null);
+      if (userInfo === null) return false;
+      if (userInfo.banned) return false;
 
       //ユーザーIdで検索、セッションIDを一致を探す
       db.all(
@@ -21,7 +26,9 @@ export default async function checkSession(RequestSender:IRequestSender)
         (err:Error, datSession:IUserSession[]
       ) => {
         if (err) {
-          console.log("checkSession :: ERROR ->", err);
+          console.log("checkSession :: db : ERROR ->", err);
+          resolve(false);
+          return;
         } else {
           //console.log("checkSession :: 検索結果->", datSession);
           //データが空なら終わらせる
@@ -46,7 +53,7 @@ export default async function checkSession(RequestSender:IRequestSender)
 
     } catch(e) {
 
-      console.log("checkSesion :: checkSession : エラー->", e);
+      console.log("checkSesion :: エラー->", e);
       resolve(false);
       return;
 

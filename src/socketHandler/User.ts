@@ -5,6 +5,10 @@ import checkSession from "../actionHandler/auth/checkSession";
 import fetchUser from "../actionHandler/User/fetchUser";
 import searchUser from "../actionHandler/User/searchUser";
 import saveUserConfig from "../actionHandler/User/saveUserConfig";
+import fetchUserAll from "../actionHandler/User/fetchUserAll";
+import banUser from "../actionHandler/User/banUser";
+import pardonUser from "../actionHandler/User/pardonUser";
+import roleCheck from "../util/roleCheck";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
@@ -84,12 +88,47 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const userInfo = await fetchUser(dat.RequestSender.userId, null);
+        const userInfo = await fetchUser(dat.userId, null);
         socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
       }
 
+    });
+
+    //複数ユーザーの取得
+    socket.on("fetchUserAll", async (dat:{RequestSender:IRequestSender, indexPage:number}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: {[key: string]: IUserInfo}|null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchUserAll", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザーを取得
+        const fetchUserAllResult = await fetchUserAll(dat.indexPage);
+        //結果に応じてデータを送信
+        if (fetchUserAllResult !== null) {
+          socket.emit("RESULT::fetchUserAll", {
+            result: "SUCCESS",
+            data: {
+              datUser: fetchUserAllResult.datUser,
+              countUser: fetchUserAllResult.countUser
+            } 
+          });
+        } else {
+          socket.emit("RESULT::fetchUserAll", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        socket.emit("RESULT::fetchUserAll", { result:"ERROR_DB_THING", data:null });
+      }
     });
 
     //ユーザー名で検索して一括取得
@@ -137,6 +176,106 @@ module.exports = (io:Server) => {
         io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーをBANする
+    socket.on("banUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
+        data: <boolean>
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::banUser", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //もし操作者と標的が一緒なら停止
+        if (dat.RequestSender.userId === dat.targetUserId) {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
+        //ユーザー情報が空、あるいはホスト権限を持つユーザーなら停止
+        const userInfo = await fetchUser(dat.targetUserId, null);
+        if (userInfo === null || userInfo.userId === "HOST") {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
+        //権限確認
+        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+          socket.emit("RESULT::banUser", { result:"ERROR_ROLE", data:false });
+          return;
+        }
+
+        //BAN処理
+        const banUserResult = await banUser(dat.RequestSender.userId, dat.targetUserId);
+        //結果を返す
+        if (banUserResult) {
+          socket.emit("RESULT::banUser", { result:"SUCCESS", data:true });
+
+          //現在のユーザー情報を取得して送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
+        } else {
+          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+        }
+      } catch(e) {
+        console.log("User :: banUser : エラー->", e);
+        socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+      }
+    });
+
+    //ユーザーのBAN状態を解除する
+    socket.on("pardonUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
+        data: <boolean>
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::pardonUser", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ユーザー情報が空なら停止
+        const userInfo = await fetchUser(dat.targetUserId, null);
+        if (userInfo === null) {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
+          return;
+        }
+
+        //権限確認
+        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_ROLE", data:false });
+          return;
+        }
+
+        //BANの解除処理
+        const pardonUserResult = await pardonUser(dat.RequestSender.userId, dat.targetUserId);
+        //結果を返す
+        if (pardonUserResult) {
+          socket.emit("RESULT::pardonUser", { result:"SUCCESS", data:true });
+
+          //現在のユーザー情報を取得して送信
+          const userInfo = await fetchUser(dat.targetUserId, null);
+          io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
+        } else {
+          socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
+        }
+      } catch(e) {
+        console.log("User :: pardonUser : エラー->", e);
+        socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
       }
     });
 
