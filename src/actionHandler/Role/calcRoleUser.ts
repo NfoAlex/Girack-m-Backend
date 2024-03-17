@@ -16,7 +16,7 @@ const roleLevel:{
 };
 */
 
-export default async function calcRole(userId:string)
+export default async function calcRoleUser(userId:string)
 :Promise<number> {
   try {
 
