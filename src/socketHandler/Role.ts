@@ -237,6 +237,10 @@ module.exports = (io:Server) => {
         //結果に応じて送信
         if (updateRoleResult) {
           socket.emit("RESULT::updateRole", {result:"SUCCESS", data:null});
+
+          //現在のロール情報を全員に送信
+          const roleInfo = await fetchRoleSingle(dat.roleData.roleId);
+          io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
         }
