@@ -166,10 +166,14 @@ module.exports = (io:Server) => {
         }
 
         //ロールを作成
-        const createRoleResult:boolean = await createRole(dat.RequestSender.userId, dat.roleData);
+        const createRoleResult:string|null = await createRole(dat.RequestSender.userId, dat.roleData);
         //結果に応じてそう返す
-        if (createRoleResult) {
+        if (createRoleResult !== null) {
           socket.emit("RESULT::createRole", { result:"SUCCESS", data:null });
+
+          //作成したロール情報を送信
+          const roleInfo:IUserRole = await fetchRoleSingle(createRoleResult);
+          io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
         }

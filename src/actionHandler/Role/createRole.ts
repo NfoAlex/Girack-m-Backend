@@ -8,7 +8,7 @@ export default async function createRole(
     name: string,
     color: string
   }
-):Promise<boolean> {
+):Promise<string|null> {
   try {
 
     // ToDo :: ロールの確認(つけられる権限の制限)
@@ -17,7 +17,7 @@ export default async function createRole(
     const roleIdNew = await getNewRoleId();
     //IDが空ならエラーとして処理を停止
     if (roleIdNew === "") {
-      return false;
+      return null;
     }
 
     //書き込み結果を待ってそれを返す
@@ -38,10 +38,10 @@ export default async function createRole(
         ],
         (err) => {
           if (err) {
-            resolve(false);
+            resolve(null);
             return;
           } else {
-            resolve(true);
+            resolve(roleIdNew);
             return;
           }
         }
@@ -51,7 +51,7 @@ export default async function createRole(
   } catch(e) {
 
     console.log("createRole :: エラー->", e);
-    return false;
+    return null;
 
   }
 }
