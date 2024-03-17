@@ -8,10 +8,10 @@ import deleteRole from "../actionHandler/Role/deleteRole";
 import addRole from "../actionHandler/Role/addRole";
 import unlinkRole from "../actionHandler/Role/unlinkRole";
 import fetchUser from "../actionHandler/User/fetchUser";
+import fetchRoleSingle from "../actionHandler/Role/fetchRoleSingle";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserRole } from "../type/User";
-import fetchRoleSingle from "../actionHandler/Role/fetchRoleSingle";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
