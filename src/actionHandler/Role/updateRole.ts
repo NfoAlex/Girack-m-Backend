@@ -1,5 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/ROLE.db");
+import calcRoleUser from "./calcRoleUser";
+import calcRoleData from "./calcRoleData";
 
 import type { IUserRole } from "../../type/User";
 
@@ -7,7 +9,15 @@ export default async function updateRole(userId:string, roleData:IUserRole)
 :Promise<boolean> {
   try {
 
-    // ToDo :: ロールの確認(つけられる権限の制限)
+    //操作者と更新ロールデータ内容のレベル確認
+    const sendersRoleLevel = await calcRoleUser(userId);
+    const updatingDataRoleLevel = await calcRoleData(roleData);
+    console.log("updateRole :: 操作者レベル->", sendersRoleLevel);
+    console.log("updateRole :: 更新するロールのレベル->", updatingDataRoleLevel);
+    //もし操作者のロールレベルが追加するロールレベルより低ければ停止
+    if (updatingDataRoleLevel >= sendersRoleLevel) {
+      return false;
+    }
 
     //ロール名は32文字まで、0もだめ
     if (roleData.name.length > 32 || roleData.name.length === 0) {
