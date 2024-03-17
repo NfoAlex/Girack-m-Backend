@@ -1,6 +1,9 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../User/fetchUser";
+import calcRoleData from "./calcRoleData";
+import calcRoleUser from "./calcRoleUser";
+import fetchRoleSingle from "./fetchRoleSingle";
 
 export default async function addRole(
   sendersUserId: string,
@@ -9,7 +12,17 @@ export default async function addRole(
 ):Promise<boolean> {
   try {
 
-    // ToDo :: ロールのレベルを計算
+    //ロールのレベルを計算
+    const userRoleLevel = await calcRoleUser(sendersUserId);
+    const addingRoleLevel = await calcRoleData(
+      await fetchRoleSingle(roleId)
+    );
+    console.log("addRole :: 操作者レベル->", userRoleLevel);
+    console.log("addRole :: 付与するロールのレベル->", addingRoleLevel);
+    //もし操作者のロールレベルが追加するロールレベルより低ければ停止
+    if (addingRoleLevel > userRoleLevel) {
+      return false;
+    }
 
     //ユーザー情報を取得してnullなら停止
     const userInfo = await fetchUser(targetUserId, null);
