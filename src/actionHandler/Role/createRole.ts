@@ -11,8 +11,6 @@ export default async function createRole(
 ):Promise<string|null> {
   try {
 
-    // ToDo :: ロールの確認(つけられる権限の制限)
-
     //空いているロールIDを生成
     const roleIdNew = await getNewRoleId();
     //IDが空ならエラーとして処理を停止
