@@ -15,7 +15,7 @@ export default async function updateRole(userId:string, roleData:IUserRole)
     console.log("updateRole :: 操作者レベル->", sendersRoleLevel);
     console.log("updateRole :: 更新するロールのレベル->", updatingDataRoleLevel);
     //もし操作者のロールレベルが追加するロールレベルより低ければ停止
-    if (updatingDataRoleLevel >= sendersRoleLevel) {
+    if (updatingDataRoleLevel > sendersRoleLevel) {
       return false;
     }
 
