@@ -11,6 +11,7 @@ import fetchUser from "../actionHandler/User/fetchUser";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserRole } from "../type/User";
+import fetchRoleSingle from "../actionHandler/Role/fetchRoleSingle";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -43,6 +44,26 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchRoles", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //単一ロールを取得
+    socket.on("fetchRoleSingle", async (dat:{RequestSender:IRequestSender, roleId:string}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchRoleSingle", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロール取得
+        const roleInfo:IUserRole = await fetchRoleSingle(dat.roleId);
+
+        //ロール情報を送信
+        socket.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
+      } catch(e) {
+        console.log("Role :: fetchRoleSingle : エラー->", e);
+        socket.emit("RESULT::fetchRoleSingle", { result:"ERROR_DB_THING", data:null });
       }
     });
 
