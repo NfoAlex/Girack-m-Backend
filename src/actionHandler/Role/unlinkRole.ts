@@ -11,8 +11,6 @@ export default async function unlinkRole(
   roleId: string
 ):Promise<boolean> {
   try {
-    
-    // ToDo :: ロールのレベルを計算
 
     //操作者と外すロールのレベル確認
     const sendersRoleLevel = await calcRoleUser(sendersUserId);
