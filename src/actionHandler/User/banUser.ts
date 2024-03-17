@@ -1,13 +1,13 @@
 import sqlite3 from "sqlite3";
-import calcRole from "../Role/calcRole";
+import calcRoleUser from "../Role/calcRoleUser";
 const db = new sqlite3.Database("./records/USER.db");
 
 export default async function banUser(sendersUserId:string, targetUserId:string)
 :Promise<boolean> {
   try {
     //送信者と標的のロールレベルを取得
-    const targetUserRoleLevel = await calcRole(targetUserId);
-    const sendersUserRoleLevel = await calcRole(sendersUserId);
+    const targetUserRoleLevel = await calcRoleUser(targetUserId);
+    const sendersUserRoleLevel = await calcRoleUser(sendersUserId);
     //もし標的者のレベルが送信者より上なら停止
     if (targetUserRoleLevel > sendersUserRoleLevel) {
       return false;
