@@ -4,17 +4,15 @@ export interface IUserInfo {
   userName: string,
   role: string[],
   channelJoined: string[],
-  loggedin: boolean,
   banned: boolean,
 };
 
-//SQKから抜き出した生のユーザー情報
+//SQLから抜き出した生のユーザー情報
 export interface IUserInfoBeforeParsing {
   userId: string,
   userName: string,
   role: string,
   channelJoined: string,
-  loggedin: 1|0,
   banned: 1|0
 };
 
