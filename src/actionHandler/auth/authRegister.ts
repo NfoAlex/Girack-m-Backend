@@ -42,23 +42,21 @@ export default async function authRegister(username:string, inviteCode:string|nu
         //最初のユーザーだからHostロールを付与
         if (num[0]["COUNT(*)"] === 0) {
           //ユーザー情報をDBへ作成
-          db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+          db.run("insert into USERS_INFO values (?,?,?,?,?)",
             userIdGen,
             username,
             "HOST",
             "0001",
-            false,
             false
           );
           //最初のユーザーであることを設定
           isFirstUser = true;
         } else { //ユーザーがいたからMember
-          db.run("insert into USERS_INFO values (?,?,?,?,?,?)",
+          db.run("insert into USERS_INFO values (?,?,?,?,?)",
             userIdGen,
             username,
             "MEMBER",
             "0001",
-            false,
             false
           );
         }
@@ -89,7 +87,6 @@ export default async function authRegister(username:string, inviteCode:string|nu
         userName: username,
         role: isFirstUser?["HOST"]:["MEMBER"], //最初のユーザーならHOST
         channelJoined: ["0001"],
-        loggedin: false,
         banned: false,
       },
       password: passwordGenerated
