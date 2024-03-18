@@ -8,6 +8,7 @@ import deleteRole from "../actionHandler/Role/deleteRole";
 import addRole from "../actionHandler/Role/addRole";
 import unlinkRole from "../actionHandler/Role/unlinkRole";
 import fetchUser from "../actionHandler/User/fetchUser";
+import fetchRoleSingle from "../actionHandler/Role/fetchRoleSingle";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserRole } from "../type/User";
@@ -43,6 +44,26 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchRoles", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //単一ロールを取得
+    socket.on("fetchRoleSingle", async (dat:{RequestSender:IRequestSender, roleId:string}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchRoleSingle", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロール取得
+        const roleInfo:IUserRole = await fetchRoleSingle(dat.roleId);
+
+        //ロール情報を送信
+        socket.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
+      } catch(e) {
+        console.log("Role :: fetchRoleSingle : エラー->", e);
+        socket.emit("RESULT::fetchRoleSingle", { result:"ERROR_DB_THING", data:null });
       }
     });
 
@@ -166,10 +187,14 @@ module.exports = (io:Server) => {
         }
 
         //ロールを作成
-        const createRoleResult:boolean = await createRole(dat.RequestSender.userId, dat.roleData);
+        const createRoleResult:string|null = await createRole(dat.RequestSender.userId, dat.roleData);
         //結果に応じてそう返す
-        if (createRoleResult) {
+        if (createRoleResult !== null) {
           socket.emit("RESULT::createRole", { result:"SUCCESS", data:null });
+
+          //作成したロール情報を送信
+          const roleInfo:IUserRole = await fetchRoleSingle(createRoleResult);
+          io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
         }
@@ -212,6 +237,10 @@ module.exports = (io:Server) => {
         //結果に応じて送信
         if (updateRoleResult) {
           socket.emit("RESULT::updateRole", {result:"SUCCESS", data:null});
+
+          //現在のロール情報を全員に送信
+          const roleInfo = await fetchRoleSingle(dat.roleData.roleId);
+          io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
         }
