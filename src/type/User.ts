@@ -8,7 +8,7 @@ export interface IUserInfo {
   banned: boolean,
 };
 
-//SQKから抜き出した生のユーザー情報
+//SQLから抜き出した生のユーザー情報
 export interface IUserInfoBeforeParsing {
   userId: string,
   userName: string,
