@@ -32,8 +32,8 @@ module.exports = (app:any) => {
   
       res.status(200).send("ファイルとメタデータのアップロードに成功しました。");
   
-    } catch (error) {
-      res.status(500).send("アップロード中にエラーが発生しました。");
+    } catch (e) {
+      res.status(500).send("アップロード中にエラーが発生しました。", e);
     }
   });
 
@@ -41,8 +41,8 @@ module.exports = (app:any) => {
     try {  
       res.status(200).send("world");
   
-    } catch (error) {
-      res.status(500).send("アップロード中にエラーが発生しました。");
+    } catch (e) {
+      res.status(500).send("アップロード中にエラーが発生しました。", e);
     }
   });
 }
