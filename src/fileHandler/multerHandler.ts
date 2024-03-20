@@ -55,6 +55,7 @@ module.exports = (app:any) => {
     }
   });
 
+  // for debug
   app.get("/hello", (req:any, res:any) => {
     try {  
       res.status(200).send("world");
