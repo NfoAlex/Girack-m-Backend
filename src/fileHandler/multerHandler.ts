@@ -63,6 +63,16 @@ module.exports = (app:any) => {
       res.status(500).send("/hello :: 内部エラーが発生しました -> ", e);
     }
   });
+
+  //プロフィール画像を返す
+  app.get("/icon/:userid", (req:any, res:any) => {
+    try {
+      //ICONディレクトリへの絶対パス取得
+      const absolutePath = path.resolve('./STORAGE/ICON');
+      //画像ファイルを送信
+      res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
+    } catch(e) {
+      res.status(500).send("/icon :: プロフィール画像を取得できませんでした -> " + e);
     }
   });
 }
