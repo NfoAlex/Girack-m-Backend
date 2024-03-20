@@ -27,8 +27,14 @@ module.exports = (app:any) => {
       // 補足データ（metadata）を取得し、JSONとしてパース
       const metadata = JSON.parse(req.body.metadata);
 
-      //拡張子取得
+      //拡張子取得、確認
       const extension = path.extname(req.file.originalname);
+      if (
+        extension !== ".jpeg" &&
+        extension !== ".jpg" &&
+        extension !== ".gif" &&
+        extension !== ".png"
+      ) throw "拡張子が未対応";
       //移動先のディレクトリを作成
       const newDir = path.join("STORAGE/ICON");
       //ファイル名を"ユーザーID+拡張子へ設定"
