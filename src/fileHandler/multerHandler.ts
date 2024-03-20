@@ -70,8 +70,17 @@ module.exports = (app:any) => {
     try {
       //ICONディレクトリへの絶対パス取得
       const absolutePath = path.resolve('./STORAGE/ICON');
-      //画像ファイルを送信
-      res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
+
+      //それぞれの拡張子を確認して送信する
+      if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpg")) {
+        res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
+      }
+      if (fs.existsSync(absolutePath + "/" + req.params.userid + ".gif")) {
+        res.sendFile(absolutePath + "/" + req.params.userid + ".gif");
+      }
+      if (fs.existsSync(absolutePath + "/" + req.params.userid + ".png")) {
+        res.sendFile(absolutePath + "/" + req.params.userid + ".png");
+      }
     } catch(e) {
       res.status(500).send("/icon :: プロフィール画像を取得できませんでした -> " + e);
     }
