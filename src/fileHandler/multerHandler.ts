@@ -1,6 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { ServerInfo } from "../db/InitServer";
 
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
@@ -12,7 +13,12 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { //アイコン用ファイル制限
+    fileSize: ServerInfo.config.PROFILE.usernameMaxLength
+  }
+});
 
 module.exports = (app:any) => {
 
