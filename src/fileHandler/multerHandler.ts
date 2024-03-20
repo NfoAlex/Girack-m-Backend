@@ -5,7 +5,7 @@ import path from "path";
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "UPLOADS/"); // アップロードされるファイルの保存先
+    cb(null, "STORAGE/"); // アップロードされるファイルの保存先
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + Date.now());
