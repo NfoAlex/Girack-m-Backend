@@ -9,6 +9,8 @@ const app = express();
 
 //DB用に必要なディレクトリを作成
 try{fs.mkdirSync("./records/");}catch(e){}
+//ファイルアップロードの保存用ディレクトリ
+try{fs.mkdirSync("./STORAGE/");}catch(e){}
 
 //DB整備
 import "./db/InitUser";
