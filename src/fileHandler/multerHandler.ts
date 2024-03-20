@@ -80,12 +80,15 @@ module.exports = (app:any) => {
       //それぞれの拡張子を確認して送信する
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpg")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
+        return;
       }
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".gif")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".gif");
+        return;
       }
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".png")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".png");
+        return;
       }
 
       //最後まで条件に合わないならデフォルト画像送信
