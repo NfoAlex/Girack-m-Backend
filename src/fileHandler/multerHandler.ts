@@ -46,6 +46,17 @@ module.exports = (app:any) => {
       //ファイル名を"ユーザーID+拡張子へ設定"
       const newPath = path.join(newDir, metadata.userId + extension);
 
+      //もともとあるアイコンファイルを削除する
+      if (fs.existsSync(newDir + "/" + metadata.userId + ".jpg")) {
+        fs.unlinkSync(newDir + "/" + metadata.userId + ".jpg");
+      }
+      if (fs.existsSync(newDir + "/" + metadata.userId + ".gif")) {
+        fs.unlinkSync(newDir + "/" + metadata.userId + ".gif");
+      }
+      if (fs.existsSync(newDir + "/" + metadata.userId + ".png")) {
+        fs.unlinkSync(newDir + "/" + metadata.userId + ".png");
+      }
+
       //ファイルを移動
       fs.renameSync(req.file.path, newPath);
   
