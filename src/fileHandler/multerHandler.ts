@@ -26,22 +26,22 @@ module.exports = (app:any) => {
   
       // 補足データ（metadata）を取得し、JSONとしてパース
       const metadata = JSON.parse(req.body.metadata);
+
       //拡張子取得
       const extension = path.extname(req.file.originalname);
-
-      // 移動先のディレクトリを作成
+      //移動先のディレクトリを作成
       const newDir = path.join("STORAGE/ICON");
-
-      //const newPath = path.join(newDir, path.basename(req.file.path));
+      //ファイル名を"ユーザーID+拡張子へ設定"
       const newPath = path.join(newDir, metadata.userId + extension);
 
-      // ファイルを移動
+      //ファイルを移動
       fs.renameSync(req.file.path, newPath);
   
       // metadata の内容を表示
       console.log("multerHandler :: /uploadProfileIcon : req.metadata->", metadata);
   
-      res.status(200).send("ファイルとメタデータのアップロードに成功しました。");
+      //結果送信
+      res.status(200).send("/uploadProfileIcon :: アップロード成功");
   
     } catch (e) {
       console.log("multerHandler :: /uploadProfileIcon : エラー ->", e);
