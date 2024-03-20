@@ -2,6 +2,9 @@
 records
 /STORAGE
 
+#デフォルトのアイコン用
+!/STORAGE/ICON/default.jpg
+
 # Logs
 logs
 *.log
