@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: { //アイコン用ファイル制限
-    fileSize: ServerInfo.config.PROFILE.usernameMaxLength
+    fileSize: ServerInfo.config.PROFILE.iconMaxSize
   }
 });
 
