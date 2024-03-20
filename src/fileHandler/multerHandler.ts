@@ -81,6 +81,9 @@ module.exports = (app:any) => {
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".png")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".png");
       }
+
+      //最後まで条件に合わないならデフォルト画像送信
+      res.sendFile(absolutePath + "/default.jpg");
     } catch(e) {
       res.status(500).send("/icon :: プロフィール画像を取得できませんでした -> " + e);
     }
