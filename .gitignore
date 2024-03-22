@@ -1,5 +1,11 @@
 #DBデータ
 records
+STORAGE/*
+
+#デフォルトのアイコン用
+STORAGE/ICON/*
+!STORAGE/ICON/
+!STORAGE/ICON/default.jpg
 
 # Logs
 logs

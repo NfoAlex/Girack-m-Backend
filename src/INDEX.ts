@@ -3,20 +3,29 @@
 import fs from "fs";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
+import express from "express";
+
+const app = express();
 
 //DB用に必要なディレクトリを作成
 try{fs.mkdirSync("./records/");}catch(e){}
+//ファイルアップロードの保存用ディレクトリ
+try{fs.mkdirSync("./STORAGE/");}catch(e){}
+try{fs.mkdirSync("./STORAGE/ICON/");}catch(e){}
 
 //DB整備
 import "./db/InitUser";
 import "./db/InitServer";
 import "./db/InitRole";
 
-const httpServer = createServer();
+const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
 });
+
+//ファイル操作ハンドラインポート
+require("./fileHandler/multerHandler")(app);
 
 //SocketHandlerインポート
 require("./socketHandler/Server.ts")(io);
