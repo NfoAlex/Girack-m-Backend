@@ -55,8 +55,9 @@ module.exports = (io:Server) => {
     socket.on("authSession", async (dat:{userId:string, sessionId:string}) => {
       //セッション確認
       if (!(await checkSession(dat))) {
-        socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:null });
-        return;
+        socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:false });
+      } else {
+        socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
 
