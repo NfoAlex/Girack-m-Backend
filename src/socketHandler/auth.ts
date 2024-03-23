@@ -51,6 +51,15 @@ module.exports = (io:Server) => {
       }
     });
 
+    //セッションのみでの認証
+    socket.on("authSession", async (dat:{userId:string, sessionId:string}) => {
+      //セッション確認
+      if (!(await checkSession(dat))) {
+        socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+    });
+
     //新規登録
     socket.on("authRegister", async (dat:{username:string, inviteCode:string|null}) => {
       /*
