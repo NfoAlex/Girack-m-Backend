@@ -106,7 +106,7 @@ module.exports = (io:Server) => {
         //結果に応じて削除したチャンネルIDを返す
         if (deleteChannelResult) {
           //チャンネルIDを全員に送信する
-          io.emit("RESULT::deleteChannel", {result:"SUCCESS", data:dat.channelId});
+          io.emit("RESULT::deleteChannel", { result:"SUCCESS", data:dat.channelId });
         } else {
           //操作者に対してのみ失敗と送信
           socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
