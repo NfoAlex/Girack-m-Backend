@@ -103,12 +103,14 @@ module.exports = (io:Server) => {
           dat.channelId,
         );
 
-        //返す
-        socket.emit("RESULT::deleteChannel", { result:"SUCCESS", data:deleteChannelResult });
-
-        //最新のチャンネル情報を全員に送る
-        const channelList = await fetchChannelList();
-        io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
+        //結果に応じて削除したチャンネルIDを返す
+        if (deleteChannelResult) {
+          //チャンネルIDを全員に送信する
+          io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:dat.channelId});
+        } else {
+          //操作者に対してのみ失敗と送信
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
+        }
       } catch(e) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
       }
