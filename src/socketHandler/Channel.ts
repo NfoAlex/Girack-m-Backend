@@ -116,7 +116,28 @@ module.exports = (io:Server) => {
 
     //チャンネル情報を取得する
     socket.on("fetchChannelInfo", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
-      const channelInfo = await fetchChannel(dat.channelId);
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchChannelInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+      
+      try {
+        //チャンネル情報取得
+        const channelInfo = await fetchChannel(dat.channelId);
+        //結果送信
+        socket.emit("RESULT::fetchChannelInfo", {
+          result: "SUCCESS",
+          data: channelInfo
+        });
+      } catch(e) {
+        console.log("Channel :: fetchChannelInfo : エラー->", e);
+        //エラーを返す
+        socket.emit("RESULT::fetchChannelInfo", {
+          result: "ERROR_DB_THING",
+          data: null
+        });
+      }
     });
 
     //チャンネルを一覧で取得
