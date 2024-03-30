@@ -130,7 +130,10 @@ module.exports = (io:Server) => {
         //結果送信
         socket.emit("RESULT::fetchChannelInfo", {
           result: "SUCCESS",
-          data: channelInfo
+          data: {
+            channelId: dat.channelId,
+            channelInfo: channelInfo
+          }
         });
       } catch(e) {
         console.log("Channel :: fetchChannelInfo : エラー->", e);
@@ -209,9 +212,9 @@ module.exports = (io:Server) => {
 
         //結果を送信
         if (leaveChannelResult) {
-          socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:leaveChannelResult });
+          socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:dat.channelId });
         } else {
-          socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:leaveChannelResult });
+          socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
       } catch(e) {
         socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:null });
