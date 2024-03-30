@@ -103,12 +103,14 @@ module.exports = (io:Server) => {
           dat.channelId,
         );
 
-        //返す
-        socket.emit("RESULT::deleteChannel", { result:"SUCCESS", data:deleteChannelResult });
-
-        //最新のチャンネル情報を全員に送る
-        const channelList = await fetchChannelList();
-        io.emit("RESULT::fetchChannelList", {result:"SUCCESS", data:channelList});
+        //結果に応じて削除したチャンネルIDを返す
+        if (deleteChannelResult) {
+          //チャンネルIDを全員に送信する
+          io.emit("RESULT::deleteChannel", { result:"SUCCESS", data:dat.channelId });
+        } else {
+          //操作者に対してのみ失敗と送信
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
+        }
       } catch(e) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
       }
@@ -128,7 +130,10 @@ module.exports = (io:Server) => {
         //結果送信
         socket.emit("RESULT::fetchChannelInfo", {
           result: "SUCCESS",
-          data: channelInfo
+          data: {
+            channelId: dat.channelId,
+            channelInfo: channelInfo
+          }
         });
       } catch(e) {
         console.log("Channel :: fetchChannelInfo : エラー->", e);
@@ -207,9 +212,9 @@ module.exports = (io:Server) => {
 
         //結果を送信
         if (leaveChannelResult) {
-          socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:leaveChannelResult });
+          socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:dat.channelId });
         } else {
-          socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:leaveChannelResult });
+          socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
       } catch(e) {
         socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:null });
