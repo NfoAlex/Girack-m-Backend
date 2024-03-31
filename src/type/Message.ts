@@ -1,5 +1,4 @@
 export interface IMessageBeforeParsing {
-  channelId: string,
   userId: string,
   content: string,
   reaction: string
