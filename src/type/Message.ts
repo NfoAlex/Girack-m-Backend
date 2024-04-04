@@ -5,6 +5,7 @@ export interface IMessageBeforeParsing {
 }
 
 export interface IMessage {
+  messageId: string,
   channelId: string,
   userId: string,
   content: string,
