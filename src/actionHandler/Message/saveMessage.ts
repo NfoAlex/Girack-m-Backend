@@ -54,7 +54,7 @@ export default async function saveMessage(
           content,
           reaction
         )
-        VALUES (?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
         `,
         [
           messageData.messageId,
