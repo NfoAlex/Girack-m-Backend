@@ -17,6 +17,7 @@ try{fs.mkdirSync("./STORAGE/ICON/");}catch(e){}
 import "./db/InitUser";
 import "./db/InitServer";
 import "./db/InitRole";
+import "./db/InitMessage";
 
 const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
