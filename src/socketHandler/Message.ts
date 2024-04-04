@@ -31,8 +31,10 @@ module.exports = (io:Server) => {
 
       try {
         //メッセージデータを処理
-        const messageData = 
-          await saveMessage(dat.RequestSender.userId, dat.message);
+        const messageData = await saveMessage(
+          dat.RequestSender.userId,
+          dat.message
+        );
 
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
