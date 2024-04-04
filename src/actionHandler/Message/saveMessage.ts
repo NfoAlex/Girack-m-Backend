@@ -46,7 +46,7 @@ export default async function saveMessage(
     //DB処理
     return new Promise((resolve) => {
       db.run(`
-        INSERT INTO ` + message.channelId + ` (
+        INSERT INTO C` + message.channelId + ` (
           messageId,
           channelId,
           userId,
