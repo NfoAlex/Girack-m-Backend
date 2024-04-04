@@ -28,7 +28,7 @@ export default async function saveMessage(
     //時間を取得
     const t = new Date();
     const tY = t.getFullYear();
-    const tM = t.getMonth().toString().padStart(2, "0");
+    const tM = (t.getMonth() + 1).toString().padStart(2, "0");
     const tD = t.getDate().toString().padStart(2, "0");
     const tHour = t.getHours().toString().padStart(2, "0");
     const tMinute = t.getMinutes().toString().padStart(2, "0");
