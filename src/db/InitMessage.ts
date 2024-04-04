@@ -6,11 +6,13 @@ db.serialize(() => {
   db.run(
   `create table if not exists 0001(
     messageId TEXT PRIMARY KEY,
+    channelId TEXT NOT NULL,
     userId TEXT NOT NULL,
+    content TEXT NOT NULL,
     reaction TEXT NOT NULL
   )`);
 
-  console.log("InitMessage :: メッセージ用DB作成完了");
+  console.log("InitMessage :: db : メッセージ用DB作成完了");
 });
 
 db.close();
