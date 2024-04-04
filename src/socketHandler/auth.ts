@@ -7,6 +7,7 @@ import IRequestSender from "../type/requestSender";
 import changePassword from "../actionHandler/auth/changePassword";
 import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
+import fetchUser from "../actionHandler/User/fetchUser";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -60,9 +61,18 @@ module.exports = (io:Server) => {
     //セッションのみでの認証
     socket.on("authSession", async (dat:{userId:string, sessionId:string}) => {
       //セッション確認
-      if (!(await checkSession(dat))) {
+      if (!(await checkSession(dat))) { //失敗
         socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:false });
-      } else {
+      } else { //成功
+        //参加チャンネル分、Socketルームへ参加させる
+        const userInfo = await fetchUser(dat.userId, null);
+          //情報が空じゃなければ参加処理
+        if (userInfo !== null) {
+          //参加ァ
+          for (let channelId of userInfo.channelJoined) {
+            socket.join(channelId);
+          }
+        }
         socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
