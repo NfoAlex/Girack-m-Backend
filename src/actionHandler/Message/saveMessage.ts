@@ -66,6 +66,7 @@ export default async function saveMessage(
         ],
         (err) => {
           if (err) {
+            console.log("saveMessage :: db : エラー->", err);
             resolve(null);
             return;
           } else {
