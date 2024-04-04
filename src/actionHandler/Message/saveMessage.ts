@@ -9,7 +9,7 @@ export default async function saveMessage(
     channelId: string,
     content: string
   }
-) {
+):Promise<IMessage|null> {
   try {
 
     //形成するメッセージデータ
@@ -69,6 +69,7 @@ export default async function saveMessage(
             resolve(null);
             return;
           } else {
+            //ここでメッセージデータを返す
             resolve(messageData);
             return;
           }
