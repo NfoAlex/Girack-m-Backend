@@ -41,7 +41,7 @@ module.exports = (io:Server) => {
           io.to(dat.message.channelId).emit("receiveMessage", messageData);
         }
       } catch(e) {
-
+        console.log("Message :: socket(sendMessage) : エラー->", e);
       }
     });
 
