@@ -1,6 +1,7 @@
 import { Socket, Server } from "socket.io";
 import IRequestSender from "../type/requestSender";
 import checkSession from "../actionHandler/auth/checkSession";
+import saveMessage from "../actionHandler/Message/saveMessage";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -29,7 +30,14 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //メッセージデータを処理
+        const messageData = 
+          await saveMessage(dat.RequestSender.userId, dat.message);
 
+        //処理に成功したのならメッセージ送信
+        if (messageData !== null) {
+          io.to(dat.message.channelId).emit("receiveMessage", messageData);
+        }
       } catch(e) {
 
       }
