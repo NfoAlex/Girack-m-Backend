@@ -38,7 +38,7 @@ module.exports = (io:Server) => {
 
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
-          io.to(dat.message.channelId).emit("receiveMessage", messageData);
+          io.to(messageData.channelId).emit("receiveMessage", messageData);
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
