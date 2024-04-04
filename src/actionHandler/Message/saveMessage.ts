@@ -41,7 +41,7 @@ export default async function saveMessage(
     messageData.time = timestampJoined;
 
     //メッセージIDを作成
-    messageData.messageId = message.channelId + "-" + randId + timestampJoined;
+    messageData.messageId = message.channelId + randId + timestampJoined;
 
     //DB処理
     return new Promise((resolve) => {
