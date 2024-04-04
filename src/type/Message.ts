@@ -9,7 +9,7 @@ export interface IMessage {
   channelId: string,
   userId: string,
   content: string,
-  time: Date,
+  time: string,
   reaction: {
     [key: string]: {
       [key: string]: number
