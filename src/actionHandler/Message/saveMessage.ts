@@ -45,37 +45,55 @@ export default async function saveMessage(
 
     //DB処理
     return new Promise((resolve) => {
-      db.run(`
-        INSERT INTO C` + message.channelId + ` (
-          messageId,
-          channelId,
-          userId,
-          time,
-          content,
-          reaction
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-        `,
-        [
-          messageData.messageId,
-          messageData.channelId,
-          messageData.userId,
-          messageData.time,
-          messageData.content,
-          "{}" //最初は当然空
-        ],
-        (err) => {
-          if (err) {
-            console.log("saveMessage :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //ここでメッセージデータを返す
-            resolve(messageData);
-            return;
+
+      db.serialize(() => {
+
+        //存在しなければそのチャンネル用のテーブルを作成する
+        db.run(
+          `create table if not exists C` + message.channelId + `(
+          messageId TEXT PRIMARY KEY,
+          channelId TEXT NOT NULL,
+          userId TEXT NOT NULL,
+          content TEXT NOT NULL,
+          time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+          reaction TEXT NOT NULL
+        )`);
+
+        //メッセージを挿入
+        db.run(`
+          INSERT INTO C` + message.channelId + ` (
+            messageId,
+            channelId,
+            userId,
+            time,
+            content,
+            reaction
+          )
+          VALUES (?, ?, ?, ?, ?, ?)
+          `,
+          [
+            messageData.messageId,
+            messageData.channelId,
+            messageData.userId,
+            messageData.time,
+            messageData.content,
+            "{}" //最初は当然空
+          ],
+          (err) => {
+            if (err) {
+              console.log("saveMessage :: db : エラー->", err);
+              resolve(null);
+              return;
+            } else {
+              //ここでメッセージデータを返す
+              resolve(messageData);
+              return;
+            }
           }
-        }
-      );
+        );
+
+      });
+
     });
 
   } catch(e) {
