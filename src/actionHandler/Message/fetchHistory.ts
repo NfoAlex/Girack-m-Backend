@@ -8,22 +8,40 @@ export default async function fetchHistory(
   positionMessageId: string
 ):Promise<IMessage[] | null> {
   try {
-  
-    //メッセージのインデックス番号を計算する
-    await calcPositionOfMessage(channelId, positionMessageId);
 
-    /*
-    const history = await new Promise ((resolve) => {
+    //履歴を読み出し始める位置
+    let position:number|null = 0;
+
+    //メッセージ位置の設定、指定がないなら0
+    if (positionMessageId !== "") {
+      //メッセージのインデックス番号を計算する
+      position = await calcPositionOfMessage(channelId, positionMessageId);
+      //結果がエラーならnullを返す
+      if (position === null) return null;
+    }
+
+    //履歴出力
+    return await new Promise ((resolve) => {
       db.all(
         `
         SELECT * FROM C` + channelId + `
-          WHERE 
-        `
+          ORDER BY time DESC
+          LIMIT 30
+          OFFSET ` + position + `
+        `,
+        (err:Error, history:IMessage[]) => {
+          if (err) {
+            console.log("fetchHistory :: db : エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            console.log("fetchHistory :: db : history->", history);
+            resolve(history);
+            return;
+          }
+        }
       );
     });
-    */
-
-    return null;
 
   } catch(e) {
 
@@ -59,7 +77,7 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
           resolve(null);
           return;
         } else {
-          console.log("fetchHistory :: db : data->", messageWithIndex);
+          console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
           resolve(messageWithIndex.RowNum);
           return;
         }
