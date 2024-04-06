@@ -69,7 +69,7 @@ module.exports = (io:Server) => {
 
       try {
         //履歴を求める
-        const history = fetchHistory(dat.channelId, dat.positionMessageId);
+        const history = await fetchHistory(dat.channelId, dat.positionMessageId);
         //データを送信
         socket.emit(
           "RESULT::fetchHistory",
