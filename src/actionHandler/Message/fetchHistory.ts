@@ -16,7 +16,7 @@ export default async function fetchHistory(
   try {
 
     //履歴を読み出し始める位置
-    let position:number = 0;
+    let positionIndex:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
     if (positionMessageId !== "") {
@@ -28,7 +28,7 @@ export default async function fetchHistory(
         return null;
       } else {
         //成功なら値を格納
-        position = positionTemp;
+        positionIndex = positionTemp;
       }
     }
 
@@ -62,7 +62,7 @@ export default async function fetchHistory(
         SELECT * FROM C` + channelId + `
           ORDER BY time DESC
           LIMIT 30
-          OFFSET ` + position + `
+          OFFSET ` + positionIndex + `
         `,
         (err:Error, history:IMessage[]) => {
           if (err) {
@@ -71,15 +71,16 @@ export default async function fetchHistory(
             return;
           } else {
             //console.log("fetchHistory :: db : history->", history);
+            
             //履歴の先頭あるいは終わりにいるかどうか用変数
             let atTop:boolean = false;
             let atEnd:boolean = false;
             //履歴の長さから取得開始位置を引いて30以内なら末端
-            if (historyLength - position < 30) {
+            if (historyLength - positionIndex < 30) {
               atEnd = true;
             }
             //位置がそもそも30以内なら履歴先頭
-            if (position < 30) {
+            if (positionIndex < 30) {
               atTop = true;
             }
 
