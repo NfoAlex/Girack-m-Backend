@@ -6,7 +6,13 @@ import { IMessage } from "../../type/Message";
 export default async function fetchHistory(
   channelId: string,
   positionMessageId: string
-):Promise<IMessage[] | null> {
+):Promise<
+  {
+    history: IMessage[],
+    atTop: boolean,
+    atEnd: boolean
+  } | null
+> {
   try {
 
     //履歴を読み出し始める位置
@@ -64,8 +70,25 @@ export default async function fetchHistory(
             resolve(null);
             return;
           } else {
-            console.log("fetchHistory :: db : history->", history);
-            resolve(history);
+            //console.log("fetchHistory :: db : history->", history);
+            //履歴の先頭あるいは終わりにいるかどうか用変数
+            let atTop:boolean = false;
+            let atEnd:boolean = false;
+            //履歴の長さから取得開始位置を引いて30以内なら末端
+            if (historyLength - position < 30) {
+              atEnd = true;
+            }
+            //位置がそもそも30以内なら履歴先頭
+            if (position < 30) {
+              atTop = true;
+            }
+
+            //最後に返す結果
+            resolve({
+              history: history,
+              atTop: atTop,
+              atEnd: atEnd
+            });
             return;
           }
         }

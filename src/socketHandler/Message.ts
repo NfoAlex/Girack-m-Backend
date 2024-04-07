@@ -3,6 +3,7 @@ import IRequestSender from "../type/requestSender";
 import checkSession from "../actionHandler/auth/checkSession";
 import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
+import { IMessage } from "../type/Message";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -69,7 +70,11 @@ module.exports = (io:Server) => {
 
       try {
         //履歴を求める
-        const history = await fetchHistory(dat.channelId, dat.positionMessageId);
+        const historyData:{
+          history: IMessage[],
+          atTop: boolean,
+          atEnd: boolean
+        }|null = await fetchHistory(dat.channelId, dat.positionMessageId);
         //データを送信
         socket.emit(
           "RESULT::fetchHistory",
@@ -77,7 +82,7 @@ module.exports = (io:Server) => {
             result: "SUCCESS",
             data: {
               channelId: dat.channelId,
-              history: history
+              historyData: historyData
             }
           }
         );
