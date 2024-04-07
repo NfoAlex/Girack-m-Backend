@@ -20,6 +20,29 @@ export default async function fetchHistory(
       if (position === null) return null;
     }
 
+    //履歴の長さを取得
+    const historyLength:number|null = await new Promise((resolve):number|null => {
+      db.all(
+        `
+        SELECT COUNT(*) FROM C` + channelId + `
+        `,
+        (err:Error, length:{"COUNT(*)":number}) => {
+          if (err) {
+            console.log("fetchHistory :: db(historyLength) : エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            resolve(length['COUNT(*)']);
+            //console.log("fetchHistory :: db(historyLength) : historyLength->", length);
+            return;
+          }
+        }
+      );
+      return null;
+    });
+    //もし長さを取得できなかったのならエラーとして停止
+    if (historyLength === null) return null;
+
     //履歴出力
     return await new Promise ((resolve) => {
       db.all(
