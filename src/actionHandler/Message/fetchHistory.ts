@@ -10,14 +10,20 @@ export default async function fetchHistory(
   try {
 
     //履歴を読み出し始める位置
-    let position:number|null = 0;
+    let position:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
     if (positionMessageId !== "") {
       //メッセージのインデックス番号を計算する
-      position = await calcPositionOfMessage(channelId, positionMessageId);
-      //結果がエラーならnullを返す
-      if (position === null) return null;
+      const positionTemp = await calcPositionOfMessage(channelId, positionMessageId);
+      //結果に応じて値設定
+      if (positionTemp === null) {
+        //nullなら処理停止
+        return null;
+      } else {
+        //成功なら値を格納
+        position = positionTemp;
+      }
     }
 
     //履歴の長さを取得
