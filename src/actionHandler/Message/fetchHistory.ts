@@ -38,13 +38,13 @@ export default async function fetchHistory(
         `
         SELECT COUNT(*) FROM C` + channelId + `
         `,
-        (err:Error, length:{"COUNT(*)":number}) => {
+        (err:Error, length:[{"COUNT(*)":number}]) => {
           if (err) {
             console.log("fetchHistory :: db(historyLength) : エラー->", err);
             resolve(null);
             return;
           } else {
-            resolve(length['COUNT(*)']);
+            resolve(length[0]['COUNT(*)']);
             //console.log("fetchHistory :: db(historyLength) : historyLength->", length);
             return;
           }
