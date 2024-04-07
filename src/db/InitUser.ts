@@ -34,6 +34,13 @@ db.serialize(() => {
     sidebar TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
+    //ユーザーのその他保存するデータ用テーブル
+  db.run(`create table if not exists USERS_SAVE(
+    userId TEXT PRIMARY KEY,
+    messageReadTime TEXT,
+    channelOrder TEXT,
+    FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
+  )`);
 });
 
 console.log("InitUser :: ユーザーDB作成完了");
