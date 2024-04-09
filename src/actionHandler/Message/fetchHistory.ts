@@ -77,11 +77,11 @@ export default async function fetchHistory(
             let atEnd:boolean = false;
             //履歴の長さから取得開始位置を引いて30以内なら末端
             if (historyLength - positionIndex < 30) {
-              atEnd = true;
+              atTop = true;
             }
             //位置がそもそも30以内なら履歴先頭
             if (positionIndex < 30) {
-              atTop = true;
+              atEnd = true;
             }
 
             //最後に返す結果
