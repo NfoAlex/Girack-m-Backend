@@ -60,15 +60,15 @@ export default async function fetchHistory(
     if (historyLength === null) return null;
 
     //履歴取得方向がolderなら取得開始位置を30上にする(時系列的に古く)
-    if (fetchingPosition.fetchDirection === "older") {
+    if (fetchingPosition.fetchDirection === "newer") {
       //そもそも30ないなら0にする
-      if (positionIndex + 30 > historyLength) {
-        positionIndex = historyLength;
+      if (positionIndex - 30 < 0) {
+        positionIndex = 0;
       } else {
-        positionIndex = positionIndex + 30;
+        positionIndex = positionIndex - 30;
       }
     }
-    
+
     //履歴出力
     return await new Promise ((resolve) => {
       db.all(
