@@ -144,7 +144,7 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
           return;
         } else {
           console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
-          resolve(messageWithIndex.RowNum);
+          resolve(messageWithIndex[0].RowNum);
           return;
         }
       }
