@@ -52,7 +52,10 @@ module.exports = (io:Server) => {
       dat:{
         RequestSender: IRequestSender,
         channelId: string,
-        positionMessageId: string
+        fetchingPosition: {
+          positionMessageId: string
+          fetchDirection: "older"|"newer"
+        }
       }
     ) => {
       /*
@@ -74,7 +77,7 @@ module.exports = (io:Server) => {
           history: IMessage[],
           atTop: boolean,
           atEnd: boolean
-        }|null = await fetchHistory(dat.channelId, dat.positionMessageId);
+        }|null = await fetchHistory(dat.channelId, dat.fetchingPosition);
         //データを送信
         socket.emit(
           "RESULT::fetchHistory",

@@ -5,7 +5,10 @@ import { IMessage } from "../../type/Message";
 
 export default async function fetchHistory(
   channelId: string,
-  positionMessageId: string
+  fetchingPosition: {
+    positionMessageId: string
+    fetchDirection: "older"|"newer"
+  }
 ):Promise<
   {
     history: IMessage[],
@@ -19,9 +22,9 @@ export default async function fetchHistory(
     let positionIndex:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
-    if (positionMessageId !== "") {
+    if (fetchingPosition.positionMessageId !== "") {
       //メッセージのインデックス番号を計算する
-      const positionTemp = await calcPositionOfMessage(channelId, positionMessageId);
+      const positionTemp = await calcPositionOfMessage(channelId, fetchingPosition.positionMessageId);
       //結果に応じて値設定
       if (positionTemp === null) {
         //nullなら処理停止
