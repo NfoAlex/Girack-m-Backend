@@ -127,7 +127,7 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
       WITH NumberedRows AS (
         SELECT
           *,
-          ROW_NUMBER() OVER (ORDER BY time) AS RowNum
+          ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
         FROM
           C` + channelId + `
       )
