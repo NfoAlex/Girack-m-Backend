@@ -53,7 +53,7 @@ module.exports = (io:Server) => {
         RequestSender: IRequestSender,
         channelId: string,
         fetchingPosition: {
-          positionMessageId: string
+          positionMessageId: string,
           fetchDirection: "older"|"newer"
         }
       }

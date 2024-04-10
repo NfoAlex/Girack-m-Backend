@@ -58,6 +58,16 @@ export default async function fetchHistory(
     //もし長さを取得できなかったのならエラーとして停止
     if (historyLength === null) return null;
 
+    //履歴取得方向がolder以外なら取得開始位置を30下にする(時系列的に古く)
+    if (fetchingPosition.fetchDirection === "older") {
+      //そもそも30ないなら0にする
+      if (positionIndex < 30) {
+        positionIndex = 0;
+      } else {
+        positionIndex -= 30;
+      }
+    }
+
     //履歴出力
     return await new Promise ((resolve) => {
       db.all(
