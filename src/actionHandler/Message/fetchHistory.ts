@@ -65,7 +65,7 @@ export default async function fetchHistory(
       if (positionIndex - 30 < 0) {
         positionIndex = 0;
       } else {
-        positionIndex = positionIndex - 30;
+        positionIndex = positionIndex - 31;
       }
     }
 
