@@ -182,6 +182,7 @@ module.exports = (io:Server) => {
 
         //結果を送信
         if (joinChannelResult) {
+          socket.join(dat.channelId); //チャンネル用ルームへ参加させる
           socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:joinChannelResult });
         } else {
           socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:joinChannelResult });
@@ -212,6 +213,7 @@ module.exports = (io:Server) => {
 
         //結果を送信
         if (leaveChannelResult) {
+          socket.leave(dat.channelId); //チャンネル用ルームから退出
           socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:dat.channelId });
         } else {
           socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });

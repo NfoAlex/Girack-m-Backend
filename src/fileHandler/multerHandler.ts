@@ -22,8 +22,6 @@ const upload = multer({
 
 module.exports = (app:any) => {
 
-  console.log("multerHandlers :: ファイル");
-
   //プロフィール写真
   app.post("/uploadProfileIcon", upload.single("file"), (req:any, res:any) => {
     try {

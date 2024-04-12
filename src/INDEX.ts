@@ -17,6 +17,7 @@ try{fs.mkdirSync("./STORAGE/ICON/");}catch(e){}
 import "./db/InitUser";
 import "./db/InitServer";
 import "./db/InitRole";
+import "./db/InitMessage";
 
 const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
@@ -33,6 +34,7 @@ require("./socketHandler/User.ts")(io);
 require("./socketHandler/Channel.ts")(io);
 require("./socketHandler/auth.ts")(io);
 require("./socketHandler/Role.ts")(io);
+require("./socketHandler/Message")(io);
 
 //共通ハンドラ
 io.on("connection", (socket:Socket) => {

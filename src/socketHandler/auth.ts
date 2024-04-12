@@ -7,6 +7,7 @@ import IRequestSender from "../type/requestSender";
 import changePassword from "../actionHandler/auth/changePassword";
 import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
+import fetchUser from "../actionHandler/User/fetchUser";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -31,7 +32,13 @@ module.exports = (io:Server) => {
         console.log("auth :: authLogin : authResult->", authData);
 
         //結果に応じて結果送信
-        if (authData.authResult) {
+        if (authData.authResult && authData !== null && authData.UserInfo !== null) {
+          //参加したチャンネル全部分のSocketルーム参加
+          if (authData.UserInfo.channelJoined !== undefined) {
+            for (let channelId of authData.UserInfo.channelJoined) {
+              socket.join(channelId);
+            }
+          }
           //成功
           socket.emit("RESULT::authLogin", {
             result:"SUCCESS",
@@ -54,9 +61,18 @@ module.exports = (io:Server) => {
     //セッションのみでの認証
     socket.on("authSession", async (dat:{userId:string, sessionId:string}) => {
       //セッション確認
-      if (!(await checkSession(dat))) {
+      if (!(await checkSession(dat))) { //失敗
         socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:false });
-      } else {
+      } else { //成功
+        //参加チャンネル分、Socketルームへ参加させる
+        const userInfo = await fetchUser(dat.userId, null);
+          //情報が空じゃなければ参加処理
+        if (userInfo !== null) {
+          //参加ァ
+          for (let channelId of userInfo.channelJoined) {
+            socket.join(channelId);
+          }
+        }
         socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
