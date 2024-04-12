@@ -66,7 +66,7 @@ export default async function fetchHistory(
       //そもそも30ないなら0にする
       if (positionIndex - 30 < 0) {
         //履歴の取り込み数を開始位置にしてその分だけしかとらないようにする
-        historyLimit = 30 - positionIndex;
+        historyLimit = positionIndex - 1;
         //履歴を取り始める位置を最初からにするため0に
         positionIndex = 0;
       } else {
