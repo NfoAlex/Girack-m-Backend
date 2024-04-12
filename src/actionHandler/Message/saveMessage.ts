@@ -65,17 +65,15 @@ export default async function saveMessage(
             messageId,
             channelId,
             userId,
-            time,
             content,
             reaction
           )
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?)
           `,
           [
             messageData.messageId,
             messageData.channelId,
             messageData.userId,
-            messageData.time,
             messageData.content,
             "{}" //最初は当然空
           ],

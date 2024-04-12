@@ -18,6 +18,8 @@ export default async function fetchHistory(
 > {
   try {
 
+    //履歴の取り込み数
+    let historyLimit:number = 30;
     //履歴を読み出し始める位置
     let positionIndex:number = 0;
 
@@ -63,6 +65,9 @@ export default async function fetchHistory(
     if (fetchingPosition.fetchDirection === "newer") {
       //そもそも30ないなら0にする
       if (positionIndex - 30 < 0) {
+        //履歴の取り込み数を開始位置にしてその分だけしかとらないようにする
+        historyLimit = 30 - positionIndex;
+        //履歴を取り始める位置を最初からにするため0に
         positionIndex = 0;
       } else {
         positionIndex = positionIndex - 31;
@@ -75,7 +80,7 @@ export default async function fetchHistory(
         `
         SELECT * FROM C` + channelId + `
           ORDER BY time DESC
-          LIMIT 30
+          LIMIT ` + historyLimit + `
           OFFSET ` + positionIndex + `
         `,
         (err:Error, history:IMessage[]) => {
