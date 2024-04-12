@@ -38,7 +38,7 @@ export default async function saveMessage(
     const timestampJoined = tY + tM + tD + tHour + tMinute + tSecond +tMilisecond;
     
     //時間情報を格納
-    messageData.time = timestampJoined;
+    messageData.time = new Date().toUTCString();
 
     //メッセージIDを作成
     messageData.messageId = message.channelId + randId + timestampJoined;
@@ -65,15 +65,17 @@ export default async function saveMessage(
             messageId,
             channelId,
             userId,
+            time,
             content,
             reaction
           )
-          VALUES (?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?)
           `,
           [
             messageData.messageId,
             messageData.channelId,
             messageData.userId,
+            messageData.time,
             messageData.content,
             "{}" //最初は当然空
           ],
