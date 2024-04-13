@@ -1,7 +1,9 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
+import IRequestSender from "../type/requestSender";
 
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
@@ -23,13 +25,16 @@ const upload = multer({
 module.exports = (app:any) => {
 
   //プロフィール写真
-  app.post("/uploadProfileIcon", upload.single("file"), (req:any, res:any) => {
+  app.post("/uploadProfileIcon", upload.single("file"), async (req:any, res:any) => {
     try {
-      // ファイルの情報は req.file に格納される
-      console.log("multerHandler :: /uploadProfileIcon : req.file->", req.file);
-  
       // 補足データ（metadata）を取得し、JSONとしてパース
-      const metadata = JSON.parse(req.body.metadata);
+      const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
+
+      //セッションの認証
+      if (!(await checkSession(RequestSender))) {
+        res.status(401).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> ERROR_SESSION_ERROR");
+        return;
+      }
 
       //拡張子取得、確認
       const extension = path.extname(req.file.originalname);
@@ -42,24 +47,24 @@ module.exports = (app:any) => {
       //移動先のディレクトリを作成
       const newDir = path.join("STORAGE/ICON");
       //ファイル名を"ユーザーID+拡張子へ設定"
-      const newPath = path.join(newDir, metadata.userId + extension);
+      const newPath = path.join(newDir, RequestSender.userId + extension);
 
       //もともとあるアイコンファイルを削除する
-      if (fs.existsSync(newDir + "/" + metadata.userId + ".jpg")) {
-        fs.unlinkSync(newDir + "/" + metadata.userId + ".jpg");
+      if (fs.existsSync(newDir + "/" + RequestSender.userId + ".jpg")) {
+        fs.unlinkSync(newDir + "/" + RequestSender.userId + ".jpg");
       }
-      if (fs.existsSync(newDir + "/" + metadata.userId + ".gif")) {
-        fs.unlinkSync(newDir + "/" + metadata.userId + ".gif");
+      if (fs.existsSync(newDir + "/" + RequestSender.userId + ".gif")) {
+        fs.unlinkSync(newDir + "/" + RequestSender.userId + ".gif");
       }
-      if (fs.existsSync(newDir + "/" + metadata.userId + ".png")) {
-        fs.unlinkSync(newDir + "/" + metadata.userId + ".png");
+      if (fs.existsSync(newDir + "/" + RequestSender.userId + ".png")) {
+        fs.unlinkSync(newDir + "/" + RequestSender.userId + ".png");
       }
 
       //ファイルを移動
       fs.renameSync(req.file.path, newPath);
   
       // metadata の内容を表示
-      console.log("multerHandler :: /uploadProfileIcon : req.metadata->", metadata);
+      //console.log("multerHandler :: /uploadProfileIcon : req.metadata->", RequestSender);
   
       //結果送信
       res.status(200).send("/uploadProfileIcon :: アップロード成功");
