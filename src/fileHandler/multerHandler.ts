@@ -1,6 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
 
 // multer の設定（ディスクストレージを使用）
@@ -23,10 +24,16 @@ const upload = multer({
 module.exports = (app:any) => {
 
   //プロフィール写真
-  app.post("/uploadProfileIcon", upload.single("file"), (req:any, res:any) => {
+  app.post("/uploadProfileIcon", upload.single("file"), async (req:any, res:any) => {
     try {
       // ファイルの情報は req.file に格納される
       console.log("multerHandler :: /uploadProfileIcon : req.file->", req.file);
+
+      //セッションの認証
+      if (!(await checkSession(req.metadata))) {
+        res.status(401).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> ERROR_SESSION_ERROR");
+        return;
+      }
   
       // 補足データ（metadata）を取得し、JSONとしてパース
       const metadata = JSON.parse(req.body.metadata);
