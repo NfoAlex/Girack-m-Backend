@@ -129,7 +129,7 @@ module.exports = (io:Server) => {
           //メッセージが取得できたら成功と送信
           if (messageNow !== null) {
             //更新させる
-            io.to(dat.channelId).emit("updateMessage", { result:"SUCCESS", data:true});
+            io.to(dat.channelId).emit("updateMessage", { result:"SUCCESS", data:messageNow});
             //リアクションしたユーザーへの結果送信
             socket.emit("RESULT::reactMessage", { result:"SUCCESS", data:true});
           } else { //取得がnullならエラーとして送信
