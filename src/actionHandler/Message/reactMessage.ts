@@ -38,12 +38,12 @@ export default async function reactMessage(
         `
         UPDATE C` + channelId + ` SET
           reaction=?
-        WHERE messageId='` + message + `'
+        WHERE messageId='` + messageId + `'
         `,
-        message.reaction,
+        JSON.stringify(message.reaction),
         (err:Error) => {
           if (err) {
-            console.log("reactMessage :: エラー->", err);
+            console.log("reactMessage :: db : エラー->", err);
             resolve(false);
             return;
           } else {
