@@ -122,16 +122,17 @@ module.exports = (io:Server) => {
           dat.RequestSender.userId
         );
 
+        //リアクション結果に応じて処理
         if (reactResult) {
           //処理した後のメッセージ取得
           const messageNow = await fetchMessage(dat.channelId, dat.messageId);
-
+          //メッセージが取得できたら成功と送信
           if (messageNow !== null) {
             //更新させる
             io.to(dat.channelId).emit("updateMessage", { result:"SUCCESS", data:true});
             //リアクションしたユーザーへの結果送信
             socket.emit("RESULT::reactMessage", { result:"SUCCESS", data:true});
-          } else {
+          } else { //取得がnullならエラーとして送信
             socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
           }
         } else {
