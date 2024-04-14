@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 
-import { IMessage } from "../../type/Message";
+import { IMessage, IMessageBeforeParsing } from "../../type/Message";
 
 export default async function fetchHistory(
   channelId: string,
@@ -83,7 +83,7 @@ export default async function fetchHistory(
           LIMIT ` + historyLimit + `
           OFFSET ` + positionIndex + `
         `,
-        (err:Error, history:IMessage[]) => {
+        (err:Error, history:IMessageBeforeParsing[]) => {
           if (err) {
             console.log("fetchHistory :: db : エラー->", err);
             resolve(null);
@@ -103,9 +103,19 @@ export default async function fetchHistory(
               atEnd = true;
             }
 
+            //JSONでメッセージパースした用の配列
+            let historyParsed:IMessage[] = [];
+            //パース処理
+            for (let index in history) {
+              historyParsed.push({
+                ...history[index],
+                reaction: JSON.parse(history[index].reaction)
+              });
+            }
+
             //最後に返す結果
             resolve({
-              history: history,
+              history: historyParsed,
               atTop: atTop,
               atEnd: atEnd
             });

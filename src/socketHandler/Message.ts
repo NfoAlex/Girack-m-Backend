@@ -3,7 +3,10 @@ import IRequestSender from "../type/requestSender";
 import checkSession from "../actionHandler/auth/checkSession";
 import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
-import { IMessage } from "../type/Message";
+import reactMessage from "../actionHandler/Message/reactMessage";
+import fetchMessage from "../actionHandler/Message/fetchMessage";
+
+import type { IMessage } from "../type/Message";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -92,6 +95,52 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Message :: socket(fetchHistory) : エラー->", e);
         socket.emit("RESULT::fetchHistory", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //リアクション追加処理
+    socket.on("reactMessage", async (
+      dat: {
+        RequestSender: IRequestSender,
+        channelId: string,
+        messageId: string,
+        reactionName: string
+      }
+    ) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::reactMessage", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //リアクション追加処理、結果受け取り
+        const reactResult:boolean = await reactMessage(
+          dat.channelId,
+          dat.messageId,
+          dat.reactionName,
+          dat.RequestSender.userId
+        );
+
+        //リアクション結果に応じて処理
+        if (reactResult) {
+          //処理した後のメッセージ取得
+          const messageNow = await fetchMessage(dat.channelId, dat.messageId);
+          //メッセージが取得できたら成功と送信
+          if (messageNow !== null) {
+            //更新させる
+            io.to(dat.channelId).emit("updateMessage", { result:"SUCCESS", data:messageNow});
+            //リアクションしたユーザーへの結果送信
+            socket.emit("RESULT::reactMessage", { result:"SUCCESS", data:true});
+          } else { //取得がnullならエラーとして送信
+            socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
+          }
+        } else {
+          socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
+        }
+      } catch(e) {
+        console.log("Message :: socket(reactMessage) : エラー->", e);
+        socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
       }
     });
 
