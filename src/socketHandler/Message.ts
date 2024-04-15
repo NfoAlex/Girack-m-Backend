@@ -198,9 +198,12 @@ module.exports = (io:Server) => {
         //nullじゃないならデータを送信
         if (getMessageReadIdResult !== null) {
           socket.emit("RESULT::getMessageReadId", { result:"SUCCESS", data:getMessageReadIdResult });
+        } else {
+          socket.emit("RESULT::getMessageReadId", { result:"ERROR_DB_THING", data:null });
         }
       } catch(e) {
         socket.emit("RESULT::getMessageReadId", { result:"ERROR_DB_THING", data:null });
+        console.log("Message :: socket(getMessageReadId) : エラー->", e);
       }
     });
 
