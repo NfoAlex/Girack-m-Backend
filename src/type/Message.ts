@@ -22,7 +22,7 @@ export interface IMessage {
   }
 }
 
-//最終既読メッセージのID
+//最終既読メッセージの時間
 export interface IMessageReadTime {
   [key: string]: string
 }
