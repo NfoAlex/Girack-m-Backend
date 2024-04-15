@@ -22,7 +22,7 @@ export default async function setMessageReadId(
       db.run(
         `
         UPDATE USERS_SAVES SET
-          messageReadTime=?
+          messageReadId=?
         WHERE userId='` + userId + `'
         `,
         JSON.stringify(messageReadId),
