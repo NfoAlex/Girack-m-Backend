@@ -13,7 +13,7 @@ export default async function getMessageReadId(userId:string)
         SELECT messageReadId FROM USERS_SAVES
           WHERE userId='` + userId + `'
         `,
-        (err:Error, messageReadIdBeforeParsed:string) => {
+        (err:Error, messageReadIdBeforeParsed:[{messageReadId:any}]) => {
           if (err) {
             console.log("getMessageReadId :: db : エラー->", err);
             resolve(null);
@@ -22,7 +22,9 @@ export default async function getMessageReadId(userId:string)
             console.log("getMessageReadId :: db : data->", messageReadIdBeforeParsed);
             //パースして返す
             const messageReadId:IMessageReadId =
-              JSON.parse(messageReadIdBeforeParsed[0]);
+              JSON.parse(
+                messageReadIdBeforeParsed[0]['messageReadId']
+              );
 
             resolve(messageReadId);
             return;
