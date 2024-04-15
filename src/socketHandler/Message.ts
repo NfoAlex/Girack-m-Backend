@@ -7,6 +7,7 @@ import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
 
 import type { IMessage } from "../type/Message";
+import setMessageReadTime from "../actionHandler/Message/setMessageReadTime";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -141,6 +142,39 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Message :: socket(reactMessage) : エラー->", e);
         socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
+      }
+    });
+
+    //メッセージの最終既読時間を保存する
+    socket.on("setMessageReadTime", async (
+      dat: {
+        RequestSender: IRequestSender,
+        channelId: string,
+        time: string
+    }) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::setMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //既読時間書き込み
+        const setMessageReadTimeResult:boolean = await setMessageReadTime(
+          dat.RequestSender.userId,
+          dat.channelId,
+          dat.time
+        );
+
+        //結果に応じてboolを送信
+        if (setMessageReadTimeResult) {
+          socket.emit("RESULT::setMessageReadTime", { result:"SUCCESS", data:true});
+        } else {
+          socket.emit("RESULT::setMessageReadTime", { result:"ERROR_DB_THING", data:false});
+        }
+      } catch(e) {
+        console.log("Message :: socket(setMessageReadTime) : エラー->", e);
+        socket.emit("RESULT::setMessageReadTime", { result:"ERROR_DB_thing", data:null });
       }
     });
 
