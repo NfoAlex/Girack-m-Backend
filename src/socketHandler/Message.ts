@@ -5,9 +5,9 @@ import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
 import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
+import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
 
 import type { IMessage } from "../type/Message";
-import setMessageReadTime from "../actionHandler/Message/setMessageReadTime";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -145,36 +145,36 @@ module.exports = (io:Server) => {
       }
     });
 
-    //メッセージの最終既読時間を保存する
-    socket.on("setMessageReadTime", async (
+    //メッセージの最終既読メッセIDを保存する
+    socket.on("setMessageReadId", async (
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
-        time: string
+        messageId: string
     }) => {
       //セッション認証
       if (!(await checkSession(dat.RequestSender))) {
-        socket.emit("RESULT::setMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
+        socket.emit("RESULT::setMessageReadId", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
-        //既読時間書き込み
-        const setMessageReadTimeResult:boolean = await setMessageReadTime(
+        //最新既読Id書き込み
+        const setMessageReadIdResult:boolean = await setMessageReadTime(
           dat.RequestSender.userId,
           dat.channelId,
-          dat.time
+          dat.messageId
         );
 
         //結果に応じてboolを送信
-        if (setMessageReadTimeResult) {
-          socket.emit("RESULT::setMessageReadTime", { result:"SUCCESS", data:true});
+        if (setMessageReadIdResult) {
+          socket.emit("RESULT::setMessageReadId", { result:"SUCCESS", data:true});
         } else {
-          socket.emit("RESULT::setMessageReadTime", { result:"ERROR_DB_THING", data:false});
+          socket.emit("RESULT::setMessageReadId", { result:"ERROR_DB_THING", data:false});
         }
       } catch(e) {
-        console.log("Message :: socket(setMessageReadTime) : エラー->", e);
-        socket.emit("RESULT::setMessageReadTime", { result:"ERROR_DB_thing", data:null });
+        console.log("Message :: socket(setMessageReadId) : エラー->", e);
+        socket.emit("RESULT::setMessageReadId", { result:"ERROR_DB_thing", data:null });
       }
     });
 
