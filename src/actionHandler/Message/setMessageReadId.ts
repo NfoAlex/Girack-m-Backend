@@ -54,7 +54,7 @@ async function getMessageReadId(userId:string)
   return new Promise((resolve) => {
     db.all(
       `
-      SELECT messageReadTime FROM USERS_SAVES
+      SELECT messageReadId FROM USERS_SAVES
         WHERE userId='` + userId + `'
       `,
       (err:Error, messageReadIdBeforeParsed:string) => {
