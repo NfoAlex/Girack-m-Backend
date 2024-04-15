@@ -79,6 +79,11 @@ export default async function authRegister(username:string, inviteCode:string|nu
       JSON.stringify(defaultConfigData.sidebar),
     );
 
+    //デフォルトのユーザーデータ用テーブルのデータを作成
+    db.run("INSERT INTO USERS_SAVES (userId) values (?)",
+      userIdGen
+    );
+
     //console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
 
     return {
