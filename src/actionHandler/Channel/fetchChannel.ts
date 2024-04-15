@@ -11,7 +11,7 @@ export default async function fetchChannel(channelId:string)
         console.log("fetchChannel :: db : エラー->", err);
         resolve(null);
       } else {
-        console.log("fetchChannel :: db : 取得結果->", datChannels);
+        //console.log("fetchChannel :: db : 取得結果->", datChannels);
         //チャンネルデータが無ければnull、あれば整形して返す
         if (datChannels.length === 0) {
           resolve(null);
