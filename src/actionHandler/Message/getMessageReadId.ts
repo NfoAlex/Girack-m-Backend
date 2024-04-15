@@ -19,11 +19,12 @@ export default async function getMessageReadId(userId:string)
             resolve(null);
             return;
           } else {
+            console.log("getMessageReadId :: db : data->", messageReadIdBeforeParsed);
             //パースして返す
-            const messageReadTime:IMessageReadId =
-              JSON.parse(messageReadIdBeforeParsed);
+            const messageReadId:IMessageReadId =
+              JSON.parse(messageReadIdBeforeParsed[0]);
 
-            resolve(messageReadTime);
+            resolve(messageReadId);
             return;
           }
         }
