@@ -2,6 +2,8 @@ import sqlite3 from "sqlite3";
 import type { IMessageReadId } from "../../type/Message";
 const db = new sqlite3.Database("./records/USER.db");
 
+import getMessageReadId from "./getMessageReadId";
+
 export default async function setMessageReadId(
   userId: string,
   channelId: string,
@@ -46,30 +48,4 @@ export default async function setMessageReadId(
     return false;
 
   }
-}
-
-//メッセージの最終既読IdをJSONで取得
-async function getMessageReadId(userId:string)
-:Promise<IMessageReadId|null> {
-  return new Promise((resolve) => {
-    db.all(
-      `
-      SELECT messageReadId FROM USERS_SAVES
-        WHERE userId='` + userId + `'
-      `,
-      (err:Error, messageReadIdBeforeParsed:string) => {
-        if (err) {
-          resolve(null);
-          return;
-        } else {
-          //パースして返す
-          const messageReadTime:IMessageReadId =
-            JSON.parse(messageReadIdBeforeParsed);
-
-          resolve(messageReadTime);
-          return;
-        }
-      }
-    );
-  });
 }
