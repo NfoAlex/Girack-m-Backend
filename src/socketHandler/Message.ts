@@ -1,12 +1,14 @@
 import { Socket, Server } from "socket.io";
-import IRequestSender from "../type/requestSender";
 import checkSession from "../actionHandler/auth/checkSession";
 import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
 import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
+import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
+import getMessageReadId from "../actionHandler/Message/getMessageReadId";
 
-import type { IMessage } from "../type/Message";
+import IRequestSender from "../type/requestSender";
+import type { IMessage, IMessageReadId } from "../type/Message";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -141,6 +143,67 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Message :: socket(reactMessage) : エラー->", e);
         socket.emit("RESULT::reactMessage", { result:"ERROR_DB_THING", data:false});
+      }
+    });
+
+    //メッセージの最終既読メッセIDを保存する
+    socket.on("setMessageReadId", async (
+      dat: {
+        RequestSender: IRequestSender,
+        channelId: string,
+        messageId: string
+    }) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::setMessageReadId", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //最新既読Id書き込み
+        const setMessageReadIdResult:boolean = await setMessageReadTime(
+          dat.RequestSender.userId,
+          dat.channelId,
+          dat.messageId
+        );
+
+        //結果に応じてboolを送信
+        if (setMessageReadIdResult) {
+          socket.emit("RESULT::setMessageReadId", { result:"SUCCESS", data:true});
+        } else {
+          socket.emit("RESULT::setMessageReadId", { result:"ERROR_DB_THING", data:false});
+        }
+      } catch(e) {
+        console.log("Message :: socket(setMessageReadId) : エラー->", e);
+        socket.emit("RESULT::setMessageReadId", { result:"ERROR_DB_thing", data:null });
+      }
+    });
+
+    //チャンネルの既読状態を取得
+    socket.on("getMessageReadId", async (
+      dat: {
+        RequestSender: IRequestSender
+      }
+    ) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::getMessageReadId", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //既読状態取得
+        const getMessageReadIdResult:IMessageReadId|null = await getMessageReadId(dat.RequestSender.userId);
+
+        //nullじゃないならデータを送信
+        if (getMessageReadIdResult !== null) {
+          socket.emit("RESULT::getMessageReadId", { result:"SUCCESS", data:getMessageReadIdResult });
+        } else {
+          socket.emit("RESULT::getMessageReadId", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        socket.emit("RESULT::getMessageReadId", { result:"ERROR_DB_THING", data:null });
+        console.log("Message :: socket(getMessageReadId) : エラー->", e);
       }
     });
 

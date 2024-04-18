@@ -61,12 +61,13 @@ export default async function fetchHistory(
     //もし長さを取得できなかったのならエラーとして停止
     if (historyLength === null) return null;
 
-    //履歴取得方向がolderなら取得開始位置を30上にする(時系列的に古く)
+    //履歴取得方向がnewerなら取得開始位置を30上にする(時系列的に古く)
     if (fetchingPosition.fetchDirection === "newer") {
       //そもそも30ないなら0にする
       if (positionIndex - 30 < 0) {
         //履歴の取り込み数を開始位置にしてその分だけしかとらないようにする
         historyLimit = positionIndex - 1;
+        if (historyLimit < 0) historyLimit = 0; //あと0未満なら0
         //履歴を取り始める位置を最初からにするため0に
         positionIndex = 0;
       } else {

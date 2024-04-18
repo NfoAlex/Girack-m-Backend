@@ -35,10 +35,10 @@ db.serialize(() => {
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
     //ユーザーのその他保存するデータ用テーブル
-  db.run(`create table if not exists USERS_SAVE(
+  db.run(`create table if not exists USERS_SAVES(
     userId TEXT PRIMARY KEY,
-    messageReadTime TEXT,
-    channelOrder TEXT,
+    messageReadId TEXT DEFAULT '{}',
+    channelOrder TEXT DEFAULT '{}',
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });

@@ -1,3 +1,4 @@
+//SQLiteからのメッセージの生データ
 export interface IMessageBeforeParsing {
   messageId: string,
   channelId: string,
@@ -7,6 +8,7 @@ export interface IMessageBeforeParsing {
   reaction: string
 }
 
+//メッセージ用interface
 export interface IMessage {
   messageId: string,
   channelId: string,
@@ -18,4 +20,9 @@ export interface IMessage {
       [key: string]: number
     }
   }
+}
+
+//最終既読メッセージのId
+export interface IMessageReadId {
+  [key: string]: string
 }
