@@ -149,33 +149,47 @@ export default async function fetchHistory(
 async function calcPositionOfMessage(channelId:string, messageId:string)
 :Promise<number|null> {
   return await new Promise((resolve) => {
-    db.all(
-      `
-      WITH NumberedRows AS (
+    try {
+
+      db.all(
+        `
+        WITH NumberedRows AS (
+          SELECT
+            *,
+            ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
+          FROM
+            C` + channelId + `
+        )
         SELECT
-          *,
-          ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
+          *
         FROM
-          C` + channelId + `
-      )
-      SELECT
-        *
-      FROM
-        NumberedRows
-      WHERE
-        messageId = '` + messageId + `';
-      `,
-      (err:Error, messageWithIndex:any) => {
-        if (err) {
-          console.log("fetchHistory :: db : エラー->", err);
-          resolve(null);
-          return;
-        } else {
-          console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
-          resolve(messageWithIndex[0].RowNum);
-          return;
+          NumberedRows
+        WHERE
+          messageId = '` + messageId + `';
+        `,
+        (err:Error, messageWithIndex:any) => {
+          if (err) {
+            console.log("fetchHistory :: db : エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
+            //もし長さが0じゃないならそれを返す
+            if (messageWithIndex.length === 0) {
+              resolve(null);
+            } else {
+              resolve(messageWithIndex[0].RowNum);
+            }
+            return;
+          }
         }
-      }
-    );
+      );
+
+    } catch(e) {
+
+      resolve(null);
+      return;
+
+    }
   });
 }
