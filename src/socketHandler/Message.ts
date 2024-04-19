@@ -54,12 +54,13 @@ module.exports = (io:Server) => {
 
     //履歴の取得
     socket.on("fetchHistory", async (
-      dat:{
+      dat: {
         RequestSender: IRequestSender,
         channelId: string,
         fetchingPosition: {
           positionMessageId: string,
-          fetchDirection: "older"|"newer"
+          includeThisPosition: boolean,
+          fetchDirection: "older"|"newer",
         }
       }
     ) => {

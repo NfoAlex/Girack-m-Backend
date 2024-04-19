@@ -7,6 +7,7 @@ export default async function fetchHistory(
   channelId: string,
   fetchingPosition: {
     positionMessageId: string
+    includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
   }
 ):Promise<
@@ -35,6 +36,16 @@ export default async function fetchHistory(
       } else {
         //成功なら値を格納
         positionIndex = positionTemp;
+      }
+
+      //もし取得はじめの位置も履歴に含めるならpositionIndexをずらす
+      if (fetchingPosition.includeThisPosition) {
+        if (fetchingPosition.fetchDirection === "newer") {
+          positionIndex += 1;
+        } else {
+          positionIndex =
+            positionIndex-1 < 0 ? 0 : positionIndex-1;
+        }
       }
     }
 
