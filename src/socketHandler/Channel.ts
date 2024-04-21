@@ -166,7 +166,7 @@ module.exports = (io:Server) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
-        data: boolean|null
+        data: string|null
       }
       */
 
@@ -183,9 +183,9 @@ module.exports = (io:Server) => {
         //結果を送信
         if (joinChannelResult) {
           socket.join(dat.channelId); //チャンネル用ルームへ参加させる
-          socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:joinChannelResult });
+          socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:dat.channelId });
         } else {
-          socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:joinChannelResult });
+          socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
       } catch(e) {
         socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:null });
