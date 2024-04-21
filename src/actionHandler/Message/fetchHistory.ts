@@ -124,8 +124,7 @@ export default async function fetchHistory(
                   &&
                 positionIndex === 0
               ) {
-                  atEnd = true;
-                }
+                atEnd = true;
               }
             }
             ////  ↑atEnd計算ここまで  ////
