@@ -7,6 +7,7 @@ export default async function fetchHistory(
   channelId: string,
   fetchingPosition: {
     positionMessageId: string
+    includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
   }
 ):Promise<
@@ -35,6 +36,16 @@ export default async function fetchHistory(
       } else {
         //成功なら値を格納
         positionIndex = positionTemp;
+      }
+
+      //もし取得はじめの位置も履歴に含めるならpositionIndexをずらす
+      if (fetchingPosition.includeThisPosition) {
+        if (fetchingPosition.fetchDirection === "newer") {
+          positionIndex += 1;
+        } else {
+          positionIndex =
+            positionIndex-1 < 0 ? 0 : positionIndex-1;
+        }
       }
     }
 
@@ -99,10 +110,26 @@ export default async function fetchHistory(
             if (historyLength - positionIndex < 30) {
               atTop = true;
             }
-            //位置がそもそも30以内なら履歴先頭
-            if (positionIndex < 30) {
-              atEnd = true;
+            ////  ↓atEnd計算  ////
+            //新しい方に履歴を取得している場合
+            if (fetchingPosition.fetchDirection === "newer") {
+              //取得開始位置が0なら最新
+              if (positionIndex === 0) {
+                atEnd = true;
+              }
+            } else { //古い方を取っている場合
+              //もし取得位置も含めてメッセージをとっていて0なら最新
+              if (
+                fetchingPosition.includeThisPosition
+                  &&
+                positionIndex === 0
+              ) {
+                atEnd = true;
+              }
             }
+            ////  ↑atEnd計算ここまで  ////
+
+            //console.log("fetchHistory :: db : atTop?->", historyLength - positionIndex);
 
             //JSONでメッセージパースした用の配列
             let historyParsed:IMessage[] = [];
@@ -138,33 +165,47 @@ export default async function fetchHistory(
 async function calcPositionOfMessage(channelId:string, messageId:string)
 :Promise<number|null> {
   return await new Promise((resolve) => {
-    db.all(
-      `
-      WITH NumberedRows AS (
+    try {
+
+      db.all(
+        `
+        WITH NumberedRows AS (
+          SELECT
+            *,
+            ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
+          FROM
+            C` + channelId + `
+        )
         SELECT
-          *,
-          ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
+          *
         FROM
-          C` + channelId + `
-      )
-      SELECT
-        *
-      FROM
-        NumberedRows
-      WHERE
-        messageId = '` + messageId + `';
-      `,
-      (err:Error, messageWithIndex:any) => {
-        if (err) {
-          console.log("fetchHistory :: db : エラー->", err);
-          resolve(null);
-          return;
-        } else {
-          console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
-          resolve(messageWithIndex[0].RowNum);
-          return;
+          NumberedRows
+        WHERE
+          messageId = '` + messageId + `';
+        `,
+        (err:Error, messageWithIndex:any) => {
+          if (err) {
+            console.log("fetchHistory :: db : エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
+            //もし長さが0じゃないならそれを返す
+            if (messageWithIndex.length === 0) {
+              resolve(null);
+            } else {
+              resolve(messageWithIndex[0].RowNum);
+            }
+            return;
+          }
         }
-      }
-    );
+      );
+
+    } catch(e) {
+
+      resolve(null);
+      return;
+
+    }
   });
 }
