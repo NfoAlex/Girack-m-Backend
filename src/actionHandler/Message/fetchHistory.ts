@@ -130,7 +130,7 @@ export default async function fetchHistory(
             }
             ////  ↑atEnd計算ここまで  ////
 
-            console.log("fetchHistory :: db : atTop?->", historyLength - positionIndex);
+            //console.log("fetchHistory :: db : atTop?->", historyLength - positionIndex);
 
             //JSONでメッセージパースした用の配列
             let historyParsed:IMessage[] = [];
