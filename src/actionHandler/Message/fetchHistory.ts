@@ -118,9 +118,12 @@ export default async function fetchHistory(
                 atEnd = true;
               }
             } else { //古い方を取っている場合
-              //もし取得位置も含めてメッセージをとっているなら
-              if (fetchingPosition.includeThisPosition) {
-                if (positionIndex === 1 || positionIndex === 0) {
+              //もし取得位置も含めてメッセージをとっていて0なら最新
+              if (
+                fetchingPosition.includeThisPosition
+                  &&
+                positionIndex === 0
+              ) {
                   atEnd = true;
                 }
               }
