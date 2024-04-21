@@ -110,10 +110,24 @@ export default async function fetchHistory(
             if (historyLength - positionIndex < 30) {
               atTop = true;
             }
-            //位置がそもそも30以内なら履歴先頭
-            if (positionIndex < 30) {
-              atEnd = true;
+            ////  ↓atEnd計算  ////
+            //新しい方に履歴を取得している場合
+            if (fetchingPosition.fetchDirection === "newer") {
+              //位置がそもそも30以内なら履歴先頭
+              if (positionIndex < 30) {
+                atEnd = true;
+              }
+            } else { //古い方を取っている場合
+              //もし取得位置も含めてメッセージをとっているなら
+              if (fetchingPosition.includeThisPosition) {
+                if (positionIndex === 1 || positionIndex === 0) {
+                  atEnd = true;
+                }
+              }
             }
+            ////  ↑atEnd計算ここまで  ////
+
+            console.log("fetchHistory :: db : atTop?->", historyLength - positionIndex);
 
             //JSONでメッセージパースした用の配列
             let historyParsed:IMessage[] = [];
