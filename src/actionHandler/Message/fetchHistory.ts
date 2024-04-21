@@ -113,8 +113,8 @@ export default async function fetchHistory(
             ////  ↓atEnd計算  ////
             //新しい方に履歴を取得している場合
             if (fetchingPosition.fetchDirection === "newer") {
-              //位置がそもそも30以内なら履歴先頭
-              if (positionIndex < 30) {
+              //取得開始位置が0なら最新
+              if (positionIndex === 0) {
                 atEnd = true;
               }
             } else { //古い方を取っている場合
