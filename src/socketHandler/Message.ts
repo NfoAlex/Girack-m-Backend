@@ -6,6 +6,7 @@ import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
 import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
 import getMessageReadId from "../actionHandler/Message/getMessageReadId";
+import deleteMessage from "../actionHandler/Message/deleteMessage";
 
 import IRequestSender from "../type/requestSender";
 import type { IMessage, IMessageReadId } from "../type/Message";
@@ -49,6 +50,49 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
+      }
+    });
+
+    //メッセージの削除
+    socket.on("deleteMessage", async (
+      dat: {
+        RequestSender: IRequestSender
+        channelId: string,
+        messageId: string
+      }
+    ) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_MISSING_INFO"|"ERROR_SESSION_ERROR",
+        data: messageId|null
+      }
+      */
+
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::deleteMessage", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //削除処理
+        const deleteMessageResult = await deleteMessage(
+          dat.channelId,
+          dat.messageId,
+          dat.RequestSender.userId
+        );
+
+        //結果に応じて送信
+        if (deleteMessageResult !== null) {
+          socket.emit("RESULT::deleteMessage", { result:"SUCCESS", data:deleteMessageResult });
+          return;
+        } else {
+          socket.emit("RESULT::deleteMessage", { result:"ERROR_DB_THING", data:null });
+          return;
+        }
+      } catch(e) {
+        console.log("socket(Message) :: deleteMessage : エラー->", e);
+        return;
       }
     });
 
