@@ -7,12 +7,12 @@ export default async function deleteMessage(
   channelId: string,
   messageId: string,
   userIdBy: string,
-) {
+):Promise<boolean> {
   try {
 
     //削除するメッセージを取得
     const messageDeleting = await fetchMessage(channelId, messageId);
-    if (messageDeleting === null) return null;
+    if (messageDeleting === null) return false;
 
     //削除する人の権限レベル
     const rolePower = await calcRoleUser(userIdBy);
@@ -20,7 +20,7 @@ export default async function deleteMessage(
     const rolePowerAgainst = await calcRoleUser(messageDeleting.userId);
 
     //レベル比較
-    if (rolePowerAgainst > rolePower) return null;
+    if (rolePowerAgainst > rolePower) return false;
 
     return new Promise((resolve) => {
       //メッセージを削除
@@ -30,10 +30,10 @@ export default async function deleteMessage(
         (err) => {
           //結果に応じてbooleanで結果を返す
           if (err) {
-            resolve(null);
+            resolve(false);
             return;
           } else {
-            resolve(messageDeleting.messageId);
+            resolve(true);
             return;
           }
         }
@@ -43,7 +43,7 @@ export default async function deleteMessage(
   } catch(e) {
 
     console.log("deleteMessage :: エラー->", e);
-    return null;
+    return false;
 
   }
 }
