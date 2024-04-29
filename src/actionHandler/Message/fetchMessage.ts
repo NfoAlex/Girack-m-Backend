@@ -22,7 +22,12 @@ export default function fetchMessage(
             return;
           } else {
             //console.log("fetchMessage :: db : 結果->", message);
-            
+            //取得メッセが空なら停止
+            if (message.length === 0) {
+              resolve(null);
+              return;
+            }
+
             //生メッセージデータを扱える形にパースする
             const messageParsed:IMessage = {
               ...message[0],
