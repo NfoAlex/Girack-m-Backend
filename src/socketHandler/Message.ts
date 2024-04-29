@@ -84,7 +84,13 @@ module.exports = (io:Server) => {
 
         //結果に応じて送信
         if (deleteMessageResult) {
-          socket.emit("RESULT::deleteMessage", { result:"SUCCESS", data:dat.messageId });
+          socket.emit("RESULT::deleteMessage", {
+            result: "SUCCESS",
+            data: {
+              channelId: dat.channelId,
+              messageId: dat.messageId
+            }
+          });
           return;
         } else {
           socket.emit("RESULT::deleteMessage", { result:"ERROR_DB_THING", data:null });
