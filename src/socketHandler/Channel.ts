@@ -154,7 +154,8 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const channelList = await fetchChannelList();
+        //チャンネルリストを取得
+        const channelList = await fetchChannelList(dat.RequestSender.userId);
         socket.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
       } catch(e) {
         socket.emit("RESULT::fetchChannelList", { result:"ERROR_DB_THING", data:null });
