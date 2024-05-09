@@ -10,7 +10,7 @@ type UserRoleKey = keyof IUserRole;
 export default async function roleCheck(userId:string, termChecking:UserRoleKey):Promise<boolean> {
   try {
 
-    return new Promise(async (resolve) => {    
+    return new Promise(async (resolve) => {
       //ユーザー情報を取得する
       const userInfo = await fetchUser(userId, null);
       //ユーザーがなければ取りやめ
