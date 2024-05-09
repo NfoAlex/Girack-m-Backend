@@ -61,8 +61,8 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::createChannel", { result:"SUCCESS", data:createChannelResult });
 
         //最新のチャンネル情報を全員に送る
-        const channelList = await fetchChannelList();
-        io.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
+        //const channelList = await fetchChannelList();
+        //io.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
       } catch(e) {
         socket.emit("RESULT::createChannel", { result:"ERROR_DB_THING", data:null });
       }
