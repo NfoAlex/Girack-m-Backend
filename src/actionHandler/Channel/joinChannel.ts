@@ -32,8 +32,12 @@ export default async function joinChannel(userId:string, channelId:string)
         return;
       }
 
-      //チャンネルIDを配列へ追加
-      channelJoinedArr.push(channelId);
+      //参加配列が空([""])なら代入、違うならチャンネルIDを配列へ追加
+      if (channelJoinedArr.length === 1 && channelJoinedArr[0] === "") {
+        channelJoinedArr[0] = channelId;
+      } else {
+        channelJoinedArr.push(channelId);
+      }
 
       //DBにて更新
       db.run(
