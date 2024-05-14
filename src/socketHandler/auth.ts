@@ -78,6 +78,10 @@ module.exports = (io:Server) => {
             socket.join(channelId);
           }
         }
+
+        //オンラインのユーザーとして記録
+        await addUserOnline(socket.id, dat.userId, dat.sessionId);
+
         socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
