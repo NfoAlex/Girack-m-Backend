@@ -7,7 +7,7 @@ export default async function addUserOnline(socketId:string, userId:string, sess
     return new Promise((resolve) => {
       db.run(
         `
-        INSERT INTO ONLINEUSERS (socketId,userId,sessionId) VALUES (?,?,?)
+        INSERT INTO ONLINE_USERS (socketId,userId,sessionId) VALUES (?,?,?)
         `,
         [socketId, userId, sessionId],
         (err:Error) => {
