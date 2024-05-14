@@ -8,6 +8,7 @@ import changePassword from "../actionHandler/auth/changePassword";
 import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
+import addUserOnline from "../util/onlineUsers/addUserOnline";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -32,13 +33,17 @@ module.exports = (io:Server) => {
         console.log("auth :: authLogin : authResult->", authData);
 
         //結果に応じて結果送信
-        if (authData.authResult && authData !== null && authData.UserInfo !== null) {
+        if (authData.authResult && authData !== null && authData.UserInfo !== null && authData.sessionId !== null) {
           //参加したチャンネル全部分のSocketルーム参加
           if (authData.UserInfo.channelJoined !== undefined) {
             for (let channelId of authData.UserInfo.channelJoined) {
               socket.join(channelId);
             }
           }
+
+          //オンラインのユーザーとして記録
+          await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
+
           //成功
           socket.emit("RESULT::authLogin", {
             result:"SUCCESS",
