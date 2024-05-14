@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/ONLINEUSERS.db");
 
-export default async function fetchOnlineUsers(socketId: string|null, userId: string|null) {
+export default async function fetchOnlineUsers() {
   try {
 
     //オンラインのユーザーを取得
