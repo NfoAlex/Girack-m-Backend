@@ -18,6 +18,7 @@ import "./db/InitUser";
 import "./db/InitServer";
 import "./db/InitRole";
 import "./db/InitMessage";
+import "./db/initOnlineUsers";
 
 const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
