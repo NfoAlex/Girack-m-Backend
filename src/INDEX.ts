@@ -37,9 +37,18 @@ require("./socketHandler/auth.ts")(io);
 require("./socketHandler/Role.ts")(io);
 require("./socketHandler/Message")(io);
 
+//オンラインの接続を削除する用
+import removeUserOnlineBySocketId from "./util/onlineUsers/removeUserOnlineBySocketId";
+
 //共通ハンドラ
 io.on("connection", (socket:Socket) => {
   console.log("*** 接続検知 ***");
+
+  //ユーザーから切断されたとき
+  socket.on("disconnect", () => {
+    //接続を削除
+    removeUserOnlineBySocketId(socket.id);
+  });
 });
 
 httpServer.listen(33333, () =>{
