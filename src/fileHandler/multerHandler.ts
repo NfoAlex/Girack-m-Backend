@@ -97,7 +97,6 @@ module.exports = (app:any) => {
 
       //それぞれの拡張子を確認して送信する
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpg")) {
-        console.log("画像が見つかりました。");
         res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
         return;
       }
@@ -109,8 +108,6 @@ module.exports = (app:any) => {
         res.sendFile(absolutePath + "/" + req.params.userid + ".png");
         return;
       }
-      console.log("画像が見つかりませんでした。");
-
 
       //最後まで条件に合わないならデフォルト画像送信
       res.sendFile(absolutePath + "/default.jpg");
