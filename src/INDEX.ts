@@ -18,6 +18,7 @@ import "./db/InitUser";
 import "./db/InitServer";
 import "./db/InitRole";
 import "./db/InitMessage";
+import "./db/initOnlineUsers";
 
 const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
@@ -35,10 +36,24 @@ require("./socketHandler/Channel.ts")(io);
 require("./socketHandler/auth.ts")(io);
 require("./socketHandler/Role.ts")(io);
 require("./socketHandler/Message")(io);
+require("./socketHandler/OnlineUsers")(io);
+
+//オンラインの接続を削除する用
+import removeUserOnlineBySocketId from "./util/onlineUsers/removeUserOnlineBySocketId";
 
 //共通ハンドラ
 io.on("connection", (socket:Socket) => {
   console.log("*** 接続検知 ***");
+
+  //ユーザーから切断されたとき
+  socket.on("disconnect", async () => {
+    //接続を削除
+    const userIdDisconnecting = await removeUserOnlineBySocketId(socket.id);
+    //ログイン中の全員に切断されたユーザーIdを返す
+    if (userIdDisconnecting !== null) {
+      io.to("LOGGEDIN").emit("removeOnlineUser", {data:userIdDisconnecting});
+    }
+  });
 });
 
 httpServer.listen(33333, () =>{
