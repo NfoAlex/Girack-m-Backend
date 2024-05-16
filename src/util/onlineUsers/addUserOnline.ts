@@ -1,7 +1,15 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/ONLINEUSERS.db");
 
-export default async function addUserOnline(socketId:string, userId:string, sessionId:string):Promise<boolean> {
+/**
+ * オンラインユーザーへユーザーId、SocketIDを追加し結果を返す
+ * @param socketId 
+ * @param userId 
+ * @param sessionId 
+ * @returns boolean
+ */
+export default async function addUserOnline(socketId:string, userId:string, sessionId:string)
+:Promise<boolean> {
   try {
 
     return new Promise((resolve) => {
