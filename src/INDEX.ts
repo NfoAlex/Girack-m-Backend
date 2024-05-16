@@ -46,9 +46,13 @@ io.on("connection", (socket:Socket) => {
   console.log("*** 接続検知 ***");
 
   //ユーザーから切断されたとき
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     //接続を削除
-    removeUserOnlineBySocketId(socket.id);
+    const userIdDisconnecting = await removeUserOnlineBySocketId(socket.id);
+    //ログイン中の全員に切断されたユーザーIdを返す
+    if (userIdDisconnecting !== null) {
+      io.to("LOGGEDIN").emit("removeOnlineUser", {data:userIdDisconnecting});
+    }
   });
 });
 
