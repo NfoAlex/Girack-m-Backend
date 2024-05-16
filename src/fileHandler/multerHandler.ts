@@ -53,6 +53,9 @@ module.exports = (app:any) => {
       if (fs.existsSync(newDir + "/" + RequestSender.userId + ".jpg")) {
         fs.unlinkSync(newDir + "/" + RequestSender.userId + ".jpg");
       }
+      if (fs.existsSync(newDir + "/" + RequestSender.userId + ".jpeg")) {
+        fs.unlinkSync(newDir + "/" + RequestSender.userId + ".jpeg");
+      }
       if (fs.existsSync(newDir + "/" + RequestSender.userId + ".gif")) {
         fs.unlinkSync(newDir + "/" + RequestSender.userId + ".gif");
       }
@@ -98,6 +101,10 @@ module.exports = (app:any) => {
       //それぞれの拡張子を確認して送信する
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpg")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
+        return;
+      }
+      if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpeg")) {
+        res.sendFile(absolutePath + "/" + req.params.userid + ".jpeg");
         return;
       }
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".gif")) {
