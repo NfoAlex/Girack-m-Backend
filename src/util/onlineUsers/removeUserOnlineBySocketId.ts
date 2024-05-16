@@ -12,6 +12,12 @@ export default async function removeUserOnlineBySocketId(socketId:string) {
       DELETE FROM ONLINE_USERS WHERE socketId=?
       `,
       socketId,
+      (err:Error, onlineUsers:any[]) => {
+        if (err) {
+          console.log("removeUserOnlineBySocketId :: db : エラー->, err");
+          return;
+        }
+      }
     );
 
     return;
