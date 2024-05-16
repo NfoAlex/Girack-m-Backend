@@ -53,6 +53,9 @@ module.exports = (app:any) => {
       if (fs.existsSync(newDir + "/" + RequestSender.userId + ".jpg")) {
         fs.unlinkSync(newDir + "/" + RequestSender.userId + ".jpg");
       }
+      if (fs.existsSync(newDir + "/" + RequestSender.userId + ".jpeg")) {
+        fs.unlinkSync(newDir + "/" + RequestSender.userId + ".jpeg");
+      }
       if (fs.existsSync(newDir + "/" + RequestSender.userId + ".gif")) {
         fs.unlinkSync(newDir + "/" + RequestSender.userId + ".gif");
       }
