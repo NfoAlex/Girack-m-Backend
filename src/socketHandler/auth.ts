@@ -33,13 +33,23 @@ module.exports = (io:Server) => {
         console.log("auth :: authLogin : authResult->", authData);
 
         //結果に応じて結果送信
-        if (authData.authResult && authData !== null && authData.UserInfo !== null && authData.sessionId !== null) {
+        if (
+          authData.authResult
+            &&
+          authData !== null
+            &&
+          authData.UserInfo !== null
+            &&
+          authData.sessionId !== null
+        ) {
           //参加したチャンネル全部分のSocketルーム参加
           if (authData.UserInfo.channelJoined !== undefined) {
             for (let channelId of authData.UserInfo.channelJoined) {
               socket.join(channelId);
             }
           }
+          //認証済みの人として参加
+          socket.join("LOGGEDIN");
 
           //オンラインのユーザーとして記録
           await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
@@ -78,6 +88,9 @@ module.exports = (io:Server) => {
             socket.join(channelId);
           }
         }
+
+        //認証済みの人として参加
+        socket.join("LOGGEDIN");
 
         //オンラインのユーザーとして記録
         await addUserOnline(socket.id, dat.userId, dat.sessionId);
