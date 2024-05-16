@@ -103,6 +103,10 @@ module.exports = (app:any) => {
         res.sendFile(absolutePath + "/" + req.params.userid + ".jpg");
         return;
       }
+      if (fs.existsSync(absolutePath + "/" + req.params.userid + ".jpeg")) {
+        res.sendFile(absolutePath + "/" + req.params.userid + ".jpeg");
+        return;
+      }
       if (fs.existsSync(absolutePath + "/" + req.params.userid + ".gif")) {
         res.sendFile(absolutePath + "/" + req.params.userid + ".gif");
         return;
