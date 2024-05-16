@@ -52,7 +52,10 @@ module.exports = (io:Server) => {
           socket.join("LOGGEDIN");
 
           //オンラインのユーザーとして記録
-          await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
+          const addUserOnlineResult = await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
+
+          //オンラインになる人としてユーザーIdをログイン済みの全員に送信
+          io.to("LOGGEDIN").emit("addOnlineUser", {data:authData.UserInfo.userId});
 
           //成功
           socket.emit("RESULT::authLogin", {
@@ -94,6 +97,9 @@ module.exports = (io:Server) => {
 
         //オンラインのユーザーとして記録
         await addUserOnline(socket.id, dat.userId, dat.sessionId);
+
+        //オンラインになる人としてユーザーIdをログイン済みの全員に送信
+        io.to("LOGGEDIN").emit("addOnlineUser", {data:dat.userId});
 
         socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
