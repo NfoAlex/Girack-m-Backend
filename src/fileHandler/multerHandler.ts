@@ -62,6 +62,10 @@ module.exports = (app:any) => {
 
       //ファイルを移動
       fs.renameSync(req.file.path, newPath);
+      //一時的な検証用ログ
+      console.log("req.file.path -> " + req.file.path);
+      console.log("newPath -> " + newPath);
+      if (fs.existsSync(newPath) === false) throw "ファイルの移動に失敗";
   
       // metadata の内容を表示
       //console.log("multerHandler :: /uploadProfileIcon : req.metadata->", RequestSender);
