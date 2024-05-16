@@ -36,6 +36,7 @@ require("./socketHandler/Channel.ts")(io);
 require("./socketHandler/auth.ts")(io);
 require("./socketHandler/Role.ts")(io);
 require("./socketHandler/Message")(io);
+require("./socketHandler/OnlineUsers")(io);
 
 //オンラインの接続を削除する用
 import removeUserOnlineBySocketId from "./util/onlineUsers/removeUserOnlineBySocketId";

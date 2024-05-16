@@ -13,7 +13,7 @@ module.exports = (io:Server) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_WRONGINFO",
-        data: ServerInfoLimited<IServerInfo>|null
+        data: 
       }
       */
 
@@ -23,22 +23,11 @@ module.exports = (io:Server) => {
 
         console.log("onlineUsers :: fetchOnlineUsers : onlineUsers->", onlineUsers);
 
-        //結果に応じて結果送信
-        
-
-        //オンラインのユーザーとして記録
-        await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
-
         //成功
         socket.emit("RESULT::fetchOnlineUsers", {
             result:"SUCCESS",
-            data:{
-                UserInfo: authData.UserInfo,
-                sessionId: authData.sessionId
-            }
+            data: onlineUsers
         });
-        socket.emit("RESULT::fetchOnlineUsers", { result:"ERROR_WRONGINFO", data:null });
-
       } catch(e) {
         //認証無理だったら
         socket.emit("RESULT::fetchOnlineUsers", { result:"ERROR_DB_THING", data:null });
