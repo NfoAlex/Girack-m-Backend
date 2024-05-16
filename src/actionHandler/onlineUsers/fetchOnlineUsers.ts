@@ -1,11 +1,11 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/ONLINEUSERS.db");
 
-export default async function fetchOnlineUsers() {
+export default async function fetchOnlineUsers():Promise<string[]|null> {
   try {
 
     //オンラインのユーザーを取得
-    const onlineUsers = new Promise((resolve) => {
+    return new Promise((resolve) => {
       db.all(
         `
         SELECT userId from ONLINE_USERS
@@ -15,15 +15,19 @@ export default async function fetchOnlineUsers() {
             resolve(null);
             return;
           } else {
-            resolve(onlineUsers);
+            console.log("fetchOnlineUser :: db : onlineUsers->", onlineUsers);
+            //取得結果を配列にする
+            const onlineUsersArr:string[] = [];
+            for (let userId of onlineUsers) {
+              onlineUsersArr.push(userId["userId"]);
+            }
+
+            resolve(onlineUsersArr);
             return;
           }
         }
       )
     });
-
-    //返す
-    return onlineUsers;
 
   } catch(e) {
 
