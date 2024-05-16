@@ -6,11 +6,11 @@ export default async function fetchOnlineUsers() {
 
     //オンラインのユーザーを取得
     const onlineUsers = new Promise((resolve) => {
-      db.run(
+      db.all(
         `
-        SELECT userId from ONLINEUSERS
+        SELECT userId from ONLINE_USERS
         `,
-        (err:Error, onlineUsers:string[]) => {
+        (err:Error, onlineUsers:{userId:string}[]) => {
           if (err) {
             resolve(null);
             return;
