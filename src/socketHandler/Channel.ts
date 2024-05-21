@@ -7,8 +7,10 @@ import joinChannel from "../actionHandler/Channel/joinChannel";
 import leaveChannel from "../actionHandler/Channel/leaveChannel";
 import roleCheck from "../util/roleCheck";
 import deleteChannel from "../actionHandler/Channel/deleteChannel";
+import updateChannel from "../actionHandler/Channel/updateChannel";
 
 import type IRequestSender from "../type/requestSender";
+import type { IChannel } from "../type/Channel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -113,6 +115,54 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //チャンネルを更新
+    socket.on("updateChannel", async (
+      dat: {
+        RequestSender: IRequestSender,
+        channelId: string,
+        channelInfo: IChannel
+      }
+    ) => {
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::updateChannel", { result:"ERROR_SESSION_ERROR" });
+        return;
+      }
+
+      try {
+        //チャンネル更新
+        const resultChannelUpdate = await updateChannel(
+          dat.RequestSender.userId,
+          dat.channelId,
+          dat.channelInfo
+        );
+
+        //結果に応じて送信、成功ならチャンネルデータを全員に送信
+        if (resultChannelUpdate) {
+          //更新操作の操作者にのみ結果を送信
+          socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
+          
+          //チャンネル情報を収集、送信
+          const channelInfoUpdated = await fetchChannel(dat.channelId);
+          if (channelInfoUpdated !== null) {
+            io.to("LOGGEDIN").emit("RESULT::fetchChannelInfo", {
+              result: "SUCCESS",
+              data: {
+                channelId: dat.channelId,
+                channelInfo: channelInfoUpdated
+              }
+            });
+          }
+        } else {
+          socket.emit("RESULT::updateChannel", { result:"ERROR_INTERNAL_THING" });
+          return;
+        }
+      } catch(e) {
+        socket.emit("RESULT::updateChannel", { result:"ERROR_INTERNAL_THING" });
+        return;
       }
     });
 
