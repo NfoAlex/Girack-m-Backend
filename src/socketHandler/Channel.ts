@@ -150,7 +150,10 @@ module.exports = (io:Server) => {
           if (channelInfoUpdated !== null) {
             io.to("LOGGEDIN").emit("RESULT::fetchChannelInfo", {
               result: "SUCCESS",
-              data: channelInfoUpdated 
+              data: {
+                channelId: dat.channelId,
+                channelInfo: channelInfoUpdated
+              }
             });
           }
         } else {
