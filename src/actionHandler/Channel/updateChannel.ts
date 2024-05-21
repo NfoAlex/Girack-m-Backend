@@ -5,7 +5,7 @@ import roleCheck from "../../util/roleCheck";
 import type { IUserRole } from "../../type/User";
 import type { IChannel } from "../../type/Channel";
 
-export default async function updateChannel(userId:string, channelInfo:IChannel)
+export default async function updateChannel(userId:string, channelId:string, channelInfo:IChannel)
 :Promise<boolean> {
   try {
 
@@ -22,13 +22,14 @@ export default async function updateChannel(userId:string, channelInfo:IChannel)
           description=?,
           isPrivate=?,
           speakableRole=?
-        WHERE roleId=?
+        WHERE channelId=?
         `,
         [
           channelInfo.channelName,
           channelInfo.description,
           channelInfo.isPrivate,
-          channelInfo.speakableRole
+          channelInfo.speakableRole,
+          channelId
         ], (err:Error) => {
           if (err) {
             console.log("updateChannel :: db : エラー->", err);
