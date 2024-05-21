@@ -11,7 +11,7 @@ export default async function updateChannel(userId:string, channelId:string, cha
 
     //チャンネル編集権限があるか調べて、なければfalse
     const resultRoleCheck = await roleCheck(userId, "ChannelCreateAndDelete");
-    if (resultRoleCheck) return false;
+    if (!resultRoleCheck) return false;
 
     return new Promise((resolve) => {
       //更新
