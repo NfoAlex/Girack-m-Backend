@@ -5,6 +5,7 @@ import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
 import { IUserConfig, IUserInfo } from "../../type/User";
+import IServerInfo from "../../type/Server";
 
 export default async function authRegister(username:string, inviteCode:string|null)
 :Promise<{userInfo:IUserInfo, password:string}|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING"> {
@@ -32,6 +33,9 @@ export default async function authRegister(username:string, inviteCode:string|nu
 
     //パスワードを生成する
     const passwordGenerated:string = generateKey();
+    
+    //サーバーの設定ファイル読み取り
+    const ServerConfig:IServerInfo = JSON.parse(fs.readFileSync("./records/server.json", "utf-8"));
 
     //一番最初のユーザーかどうかを調べてそうならHostロールを付与して登録
     db.all("SELECT COUNT(*) FROM USERS_INFO", (err:Error, num:{"COUNT(*)":number}[]) => {
@@ -56,7 +60,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
             userIdGen,
             username,
             "MEMBER",
-            "0001",
+            ServerConfig.config.CHANNEL.defaultJoinOnRegister, //サーバー設定のデフォルト参加チャンネル
             false
           );
         }
