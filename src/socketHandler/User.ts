@@ -132,7 +132,12 @@ module.exports = (io:Server) => {
 
     //ユーザー名で検索して一括取得
     socket.on("searchUserInfo", async (
-      dat:{RequestSender:IRequestSender, userName:string, rule:"FULL"|"PARTIAL"}
+      dat: {
+        RequestSender: IRequestSender,
+        userName: string, //検索文字列
+        rule: "FULL"|"PARTIAL" //全文検索か部分検索か
+        channelId?: string //チャンネル限定か、それならチャンネルId
+      }
     ) => {
       console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
@@ -143,7 +148,9 @@ module.exports = (io:Server) => {
 
       try {
         //情報検索、取得
-        const userInfos = await searchUser(dat.userName, dat.rule);
+        const userInfos = await searchUser(
+          dat.userName, dat.rule, dat.channelId
+        );
 
         socket.emit("RESULT::searchUserInfo", { result:"SUCCESS", data:userInfos })
       } catch(e) {
