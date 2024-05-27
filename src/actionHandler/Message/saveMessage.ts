@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/MESSAGE.db");
+import { ServerInfo } from "../../db/InitServer";
 
 import { IMessage } from "../../type/Message";
 
@@ -21,6 +22,11 @@ export default async function saveMessage(
       time: "",
       reaction: {}
     };
+
+    //もしメッセージ長がサーバー設定より長ければエラー
+    if (message.content.length > ServerInfo.config.MESSAGE.TxtMaxLength) {
+      return null;
+    }
 
     //メッセージID用の乱数生成
     const randId = Math.floor(Math.random()*9999).toString().padStart(4, "0");
