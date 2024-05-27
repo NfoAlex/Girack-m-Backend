@@ -60,7 +60,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
             userIdGen,
             username,
             "MEMBER",
-            ServerConfig.config.CHANNEL.defaultJoinOnRegister, //サーバー設定のデフォルト参加チャンネル
+            ServerConfig.config.CHANNEL.defaultJoinOnRegister.join(","), //サーバー設定のデフォルト参加チャンネル
             false
           );
         }
