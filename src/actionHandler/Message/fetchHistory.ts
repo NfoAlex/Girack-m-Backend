@@ -189,7 +189,7 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
             resolve(null);
             return;
           } else {
-            console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
+            //console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
             //もし長さが0じゃないならそれを返す
             if (messageWithIndex.length === 0) {
               resolve(null);

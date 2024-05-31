@@ -34,7 +34,7 @@ export default async function setMessageReadId(
             resolve(false);
             return;
           } else {
-            console.log("setMessageReadId :: db : 成功 messageReadTime->", messageReadId);
+            //console.log("setMessageReadId :: db : 成功 messageReadTime->", messageReadId);
             resolve(true);
             return;
           }

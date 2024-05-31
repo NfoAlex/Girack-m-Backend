@@ -19,7 +19,7 @@ export default async function getMessageReadId(userId:string)
             resolve(null);
             return;
           } else {
-            console.log("getMessageReadId :: db : data->", messageReadIdBeforeParsed);
+            //console.log("getMessageReadId :: db : data->", messageReadIdBeforeParsed);
             //パースして返す
             const messageReadId:IMessageReadId =
               JSON.parse(
