@@ -7,16 +7,8 @@ import type { IChannelbeforeParsing, IChannel } from "../../type/Channel";
 
 export default async function fetchChannel(channelId:string, userId:string)
 :Promise<IChannel|null> {
-
-  //ユーザー情報を取得、ないならnull
-  const userInfo = await fetchUser(userId, null);
-  if (userInfo === null) return null;
-
-  //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-  const roleServerManage = await roleCheck(userId, "ServerManage");
-
-  return new Promise<IChannel|null>((resolve) => {
-    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], (err:Error, datChannels:IChannelbeforeParsing[]) => {
+  return new Promise<IChannel|null>(async (resolve) => {
+    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], async (err:Error, datChannels:IChannelbeforeParsing[]) => {
       if (err) {
         console.log("fetchChannel :: db : エラー->", err);
         resolve(null);
@@ -27,11 +19,14 @@ export default async function fetchChannel(channelId:string, userId:string)
           resolve(null);
           return;
         } else {
-          //プラベで権限が無いならnull
-          if (datChannels[0].isPrivate && !roleServerManage) {
-            //返す
-            resolve(null);
-            return;
+          //プラベなら権限を調べて無いならnull
+          if (datChannels[0].isPrivate) {
+            //このユーザーがサーバー管理権限がありプラベを見られるか調べる
+            if (await roleCheck(userId, "ServerManage")) {
+              //返す
+              resolve(null);
+              return;
+            }
           }
 
           //チャンネル情報を整形する
