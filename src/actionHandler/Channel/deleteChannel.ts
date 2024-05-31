@@ -10,7 +10,7 @@ export default async function deleteChannel(
   try {
 
     //チャンネル情報を取得
-    const channelInfo = await fetchChannel(channelId);
+    const channelInfo = await fetchChannel(channelId, userId);
     //無ければ停止
     if (channelInfo === null) return false;
 

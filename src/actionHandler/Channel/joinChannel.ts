@@ -9,7 +9,7 @@ export default async function joinChannel(userId:string, channelId:string)
     
     return new Promise(async (resolve) => {
       //チャンネルの存在を確認しないなら停止
-      if (await fetchChannel(channelId) === null) {
+      if (await fetchChannel(channelId, userId) === null) {
         resolve(false);
         return;
       }

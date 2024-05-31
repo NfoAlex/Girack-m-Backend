@@ -146,7 +146,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
           
           //チャンネル情報を収集、送信
-          const channelInfoUpdated = await fetchChannel(dat.channelId);
+          const channelInfoUpdated = await fetchChannel(dat.channelId, dat.RequestSender.userId);
           if (channelInfoUpdated !== null) {
             io.to("LOGGEDIN").emit("RESULT::fetchChannelInfo", {
               result: "SUCCESS",
@@ -176,7 +176,7 @@ module.exports = (io:Server) => {
       
       try {
         //チャンネル情報取得
-        const channelInfo = await fetchChannel(dat.channelId);
+        const channelInfo = await fetchChannel(dat.channelId, dat.RequestSender.userId);
         //結果送信
         socket.emit("RESULT::fetchChannelInfo", {
           result: "SUCCESS",
