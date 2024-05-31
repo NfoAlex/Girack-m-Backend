@@ -2,7 +2,6 @@ import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/SERVER.db");
 import roleCheck from "../../util/roleCheck";
 
-import type { IUserRole } from "../../type/User";
 import type { IChannel } from "../../type/Channel";
 
 export default async function updateChannel(userId:string, channelId:string, channelInfo:IChannel)
