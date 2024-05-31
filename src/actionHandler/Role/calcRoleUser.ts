@@ -26,14 +26,12 @@ export default async function calcRoleUser(userId:string)
     } else if (await roleCheck(userId, "RoleManage")) {
       return 4;
     } else if (
-      await roleCheck(userId, "ChannelViewPrivate")
+      await roleCheck(userId, "ChannelManage")
       ||
       await roleCheck(userId, "UserManage")
     ) {
       return 3;
     } else if (
-      await roleCheck(userId, "ChannelRename")
-      ||
       await roleCheck(userId, "MessageDelete")
     ) {
       return 2;

@@ -1,12 +1,14 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/SERVER.db");
+import fetchUser from "../User/fetchUser";
+import roleCheck from "../../util/roleCheck";
 
 import type { IChannelbeforeParsing, IChannel } from "../../type/Channel";
 
-export default async function fetchChannel(channelId:string)
+export default async function fetchChannel(channelId:string, userId:string)
 :Promise<IChannel|null> {
-  return new Promise<IChannel|null>((resolve) => {
-    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], (err:Error, datChannels:IChannelbeforeParsing[]) => {
+  return new Promise<IChannel|null>(async (resolve) => {
+    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], async (err:Error, datChannels:IChannelbeforeParsing[]) => {
       if (err) {
         console.log("fetchChannel :: db : エラー->", err);
         resolve(null);
@@ -17,6 +19,16 @@ export default async function fetchChannel(channelId:string)
           resolve(null);
           return;
         } else {
+          //プラベなら権限を調べて無いならnull
+          if (datChannels[0].isPrivate) {
+            //このユーザーがサーバー管理権限がありプラベを見られるか調べる
+            if (await roleCheck(userId, "ServerManage")) {
+              //返す
+              resolve(null);
+              return;
+            }
+          }
+
           //チャンネル情報を整形する
           const infoGotIt:IChannel = {
             ...datChannels[0],

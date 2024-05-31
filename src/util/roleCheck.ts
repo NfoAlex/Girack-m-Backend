@@ -11,6 +11,12 @@ export default async function roleCheck(userId:string, termChecking:UserRoleKey)
   try {
 
     return new Promise(async (resolve) => {
+      //SYSTEMならtrue
+      if (userId === "SYSTEM") {
+        resolve(true);
+        return;
+      }
+
       //ユーザー情報を取得する
       const userInfo = await fetchUser(userId, null);
       //ユーザーがなければ取りやめ

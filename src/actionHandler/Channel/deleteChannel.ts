@@ -10,14 +10,14 @@ export default async function deleteChannel(
   try {
 
     //チャンネル情報を取得
-    const channelInfo = await fetchChannel(channelId);
+    const channelInfo = await fetchChannel(channelId, userId);
     //無ければ停止
     if (channelInfo === null) return false;
 
     //チャンネル作成者でない場合権限があるかを確認
     if (channelInfo.createdBy !== userId) {
       //チャンネル管理のロール権限を確認する
-      const roleCheckResult = await roleCheck(userId, "ChannelCreateAndDelete");
+      const roleCheckResult = await roleCheck(userId, "ChannelManage");
       if (!roleCheckResult) { //falseなら停止
         return false;
       }

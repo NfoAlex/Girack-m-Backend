@@ -45,7 +45,7 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::createChannel", { result:"ERROR_ROLE", data:null });
           return;
@@ -93,7 +93,7 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) { //falseなら停止
           socket.emit("RESULT::deleteChannel", { result:"ERROR_ROLE", data:null });
           return;
@@ -146,7 +146,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
           
           //チャンネル情報を収集、送信
-          const channelInfoUpdated = await fetchChannel(dat.channelId);
+          const channelInfoUpdated = await fetchChannel(dat.channelId, dat.RequestSender.userId);
           if (channelInfoUpdated !== null) {
             io.to("LOGGEDIN").emit("RESULT::fetchChannelInfo", {
               result: "SUCCESS",
@@ -176,7 +176,7 @@ module.exports = (io:Server) => {
       
       try {
         //チャンネル情報取得
-        const channelInfo = await fetchChannel(dat.channelId);
+        const channelInfo = await fetchChannel(dat.channelId, dat.RequestSender.userId);
         //結果送信
         socket.emit("RESULT::fetchChannelInfo", {
           result: "SUCCESS",

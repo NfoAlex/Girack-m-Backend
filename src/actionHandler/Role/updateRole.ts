@@ -46,9 +46,7 @@ export default async function updateRole(userId:string, roleData:IUserRole)
           roleData.color, //色
           roleData.ServerManage, //権限いろいろ...
           roleData.RoleManage,
-          roleData.ChannelRename,
-          roleData.ChannelViewPrivate,
-          roleData.ChannelCreateAndDelete,
+          roleData.ChannelManage,
           roleData.UserManage,
           roleData.MessageDelete,
           roleData.MessageAttatchFile,

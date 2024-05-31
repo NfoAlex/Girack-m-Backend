@@ -7,9 +7,7 @@ const roleLevel:{
 } = {
   ServerManage: 5,
   RoleManage: 4,
-  ChannelRename: 2,
-  ChannelViewPrivate: 3,
-  ChannelCreateAndDelete: 2,
+  ChannelManage: 3,
   UserManage: 3,
   MessageDelete: 2,
   MessageAttatchFile: 1
@@ -26,14 +24,12 @@ export default async function calcRoleData(roleDataChecking:IUserRole)
     } else if (roleDataChecking.RoleManage) {
       return 4;
     } else if (
-      roleDataChecking.ChannelViewPrivate
+      roleDataChecking.ChannelManage
       ||
       roleDataChecking.UserManage
     ) {
       return 3;
     } else if (
-      roleDataChecking.ChannelRename
-      ||
       roleDataChecking.MessageDelete
     ) {
       return 2;

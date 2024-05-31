@@ -10,9 +10,7 @@ const errorRoleHolder:IUserRole = {
   color: "#f00",
   ServerManage: false,
   RoleManage: false,
-  ChannelRename: false,
-  ChannelViewPrivate: false,
-  ChannelCreateAndDelete: false,
+  ChannelManage: false,
   UserManage: false,
   MessageDelete: false,
   MessageAttatchFile: false
@@ -42,9 +40,7 @@ export default async function fetchRoleSingle(targetRoleId:string)
               ...roleData[0], //名前、色、IDはパース不要
               ServerManage: roleData[0].ServerManage===1?true:false,
               RoleManage: roleData[0].RoleManage===1?true:false,
-              ChannelRename: roleData[0].ChannelRename===1?true:false,
-              ChannelViewPrivate: roleData[0].ChannelViewPrivate===1?true:false,
-              ChannelCreateAndDelete: roleData[0].ChannelCreateAndDelete===1?true:false,
+              ChannelManage: roleData[0].ChannelManage===1?true:false,
               UserManage: roleData[0].UserManage===1?true:false,
               MessageDelete: roleData[0].MessageDelete===1?true:false,
               MessageAttatchFile: roleData[0].MessageAttatchFile===1?true:false

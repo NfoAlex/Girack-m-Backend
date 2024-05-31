@@ -23,9 +23,7 @@ export interface IUserRole {
   color: string,
   ServerManage: boolean,
   RoleManage: boolean,
-  ChannelRename: boolean,
-  ChannelViewPrivate: boolean,
-  ChannelCreateAndDelete: boolean,
+  ChannelManage: boolean,
   UserManage: boolean,
   MessageDelete: boolean,
   MessageAttatchFile: boolean
@@ -38,9 +36,7 @@ export interface IUserRoleBeforeParsing {
   color: string,
   ServerManage: 1|0,
   RoleManage: 1|0,
-  ChannelRename: 1|0,
-  ChannelViewPrivate: 1|0,
-  ChannelCreateAndDelete: 1|0,
+  ChannelManage: 1|0,
   UserManage: 1|0,
   MessageDelete: 1|0,
   MessageAttatchFile: 1|0

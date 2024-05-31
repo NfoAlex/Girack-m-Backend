@@ -10,9 +10,7 @@ db.serialize(() => {
     color TEXT NOT NULL DEFAULT '#ffffff',
     ServerManage BOOLEAN NOT NULL DEFAULT '0',
     RoleManage BOOLEAN NOT NULL DEFAULT '0',
-    ChannelRename BOOLEAN NOT NULL DEFAULT '0',
-    ChannelViewPrivate BOOLEAN NOT NULL DEFAULT '0',
-    ChannelCreateAndDelete BOOLEAN NOT NULL DEFAULT '0',
+    ChannelManage BOOLEAN NOT NULL DEFAULT '0',
     UserManage BOOLEAN NOT NULL DEFAULT '0',
     MessageDelete BOOLEAN NOT NULL DEFAULT '0',
     MessageAttatchFile BOOLEAN NOT NULL DEFAULT '0'
@@ -39,21 +37,17 @@ db.serialize(() => {
       color,
       ServerManage,
       RoleManage,
-      ChannelRename,
-      ChannelViewPrivate,
-      ChannelCreateAndDelete,
+      ChannelManage,
       UserManage,
       MessageDelete,
       MessageAttatchFile
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(roleId) DO NOTHING;
     `,
     "HOST",
     "Host",
     "#7E097E",
-    true,
-    true,
     true,
     true,
     true,
