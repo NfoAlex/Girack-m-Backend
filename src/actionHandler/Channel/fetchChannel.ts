@@ -12,6 +12,7 @@ export default async function fetchChannel(channelId:string, userId:string)
       if (err) {
         console.log("fetchChannel :: db : エラー->", err);
         resolve(null);
+        return;
       } else {
         //console.log("fetchChannel :: db : 取得結果->", datChannels);
         //チャンネルデータが無ければnull、あれば整形して返す
@@ -22,7 +23,7 @@ export default async function fetchChannel(channelId:string, userId:string)
           //プラベなら権限を調べて無いならnull
           if (datChannels[0].isPrivate) {
             //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-            if (await roleCheck(userId, "ServerManage")) {
+            if (!(await roleCheck(userId, "ServerManage"))) {
               //返す
               resolve(null);
               return;
