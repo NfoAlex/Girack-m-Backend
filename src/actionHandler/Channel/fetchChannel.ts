@@ -29,11 +29,11 @@ export default async function fetchChannel(channelId:string, userId:string)
               return;
             }
           }
-
+          
           //チャンネル情報を整形する
           const infoGotIt:IChannel = {
             ...datChannels[0],
-            isPrivate: datChannels[0].isPrivate==="1"?true:false,
+            isPrivate: datChannels[0].isPrivate===1?true:false,
             speakableRole: datChannels[0].speakableRole.split(",")
           };
           //返す
