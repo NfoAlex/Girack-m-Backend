@@ -12,11 +12,8 @@ export default async function fetchChannelList(userId: string)
   const userInfo = await fetchUser(userId, null);
   if (userInfo === null) return null;
 
-  //このユーザーはプラベチャンネルを見られるか調べる
-  //const rolePowerViewPrivate = await roleCheck(userId, "Channel");
-
-  //TEMPORARY
-  const rolePowerViewPrivate = true;
+  //このユーザーがサーバー管理権限がありプラベを見られるか調べる
+  const roleServerManage = await roleCheck(userId, "ServerManage");
 
   return new Promise<IChannel[]|null>((resolve) => {
     db.all("SELECT * FROM CHANNELS", (err:Error, datChannels:IChannel[]) => {
@@ -25,7 +22,7 @@ export default async function fetchChannelList(userId: string)
         resolve(null);
       } else {
         //プラベチャンネルを見れる権限があるなら参加確認しない
-        if (!rolePowerViewPrivate) {
+        if (!roleServerManage) {
           //権限を持っておらず、参加していないなら除去
           let datChannelsFiltered = datChannels.filter((channel) => {
             return userInfo.channelJoined.includes(channel.channelId)
