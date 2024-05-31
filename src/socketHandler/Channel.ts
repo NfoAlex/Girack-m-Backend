@@ -157,7 +157,7 @@ module.exports = (io:Server) => {
             });
           }
         } else {
-          socket.emit("RESULT::updateChannel", { result:"ERROR_INTERNAL_THING" });
+          socket.emit("RESULT::updateChannel", { result:"ERROR_DB_THING" });
           return;
         }
       } catch(e) {
