@@ -178,13 +178,18 @@ module.exports = (io:Server) => {
         //チャンネル情報取得
         const channelInfo = await fetchChannel(dat.channelId, dat.RequestSender.userId);
         //結果送信
-        socket.emit("RESULT::fetchChannelInfo", {
-          result: "SUCCESS",
-          data: {
-            channelId: dat.channelId,
-            channelInfo: channelInfo
-          }
-        });
+        if (channelInfo !== null) {
+          socket.emit("RESULT::fetchChannelInfo", {
+            result: "SUCCESS",
+            data: {
+              channelId: dat.channelId,
+              channelInfo: channelInfo
+            }
+          });
+        } else {
+          socket.emit("RESULT::updateChannel", { result:"ERROR_INTERNAL_THING" });
+          return;
+        }
       } catch(e) {
         console.log("Channel :: fetchChannelInfo : エラー->", e);
         //エラーを返す
