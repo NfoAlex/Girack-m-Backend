@@ -244,7 +244,8 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
       } catch(e) {
-        socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:null });
+        console.log("channel :: socket(joinChannel) : エラー->", e);
+        socket.emit("RESULT::joinChannel", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
