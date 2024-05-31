@@ -13,7 +13,10 @@ export default async function fetchChannelList(userId: string)
   if (userInfo === null) return null;
 
   //このユーザーはプラベチャンネルを見られるか調べる
-  const rolePowerViewPrivate = await roleCheck(userId, "ChannelViewPrivate");
+  //const rolePowerViewPrivate = await roleCheck(userId, "Channel");
+
+  //TEMPORARY
+  const rolePowerViewPrivate = true;
 
   return new Promise<IChannel[]|null>((resolve) => {
     db.all("SELECT * FROM CHANNELS", (err:Error, datChannels:IChannel[]) => {

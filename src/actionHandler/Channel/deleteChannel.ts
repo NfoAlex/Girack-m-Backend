@@ -17,7 +17,7 @@ export default async function deleteChannel(
     //チャンネル作成者でない場合権限があるかを確認
     if (channelInfo.createdBy !== userId) {
       //チャンネル管理のロール権限を確認する
-      const roleCheckResult = await roleCheck(userId, "ChannelCreateAndDelete");
+      const roleCheckResult = await roleCheck(userId, "ChannelManage");
       if (!roleCheckResult) { //falseなら停止
         return false;
       }

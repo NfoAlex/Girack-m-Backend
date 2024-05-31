@@ -45,7 +45,7 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::createChannel", { result:"ERROR_ROLE", data:null });
           return;
@@ -93,7 +93,7 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelCreateAndDelete");
+        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) { //falseなら停止
           socket.emit("RESULT::deleteChannel", { result:"ERROR_ROLE", data:null });
           return;
