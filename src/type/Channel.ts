@@ -3,7 +3,7 @@ export interface IChannelbeforeParsing {
   channelName: string,
   description: string,
   createdBy: string,
-  isPrivate: "0"|"1",
+  isPrivate: 0|1,
   speakableRole: string
 }
 
