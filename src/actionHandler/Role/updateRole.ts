@@ -33,9 +33,7 @@ export default async function updateRole(userId:string, roleData:IUserRole)
           color=?,
           ServerManage=?,
           RoleManage=?,
-          ChannelRename=?,
-          ChannelViewPrivate=?,
-          ChannelCreateAndDelete=?,
+          ChannelManage=?,
           UserManage=?,
           MessageDelete=?,
           MessageAttatchFile=?
