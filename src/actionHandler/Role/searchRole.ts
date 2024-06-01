@@ -7,7 +7,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
   try {
 
     //ページ数に合わせて取得するデータをずらす
-    const itemOffset = pageIndex - 1 * 30;
+    const itemOffset = (pageIndex - 1) * 30;
 
     return new Promise((resolve) => {
       //ユーザー名でクエリが含まれるものを取得
