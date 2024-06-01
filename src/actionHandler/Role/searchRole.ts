@@ -14,14 +14,14 @@ export default function searchRole(searchQuery:string, pageIndex:number)
       db.all(
         `
         SELECT * FROM ROLES
-          WHERE name LIKE '%?%'
+          WHERE name LIKE ?
           LIMIT 30
           OFFSET ?
         `,
-        [searchQuery, itemOffset],
+        ["'%" + searchQuery + "%'", itemOffset],
         (err:Error, datRole:IUserRoleBeforeParsing[]) => {
           if (err) {
-            console.log("searchRole :: エラー ->", err);
+            console.log("searchRole :: db(エラー) ->", err);
             resolve([]);
           } else {
             //変数パース用の配列変数
