@@ -18,7 +18,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
           LIMIT 30
           OFFSET ?
         `,
-        ["'%" + searchQuery + "%'", itemOffset],
+        ["%" + searchQuery + "%", itemOffset],
         (err:Error, datRole:IUserRoleBeforeParsing[]) => {
           if (err) {
             console.log("searchRole :: db(エラー) ->", err);
