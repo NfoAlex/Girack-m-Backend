@@ -14,8 +14,6 @@ export default function searchRole(searchQuery:string, pageIndex:number)
     //ページ数に合わせて取得するデータをずらす
     const itemOffset = (pageIndex - 1) * 30;
 
-    console.log("searchRole -> ", searchQuery, itemOffset);
-
     return new Promise((resolve) => {
       //ユーザー名でクエリが含まれるものを取得
       db.all(
