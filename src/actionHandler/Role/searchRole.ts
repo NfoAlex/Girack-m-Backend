@@ -14,7 +14,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
       db.all(
         `
         SELECT * FROM ROLES
-          WHERE roleName LIKE '%?%'
+          WHERE name LIKE '%?%'
           LIMIT 30
           OFFSET ?
         `,
