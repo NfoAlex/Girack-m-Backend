@@ -2,8 +2,12 @@ import sqlite3 from "sqlite3";
 import { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
 const db = new sqlite3.Database("./records/USER.db");
 
-export default function searchRole(searchQuery:string, pageIndex:number) {
+export default function searchRole(searchQuery:string, pageIndex:number)
+:Promise<IUserRole[]|[]>|null {
   try {
+
+    //ページ数に合わせて取得するデータをずらす
+    const itemOffset = pageIndex - 1 * 30;
 
     return new Promise((resolve) => {
       //ユーザー名でクエリが含まれるものを取得
@@ -12,8 +16,9 @@ export default function searchRole(searchQuery:string, pageIndex:number) {
         SELECT * FROM ROLES
           WHERE roleName LIKE '%?%'
           LIMIT 30
+          OFFSET ?
         `,
-        [searchQuery],
+        [searchQuery, itemOffset],
         (err:Error, datRole:IUserRoleBeforeParsing[]) => {
           if (err) {
             console.log("searchRole :: エラー ->", err);
