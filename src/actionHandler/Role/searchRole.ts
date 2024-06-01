@@ -3,11 +3,18 @@ import { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
 const db = new sqlite3.Database("./records/ROLE.db");
 
 export default function searchRole(searchQuery:string, pageIndex:number)
-:Promise<IUserRole[]|[]>|null {
+:Promise<
+  {
+    role: IUserRole[],
+    pageIndex: number
+  }
+>|null{
   try {
 
     //ページ数に合わせて取得するデータをずらす
     const itemOffset = (pageIndex - 1) * 30;
+
+    console.log("searchRole -> ", searchQuery, itemOffset);
 
     return new Promise((resolve) => {
       //ユーザー名でクエリが含まれるものを取得
@@ -22,7 +29,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
         (err:Error, datRole:IUserRoleBeforeParsing[]) => {
           if (err) {
             console.log("searchRole :: db(エラー) ->", err);
-            resolve([]);
+            resolve({role:[], pageIndex:1});
           } else {
             //変数パース用の配列変数
             let roleDataParsed:IUserRole[] = [];
@@ -42,7 +49,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
               });
             }
             //パースしたものを返す
-            resolve(roleDataParsed);
+            resolve({role:roleDataParsed, pageIndex:pageIndex});
             return;
           }
         }
