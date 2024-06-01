@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
-const db = new sqlite3.Database("./records/USER.db");
+const db = new sqlite3.Database("./records/ROLE.db");
 
 export default function searchRole(searchQuery:string, pageIndex:number)
 :Promise<IUserRole[]|[]>|null {
