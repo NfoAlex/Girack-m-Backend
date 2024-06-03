@@ -8,7 +8,7 @@ export default async function fetchOnlineUsers():Promise<string[]|null> {
     return new Promise((resolve) => {
       db.all(
         `
-        SELECT userId from ONLINE_USERS
+        SELECT DISTINCT userId from ONLINE_USERS
         `,
         (err:Error, onlineUsers:{userId:string}[]) => {
           if (err) {
