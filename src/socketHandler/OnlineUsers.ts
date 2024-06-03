@@ -36,8 +36,8 @@ module.exports = (io:Server) => {
 
         //成功
         socket.emit("RESULT::fetchOnlineUsers", {
-            result:"SUCCESS",
-            data: onlineUsers
+          result:"SUCCESS",
+          data: onlineUsers
         });
       } catch(e) {
         //認証無理だったら
