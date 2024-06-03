@@ -8,7 +8,7 @@ export default function searchRole(searchQuery:string, pageIndex:number)
     role: IUserRole[],
     pageIndex: number
   }
->|null{
+>|null {
   try {
 
     //ページ数に合わせて取得するデータをずらす
