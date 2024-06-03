@@ -27,7 +27,7 @@ export default async function updateChannel(userId:string, channelId:string, cha
           channelInfo.channelName,
           channelInfo.description,
           channelInfo.isPrivate,
-          channelInfo.speakableRole,
+          channelInfo.speakableRole.join(),
           channelId
         ], (err:Error) => {
           if (err) {

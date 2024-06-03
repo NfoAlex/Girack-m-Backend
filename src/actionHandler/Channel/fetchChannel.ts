@@ -34,7 +34,8 @@ export default async function fetchChannel(channelId:string, userId:string)
           const infoGotIt:IChannel = {
             ...datChannels[0],
             isPrivate: datChannels[0].isPrivate===1?true:false,
-            speakableRole: datChannels[0].speakableRole.split(",")
+            speakableRole: //空文字列なら空配列にする
+              datChannels[0].speakableRole!==""?datChannels[0].speakableRole.split(","):[]
           };
           //返す
           resolve(infoGotIt);

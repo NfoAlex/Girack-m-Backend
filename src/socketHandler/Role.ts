@@ -1,4 +1,5 @@
 import { Socket, Server } from "socket.io";
+
 import fetchRoles from "../actionHandler/Role/fetchRoles";
 import checkSession from "../actionHandler/auth/checkSession";
 import roleCheck from "../util/roleCheck";
@@ -9,6 +10,7 @@ import addRole from "../actionHandler/Role/addRole";
 import unlinkRole from "../actionHandler/Role/unlinkRole";
 import fetchUser from "../actionHandler/User/fetchUser";
 import fetchRoleSingle from "../actionHandler/Role/fetchRoleSingle";
+import searchRole from "../actionHandler/Role/searchRole";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserRole } from "../type/User";
@@ -44,6 +46,35 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchRoles", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ロールを検索
+    socket.on("searchRole", async (
+      dat: {
+        RequestSender: IRequestSender,
+        searchQuery: string,
+        pageIndex: number
+      }
+    ) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::searchRole", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロールを検索
+        const roleResult = await searchRole(dat.searchQuery, dat.pageIndex);
+        //nullじゃないなら結果送信
+        if (roleResult !== null) {
+          socket.emit("RESULT::searchRole", { result:"SUCCESS", data:roleResult });
+        } else {
+          socket.emit("RESULT::searchRole", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("Role :: socket(searchRole) : エラー->", e);
+        socket.emit("RESULT::searchRole", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
