@@ -20,10 +20,27 @@ export default async function fetchChannel(channelId:string, userId:string)
           resolve(null);
           return;
         } else {
-          //プラベなら権限を調べて無いならnull
+          //プラベなら権限と参加を調べて無いならnull
           if (datChannels[0].isPrivate) {
+            //ユーザー情報を取得
+            const userInfo = await fetchUser(userId, null);
+            //ユーザー情報がそもそもないならnull
+            if (userInfo === null) {
+              resolve(null);
+              return;
+            }
+            //もし参加チャンネルに入ってなければnull
+            if (!userInfo.channelJoined.includes(channelId)) {
+              resolve(null);
+              return;
+            }
+
             //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-            if (!(await roleCheck(userId, "ServerManage"))) {
+            if (
+              !userInfo.channelJoined.includes(channelId)
+                &&
+              !(await roleCheck(userId, "ServerManage"))
+            ) {
               //返す
               resolve(null);
               return;
