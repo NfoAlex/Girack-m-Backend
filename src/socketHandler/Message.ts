@@ -7,8 +7,9 @@ import fetchMessage from "../actionHandler/Message/fetchMessage";
 import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
 import getMessageReadId from "../actionHandler/Message/getMessageReadId";
 import deleteMessage from "../actionHandler/Message/deleteMessage";
+import genLinkPreview from "../util/genLinkPreview";
 
-import IRequestSender from "../type/requestSender";
+import type IRequestSender from "../type/requestSender";
 import type { IMessage, IMessageReadId } from "../type/Message";
 
 module.exports = (io:Server) => {
@@ -47,6 +48,13 @@ module.exports = (io:Server) => {
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
           io.to(messageData.channelId).emit("receiveMessage", messageData);
+
+          //URLが含まれるならプレビューを生成
+          const urlRegex = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+          const urlMatched = messageData.content.match(urlRegex);
+          if (urlMatched) {
+            await genLinkPreview(urlMatched);
+          }
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
