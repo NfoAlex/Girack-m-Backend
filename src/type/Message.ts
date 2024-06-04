@@ -4,6 +4,7 @@ export interface IMessageBeforeParsing {
   channelId: string,
   userId: string,
   content: string,
+  linkData: string,
   time: string,
   reaction: string
 }
@@ -14,6 +15,28 @@ export interface IMessage {
   channelId: string,
   userId: string,
   content: string,
+  linkData: [
+    {
+      contentType: "text/html",
+      mediaType: string,
+      url: string,
+      siteName: string,
+      description: string,
+      images: string[]
+    },
+    {
+      mediaType: "image",
+      url: string,
+      contentType: string,
+      favicons: string[]
+    },
+    {
+      mediaType: "video",
+      url: string,
+      contentType: string,
+      favicons: string[]
+    }
+  ],
   time: string,
   reaction: {
     [key: string]: {
