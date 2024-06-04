@@ -137,6 +137,7 @@ export default async function fetchHistory(
             for (let index in history) {
               historyParsed.push({
                 ...history[index],
+                linkData: JSON.parse(history[index].linkData),
                 reaction: JSON.parse(history[index].reaction)
               });
             }
