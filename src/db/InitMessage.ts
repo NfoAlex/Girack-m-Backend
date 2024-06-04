@@ -14,7 +14,7 @@ db.serialize(() => {
     channelId TEXT NOT NULL,
     userId TEXT NOT NULL,
     content TEXT NOT NULL,
-    linkData BLOB,
+    linkData TEXT,
     time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     reaction TEXT NOT NULL
   )`);
