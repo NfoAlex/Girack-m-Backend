@@ -27,14 +27,7 @@ export interface IMessage {
       }
         |
       {
-        mediaType: "image",
-        url: string,
-        contentType: string,
-        favicons: string[]
-      }
-        |
-      {
-        mediaType: "video",
+        mediaType: "image"|"video",
         url: string,
         contentType: string,
         favicons: string[]
