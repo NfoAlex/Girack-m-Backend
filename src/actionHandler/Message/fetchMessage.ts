@@ -31,6 +31,7 @@ export default function fetchMessage(
             //生メッセージデータを扱える形にパースする
             const messageParsed:IMessage = {
               ...message[0],
+              linkData: JSON.parse(message[0].linkData),
               reaction: JSON.parse(message[0].reaction)
             };
             resolve(messageParsed);
