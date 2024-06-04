@@ -52,8 +52,10 @@ module.exports = (io:Server) => {
           //URLが含まれるならプレビューを生成
           const urlRegex = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
           const urlMatched = messageData.content.match(urlRegex);
+            //nullじゃなければ生成
           if (urlMatched) {
-            await genLinkPreview(urlMatched);
+            const linkDataResult = await genLinkPreview(urlMatched);
+            io.to(messageData.channelId).emit("updateMessage", {...messageData, linkData: linkDataResult});
           }
         }
       } catch(e) {
