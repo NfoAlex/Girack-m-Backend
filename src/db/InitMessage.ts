@@ -9,7 +9,7 @@ db.serialize(() => {
     channelId TEXT NOT NULL,
     userId TEXT NOT NULL,
     content TEXT NOT NULL,
-    linkData TEXT,
+    linkData BLOB,
     time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     reaction TEXT NOT NULL
   )`);
