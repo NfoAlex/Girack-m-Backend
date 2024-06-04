@@ -135,9 +135,17 @@ export default async function fetchHistory(
             let historyParsed:IMessage[] = [];
             //パース処理
             for (let index in history) {
+              //リンクプレビューのJSONパース、nullなら空JSONに
+              const linkDataParsed:JSON =
+                history[index].linkData!==null
+                  ?
+                    JSON.parse(history[index].linkData)
+                      :
+                    {};
+
               historyParsed.push({
                 ...history[index],
-                linkData: JSON.parse(history[index].linkData),
+                linkData: linkDataParsed,
                 reaction: JSON.parse(history[index].reaction)
               });
             }
