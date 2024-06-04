@@ -7,18 +7,19 @@ const db = new sqlite3.Database("./records/MESSAGE.db");
 export default async function migration20240603() {
   //チャンネル分のテーブルへlinkDataカラムを追加
   return new Promise ((resolve)=> {
-      db.all(
-        `
-        SELECT name FROM sqlite_master WHERE type='table';
-        `,
-        (err:Error, tables:[{name:string}]) => {
-          console.log("20240603 :: tables->", tables);
-          //テーブルを追加
-          for (let channelName of tables) {
-            db.run(`ALTER TABLE ` + channelName.name + ` ADD linkData BLOB`)
-          }
-          return;
+    db.all(
+      `
+      SELECT name FROM sqlite_master WHERE type='table';
+      `,
+      (err:Error, tables:[{name:string}]) => {
+        //console.log("20240603 :: tables->", tables);
+        
+        //ループしてlinkDataカラムを追加
+        for (let channelName of tables) {
+          db.run(`ALTER TABLE ` + channelName.name + ` ADD linkData BLOB`, (err:Error)=>{});
         }
-      );
+        return;
+      }
+    );
   });
 }
