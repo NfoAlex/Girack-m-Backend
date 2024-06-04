@@ -15,7 +15,7 @@ export default async function migration20240603() {
 
       //ループしてlinkDataカラムを追加
       for (let channelName of tables) {
-        db.run(`ALTER TABLE ` + channelName.name + ` ADD linkData TEXT`, (err:Error)=>{});
+        db.run(`ALTER TABLE ` + channelName.name + ` ADD linkData TEXT DEFAULT '{}'`, (err:Error)=>{});
       }
       return;
     }

@@ -32,7 +32,7 @@ export interface IMessage {
         contentType: string,
         favicons: string[]
       }
-  },
+  }|{},
   time: string,
   reaction: {
     [key: string]: {
