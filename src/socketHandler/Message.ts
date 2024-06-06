@@ -60,8 +60,12 @@ module.exports = (io:Server) => {
               messageData.messageId
             );
 
+            //結果があるなら更新させる
             if (linkDataResult !== null) {
-              io.to(messageData.channelId).emit("updateMessage", {...messageData, linkData: linkDataResult});
+              io.to(messageData.channelId).emit(
+                "updateMessage",
+                {...messageData, linkData: linkDataResult}
+              );
             } else {
               console.log("Message :: socket(sendMessage) : URL結果がnull");
               return;
