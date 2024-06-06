@@ -47,7 +47,8 @@ export default async function genLinkPreview(
             url: result.ogUrl,
             siteName: result.ogSiteName,
             description: result.ogDescription,
-            images: result.ogImage
+            images: result.ogImage,
+            favicon: result.favicon
           }
         };
       }
