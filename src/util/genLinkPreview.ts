@@ -19,7 +19,7 @@ export default async function genLinkPreview(
   urls:RegExpMatchArray,
   channelId:string,
   messageId: string
-) {
+):Promise<IMessage["linkData"]|null> {
   try {
 
     //リンクプレビュー用のインポート
@@ -55,22 +55,26 @@ export default async function genLinkPreview(
     });
 
     //プレビューデータの書き込み処理
-    db.run(
-      `
-      UPDATE C` + channelId + ` SET
-        linkData=?
-      WHERE messageId=?
-      `,
-      [JSON.stringify(previewResult), messageId],
-      (err:Error) => {
-        if (err) {
-          console.log("genLinkPreview :: エラー->", err);
-          return null;
-        } else {
-          return previewResult;
+    return new Promise((resolve)=> {
+      db.run(
+        `
+        UPDATE C` + channelId + ` SET
+          linkData=?
+        WHERE messageId=?
+        `,
+        [JSON.stringify(previewResult), messageId],
+        (err:Error) => {
+          if (err) {
+            console.log("genLinkPreview :: エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            resolve(previewResult);
+            return;
+          }
         }
-      }
-    );
+      );
+    });
 
   } catch(e) {
 
