@@ -54,8 +54,18 @@ module.exports = (io:Server) => {
           const urlMatched = messageData.content.match(urlRegex);
             //nullじゃなければ生成
           if (urlMatched) {
-            const linkDataResult = await genLinkPreview(urlMatched);
-            io.to(messageData.channelId).emit("updateMessage", {...messageData, linkData: linkDataResult});
+            const linkDataResult = await genLinkPreview(
+              urlMatched,
+              messageData.channelId,
+              messageData.messageId
+            );
+
+            if (linkDataResult !== null) {
+              io.to(messageData.channelId).emit("updateMessage", {...messageData, linkData: linkDataResult});
+            } else {
+              console.log("Message :: socket(sendMessage) : URL結果がnull");
+              return;
+            }
           }
         }
       } catch(e) {
