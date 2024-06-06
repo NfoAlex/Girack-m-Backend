@@ -23,6 +23,7 @@ export interface IMessage {
         url: string,
         siteName: string,
         description: string,
+        favicon: string,
         images: string[]
       }
         |
