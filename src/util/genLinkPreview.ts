@@ -2,21 +2,75 @@ import sqlite3 from "sqlite3";
 import { IMessage } from "../type/Message";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 
-export default async function genLinkPreview(urls:RegExpMatchArray) {
+//取得できるOpenGraphデータのinterface
+interface IOGData {
+  ogSiteName: string,
+  ogTitle: string,
+  ogType: string,
+  ogUrl: string,
+  ogImage: [{url:string, type:string}],
+  ogDescription: string,
+  favicon: string,
+  requestUrl: string,
+  success: boolean
+};
+
+export default async function genLinkPreview(
+  urls:RegExpMatchArray,
+  channelId:string,
+  messageId: string
+) {
   try {
 
     //リンクプレビュー用のインポート
     const ogs = require('open-graph-scraper');
     const options = { url: urls[0] };
-    //プレビュー処理
-    ogs(options)
+
+    //プレビューデータの格納用変数
+    let previewResult:IMessage["linkData"] = {
+      "0":{}
+    };
+
+    //プレビューデータ化処理
+    await ogs(options)
     .then((data:any) => {
       const { error, html, result, response } = data;
       //console.log('error:', error);  // This returns true or false. True if there was an error. The error itself is inside the result object.
       //console.log('html:', html); // This contains the HTML of page
       console.log('result:', result); // This contains all of the Open Graph results
+      //パース
+      if (result.ogType === "website") {
+        previewResult = {
+          "0": {
+            contentType: "text/html",
+            mediaType: result.ogType,
+            url: result.ogUrl,
+            siteName: result.ogSiteName,
+            description: result.ogDescription,
+            images: result.ogImage
+          }
+        };
+      }
       //console.log('response:', response); // This contains response from the Fetch API
     });
+
+    //プレビューデータの書き込み処理
+    db.run(
+      `
+      UPDATE C` + channelId + ` SET
+        linkData=?
+      WHERE messageId=?
+      `,
+      [JSON.stringify(previewResult), messageId],
+      (err:Error) => {
+        if (err) {
+          console.log("genLinkPreview :: エラー->", err);
+          return null;
+        } else {
+          return previewResult;
+        }
+      }
+    );
 
   } catch(e) {
 
