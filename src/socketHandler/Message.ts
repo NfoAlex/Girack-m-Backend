@@ -54,7 +54,7 @@ module.exports = (io:Server) => {
           const urlMatched = messageData.content.match(urlRegex);
             //nullじゃなければ生成
           if (urlMatched) {
-            const linkDataResult = await genLinkPreview(
+            const linkDataResult:IMessage["linkData"]|null = await genLinkPreview(
               urlMatched,
               messageData.channelId,
               messageData.messageId
@@ -62,9 +62,15 @@ module.exports = (io:Server) => {
 
             //結果があるなら更新させる
             if (linkDataResult !== null) {
+              //リンクデータを上書き
+              messageData.linkData = linkDataResult;
+              //送信
               io.to(messageData.channelId).emit(
                 "updateMessage",
-                {...messageData, linkData: linkDataResult}
+                {
+                  result: "SUCCESS",
+                  data: messageData
+                }
               );
             } else {
               console.log("Message :: socket(sendMessage) : URL結果がnull");
