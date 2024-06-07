@@ -46,6 +46,7 @@ export default async function genLinkPreview(
             mediaType: result.ogType,
             url: result.ogUrl,
             siteName: result.ogSiteName,
+            title: result.ogTitle,
             description: result.ogDescription,
             images: result.ogImage,
             favicon: result.favicon
