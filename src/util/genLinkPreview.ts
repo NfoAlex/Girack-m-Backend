@@ -37,38 +37,39 @@ export default async function genLinkPreview(
 
     //プレビューデータの格納用変数
     let previewResult:IMessage["linkData"] = {
-      "0":{}
+      //"0":{}
     };
 
     console.log("genLinkPreview :: match as image?->", urls[0].match(/(https?:\/\/.*\.(?:png|jpg))/g));
 
-    //もしURLが画像用ならここで処理して終了
-    if (urls[0].match(/(https?:\/\/.*\.(?:png|jpg))/g) !== null) {
-      previewResult = {
-        "0": {
-          mediaType: "image",
-          url: urls[0],
-        }
-      };
-    } else {
+    //URLの配列分フェッチ、パース処理
+    for (let index in urls) {
 
-      //Twitter用だったら二重処理
-      if (urls[0].includes("fxtwitter")) {
-        //プレビューデータ化処理
-        const resultForThis = await fetchURLForTwitter(urls[0]);
-        //挿入 :: ToDo
-        previewResult = {
-          "0": resultForThis
+      //もしURLが画像用ならここで処理して終了
+      if (urls[index].match(/(https?:\/\/.*\.(?:png|jpg))/g) !== null) {
+        previewResult[index] = {
+          contentType: "image",
+          url: urls[index],
         };
       } else {
-        //プレビューデータ化処理
-        const resultForThis = await fetchURL(urls[0]);
-        //挿入 :: ToDo
-        previewResult = {
-          "0": resultForThis
-        };
-      }
 
+        //Twitter用だったら二重処理
+        if (urls[index].includes("fxtwitter")) {
+          //プレビューデータ化処理
+          const resultForThis = await fetchURLForTwitter(urls[0]);
+          //挿入 :: ToDo
+          //previewResult = {
+          //  "0": resultForThis
+          //};
+          previewResult[index] = resultForThis;
+        } else {
+          //プレビューデータ化処理
+          const resultForThis = await fetchURL(urls[index]);
+          //挿入 :: ToDo
+          previewResult[index] = resultForThis;
+        }
+
+      }
     }
 
     //プレビューデータの書き込み処理
