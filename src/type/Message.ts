@@ -30,6 +30,7 @@ export interface IMessage {
       |
       {
         contentType: "image",
+        mediaType: "image",
         url: string
       }
   },

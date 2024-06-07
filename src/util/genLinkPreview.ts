@@ -49,6 +49,7 @@ export default async function genLinkPreview(
       if (urls[index].match(/(https?:\/\/.*\.(?:png|jpg))/g) !== null) {
         previewResult[index] = {
           contentType: "image",
+          mediaType: "image",
           url: urls[index],
         };
       } else {
