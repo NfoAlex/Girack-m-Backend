@@ -51,20 +51,18 @@ export default async function genLinkPreview(
         //console.log('html:', html); // This contains the HTML of page
         console.log('result:', result); // This contains all of the Open Graph results
         //パース
-        if (result.ogType === "website" || result.ogType === "article") {
-          previewResult = {
-            "0": {
-              contentType: "text/html",
-              mediaType: result.ogType,
-              url: result.ogUrl,
-              siteName: result.ogSiteName,
-              title: result.ogTitle,
-              description: result.ogDescription,
-              images: result.ogImage,
-              favicon: result.favicon
-            }
-          };
-        }
+        previewResult = {
+          "0": {
+            contentType: "text/html",
+            mediaType: result.ogType,
+            url: result.ogUrl,
+            siteName: result.ogSiteName,
+            title: result.ogTitle,
+            description: result.ogDescription,
+            images: result.ogImage,
+            favicon: result.favicon
+          }
+        };
         console.log('response:', response); // This contains response from the Fetch API
       });
 
