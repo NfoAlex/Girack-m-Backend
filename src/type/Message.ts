@@ -18,23 +18,21 @@ export interface IMessage {
   linkData: {
     [key: string]:
       {
-        contentType: "text/html",
+        contentType: "text/html"|"video",
         mediaType: string,
         url: string,
-        siteName: string,
-        title: string,
-        description: string,
+        siteName?: string,
+        title?: string,
+        description?: string,
         favicon: string,
-        images: string[]
+        images?: {url:string, type:string}[]
       }
-        |
+      |
       {
-        mediaType: "image"|"video",
-        url: string,
-        contentType?: string,
-        favicons?: string[]
+        contentType: "image",
+        url: string
       }
-  }|{},
+  },
   time: string,
   reaction: {
     [key: string]: {
