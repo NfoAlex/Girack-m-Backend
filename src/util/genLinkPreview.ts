@@ -8,7 +8,7 @@ interface IOGData {
   ogTitle: string,
   ogType: string,
   ogUrl: string,
-  ogImage: [{url:string, type:string}],
+  ogImage: {url:string, type:string}[],
   ogDescription: string,
   favicon: string,
   requestUrl: string,
