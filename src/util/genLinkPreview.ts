@@ -44,7 +44,7 @@ export default async function genLinkPreview(
     for (let index in urls) {
 
       //もしURLが画像用ならここで処理して終了
-      if (urls[index].match(/(https?:\/\/.*\.(?:png|jpg))/g) !== null) {
+      if (urls[index].match(/(https?:\/\/.*\.(?:png|jpg|gif))/g) !== null) {
         previewResult[index] = {
           contentType: "image",
           mediaType: "image",
