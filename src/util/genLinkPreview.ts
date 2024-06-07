@@ -40,8 +40,6 @@ export default async function genLinkPreview(
       //"0":{}
     };
 
-    console.log("genLinkPreview :: match as image?->", urls[0].match(/(https?:\/\/.*\.(?:png|jpg))/g));
-
     //URLの配列分フェッチ、パース処理
     for (let index in urls) {
 
