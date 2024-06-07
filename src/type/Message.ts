@@ -31,8 +31,8 @@ export interface IMessage {
       {
         mediaType: "image"|"video",
         url: string,
-        contentType: string,
-        favicons: string[]
+        contentType?: string,
+        favicons?: string[]
       }
   }|{},
   time: string,
