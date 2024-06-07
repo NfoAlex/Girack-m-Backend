@@ -50,7 +50,7 @@ module.exports = (io:Server) => {
           io.to(messageData.channelId).emit("receiveMessage", messageData);
 
           //URLが含まれるならプレビューを生成
-          const urlRegex = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+          const urlRegex = /((https|http)?:\/\/[^\s]+)/g;
           const urlMatched = messageData.content.match(urlRegex);
             //nullじゃなければ生成
           if (urlMatched) {
