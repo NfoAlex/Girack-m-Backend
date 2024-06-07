@@ -57,7 +57,7 @@ export default async function genLinkPreview(
         //Twitter用だったら二重処理
         if (urls[index].includes("fxtwitter")) {
           //プレビューデータ化処理
-          const resultForThis = await fetchURLForTwitter(urls[0]);
+          const resultForThis = await fetchURLForTwitter(urls[index]);
           //挿入 :: ToDo
           //previewResult = {
           //  "0": resultForThis
