@@ -15,16 +15,26 @@ interface IOGData {
   success: boolean
 };
 
+//取得したメタデータをパースしたもの
+interface IURLParsed {
+  contentType: "text/html",
+  mediaType: string,
+  url: string,
+  siteName: string,
+  title: string,
+  description: string,
+  images: {url:string, type:string}[],
+  favicon: string
+};
+
+import ogs from 'open-graph-scraper';
+
 export default async function genLinkPreview(
   urls:RegExpMatchArray,
   channelId:string,
   messageId: string
 ):Promise<IMessage["linkData"]|null> {
   try {
-
-    //リンクプレビュー用のインポート
-    const ogs = require('open-graph-scraper');
-    const options = { url: urls[0] };
 
     //プレビューデータの格納用変数
     let previewResult:IMessage["linkData"] = {
@@ -45,54 +55,19 @@ export default async function genLinkPreview(
 
       //Twitter用だったら二重処理
       if (urls[0].includes("fxtwitter")) {
-        //NodeJSネイティブのfetchで一旦取得
-        await fetch(urls[0]).then(async (res) => {
-          //データをテキスト化
-          return await res.text();
-        }).then(async (text) => {
-          //console.log("simple fetched json->", text);
-          //処理したHTMLのテキストからmetaデータ取得
-          await ogs({ html: text }).then((data:any) => {
-            const { error, html, result, response } = data;
-            console.log("genLink Preview :: parsed for Better timing->", result);
-            previewResult = {
-              "0": {
-                contentType: "text/html",
-                mediaType: result.ogType,
-                url: result.ogUrl,
-                siteName: result.ogSiteName,
-                title: result.ogTitle,
-                description: result.ogDescription,
-                images: result.ogImage,
-                favicon: result.favicon
-              }
-            };
-          })
-        });
+        //プレビューデータ化処理
+        const resultForThis = await fetchURLForTwitter(urls[0]);
+        //挿入 :: ToDo
+        previewResult = {
+          "0": resultForThis
+        };
       } else {
         //プレビューデータ化処理
-        await ogs(options)
-        .then((data:any) => {
-          const { error, html, result, response } = data;
-          //console.log('error:', error);  // This returns true or false. True if there was an error. The error itself is inside the result object.
-          //console.log('html:', html); // This contains the HTML of page
-          console.log('result:', result); // This contains all of the Open Graph results
-          //パース
-          previewResult = {
-            "0": {
-              contentType: "text/html",
-              mediaType: result.ogType,
-              url: result.ogUrl,
-              siteName: result.ogSiteName,
-              title: result.ogTitle,
-              description: result.ogDescription,
-              images: result.ogImage,
-              favicon: result.favicon
-            }
-          };
-          console.log('response:', response); // This contains response from the Fetch API
-          //console.log('\n\ndata:', data); // This contains response from the Fetch API
-        });
+        const resultForThis = await fetchURL(urls[0]);
+        //挿入 :: ToDo
+        previewResult = {
+          "0": resultForThis
+        };
       }
 
     }
@@ -125,4 +100,88 @@ export default async function genLinkPreview(
     return null;
 
   }
+}
+
+/**
+ * URLのパース処理
+ * @param url
+ */
+async function fetchURL(url:string):Promise<IURLParsed> {
+  //結果格納用
+  let resultFetched:IURLParsed = {
+    contentType: "text/html",
+    mediaType: "",
+    url: "",
+    siteName: "",
+    title: "",
+    description: "",
+    images: [],
+    favicon: ""
+  };
+
+  //フェッチ、メタデータパース
+  await ogs({url: url})
+  .then((data:any) => {
+    const { error, html, result, response } = data;
+
+    //パース
+    resultFetched = {
+      contentType: "text/html",
+      mediaType: result.ogType,
+      url: result.ogUrl,
+      siteName: result.ogSiteName,
+      title: result.ogTitle,
+      description: result.ogDescription,
+      images: result.ogImage,
+      favicon: result.favicon
+    };
+  });
+
+  //取得できたメタデータを返す
+  return resultFetched;
+}
+
+/**
+ * twitter用のURLパース処理
+ * @param url 
+ */
+async function fetchURLForTwitter(url:string) {
+  //結果格納用
+  let resultFetched:IURLParsed = {
+    contentType: "text/html",
+    mediaType: "",
+    url: "",
+    siteName: "",
+    title: "",
+    description: "",
+    images: [],
+    favicon: ""
+  };
+
+  //一度純粋にHTMLをフェッチ
+  await fetch(url).then(async (res) => {
+    //取得データをテキスト化
+    return await res.text();
+  }).then(async (text) => {
+    //console.log("simple fetched json->", text);
+    //処理したHTMLのテキストからmetaデータ取得する
+    await ogs({ html: text }).then((data:any) => {
+      const { error, html, result, response } = data;
+      //console.log("genLink Preview :: parsed for Better timing->", result);
+      //パース
+      resultFetched = {
+        contentType: "text/html",
+        mediaType: result.ogType,
+        url: result.ogUrl,
+        siteName: result.ogSiteName,
+        title: result.ogTitle,
+        description: result.ogDescription,
+        images: result.ogImage,
+        favicon: result.favicon
+      };
+    });
+  });
+
+  //取得できたメタデータを返す
+  return resultFetched;
 }
