@@ -7,8 +7,9 @@ import fetchMessage from "../actionHandler/Message/fetchMessage";
 import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
 import getMessageReadId from "../actionHandler/Message/getMessageReadId";
 import deleteMessage from "../actionHandler/Message/deleteMessage";
+import genLinkPreview from "../util/genLinkPreview";
 
-import IRequestSender from "../type/requestSender";
+import type IRequestSender from "../type/requestSender";
 import type { IMessage, IMessageReadId } from "../type/Message";
 
 module.exports = (io:Server) => {
@@ -47,6 +48,35 @@ module.exports = (io:Server) => {
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
           io.to(messageData.channelId).emit("receiveMessage", messageData);
+
+          //URLが含まれるならプレビューを生成
+          const urlRegex = /((https|http)?:\/\/[^\s]+)/g;
+          const urlMatched = messageData.content.match(urlRegex);
+            //nullじゃなければ生成
+          if (urlMatched) {
+            const linkDataResult:IMessage["linkData"]|null = await genLinkPreview(
+              urlMatched,
+              messageData.channelId,
+              messageData.messageId
+            );
+
+            //結果があるなら更新させる
+            if (linkDataResult !== null) {
+              //リンクデータを上書き
+              messageData.linkData = linkDataResult;
+              //送信
+              io.to(messageData.channelId).emit(
+                "updateMessage",
+                {
+                  result: "SUCCESS",
+                  data: messageData
+                }
+              );
+            } else {
+              console.log("Message :: socket(sendMessage) : URL結果がnull");
+              return;
+            }
+          }
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
