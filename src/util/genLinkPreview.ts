@@ -43,28 +43,57 @@ export default async function genLinkPreview(
       };
     } else {
 
-      //プレビューデータ化処理
-      await ogs(options)
-      .then((data:any) => {
-        const { error, html, result, response } = data;
-        //console.log('error:', error);  // This returns true or false. True if there was an error. The error itself is inside the result object.
-        //console.log('html:', html); // This contains the HTML of page
-        console.log('result:', result); // This contains all of the Open Graph results
-        //パース
-        previewResult = {
-          "0": {
-            contentType: "text/html",
-            mediaType: result.ogType,
-            url: result.ogUrl,
-            siteName: result.ogSiteName,
-            title: result.ogTitle,
-            description: result.ogDescription,
-            images: result.ogImage,
-            favicon: result.favicon
-          }
-        };
-        console.log('response:', response); // This contains response from the Fetch API
-      });
+      //Twitter用だったら二重処理
+      if (urls[0].includes("fxtwitter")) {
+        //NodeJSネイティブのfetchで一旦取得
+        await fetch(urls[0]).then(async (res) => {
+          //データをテキスト化
+          return await res.text();
+        }).then(async (text) => {
+          //console.log("simple fetched json->", text);
+          //処理したHTMLのテキストからmetaデータ取得
+          await ogs({ html: text }).then((data:any) => {
+            const { error, html, result, response } = data;
+            console.log("genLink Preview :: parsed for Better timing->", result);
+            previewResult = {
+              "0": {
+                contentType: "text/html",
+                mediaType: result.ogType,
+                url: result.ogUrl,
+                siteName: result.ogSiteName,
+                title: result.ogTitle,
+                description: result.ogDescription,
+                images: result.ogImage,
+                favicon: result.favicon
+              }
+            };
+          })
+        });
+      } else {
+        //プレビューデータ化処理
+        await ogs(options)
+        .then((data:any) => {
+          const { error, html, result, response } = data;
+          //console.log('error:', error);  // This returns true or false. True if there was an error. The error itself is inside the result object.
+          //console.log('html:', html); // This contains the HTML of page
+          console.log('result:', result); // This contains all of the Open Graph results
+          //パース
+          previewResult = {
+            "0": {
+              contentType: "text/html",
+              mediaType: result.ogType,
+              url: result.ogUrl,
+              siteName: result.ogSiteName,
+              title: result.ogTitle,
+              description: result.ogDescription,
+              images: result.ogImage,
+              favicon: result.favicon
+            }
+          };
+          console.log('response:', response); // This contains response from the Fetch API
+          //console.log('\n\ndata:', data); // This contains response from the Fetch API
+        });
+      }
 
     }
 
