@@ -22,6 +22,7 @@ export interface IMessage {
         mediaType: string,
         url: string,
         siteName: string,
+        title: string,
         description: string,
         favicon: string,
         images: string[]
