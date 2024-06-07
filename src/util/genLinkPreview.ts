@@ -1,6 +1,7 @@
 import sqlite3 from "sqlite3";
 import { IMessage } from "../type/Message";
 const db = new sqlite3.Database("./records/MESSAGE.db");
+import ogs from 'open-graph-scraper';
 
 //取得できるOpenGraphデータのinterface
 interface IOGData {
@@ -26,8 +27,6 @@ interface IURLParsed {
   images: {url:string, type:string}[],
   favicon: string
 };
-
-import ogs from 'open-graph-scraper';
 
 export default async function genLinkPreview(
   urls:RegExpMatchArray,
