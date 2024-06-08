@@ -34,7 +34,7 @@ db.serialize(() => {
     sidebar TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
-    //ユーザーのその他保存するデータ用テーブル
+  //ユーザーのその他保存するデータ用テーブル
   db.run(`create table if not exists USERS_SAVES(
     userId TEXT PRIMARY KEY,
     messageReadId TEXT DEFAULT '{}',
