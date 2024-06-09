@@ -15,3 +15,10 @@ export interface IChannel {
   isPrivate: boolean,
   speakableRole: string[]
 }
+
+export interface IChannelOrder {
+  channelId: string,
+  isThread: boolean,
+  isFolder: boolean,
+  child?: []
+}
