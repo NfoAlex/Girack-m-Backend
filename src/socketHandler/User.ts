@@ -9,6 +9,7 @@ import fetchUserAll from "../actionHandler/User/fetchUserAll";
 import banUser from "../actionHandler/User/banUser";
 import pardonUser from "../actionHandler/User/pardonUser";
 import roleCheck from "../util/roleCheck";
+import fetchUserChannelOrder from "../actionHandler/User/fetchUserChannelOrder";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
@@ -40,6 +41,33 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーごとのチャンネル順序を取得
+    socket.on("fetchUserChannelOrder", async (dat:{RequestSender:IRequestSender}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: ServerInfoLimited<IServerInfo>
+      }
+      */
+
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //チャンネル順序の読み取り
+        const resultChannelOrder = await fetchUserChannelOrder(dat.RequestSender.userId);
+
+        //返す
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"SUCCESS", data:resultChannelOrder });
+      } catch(e) {
+        //返す
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_DB_THING", data:null });
       }
     });
     
