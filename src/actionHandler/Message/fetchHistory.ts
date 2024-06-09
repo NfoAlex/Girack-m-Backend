@@ -135,9 +135,9 @@ export default async function fetchHistory(
             let historyParsed:IMessage[] = [];
             //パース処理
             for (let index in history) {
-              //リンクプレビューのJSONパース、nullなら空JSONに
+              //リンクプレビューのJSONパース、nullかundefinedなら空JSONに
               const linkDataParsed:IMessage["linkData"] =
-                (history[index].linkData!==null||history[index].linkData!==undefined)
+                (history[index].linkData!==null || history[index].linkData!==undefined)
                   ?
                     JSON.parse(history[index].linkData)
                       :
