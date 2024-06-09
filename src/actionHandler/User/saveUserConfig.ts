@@ -33,7 +33,7 @@ export default async function saveUserConfig(userId:string, datConfig:IUserConfi
       
     } catch(e) {
 
-      console.log("saveUserConfig :: saveUserConfig : エラー->", e);
+      console.log("saveUserConfig :: エラー->", e);
       resolve(false);
       return;
 

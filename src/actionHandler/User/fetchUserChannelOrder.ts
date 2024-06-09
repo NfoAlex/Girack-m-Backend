@@ -12,7 +12,7 @@ export default async function fetchUserChannelOrder(userId: string) {
         `,
         userId,
         (err:Error, channelOrderData:[{channelOrder: string}]) => {
-          console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
+          //console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
           //文字列をJSONにしてから返す
           resolve(JSON.parse(channelOrderData[0].channelOrder));
           return;
