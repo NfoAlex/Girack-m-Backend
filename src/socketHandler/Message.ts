@@ -56,6 +56,9 @@ module.exports = (io:Server) => {
             }
           }
 
+          /**************************************************/
+          /* URLがあったときのプレビュー生成、送信 */
+
           //URLが含まれるならプレビューを生成
           const urlRegex = /((https|http)?:\/\/[^\s]+)/g;
           const urlMatched = messageData.messageResult.content.match(urlRegex);
@@ -84,6 +87,8 @@ module.exports = (io:Server) => {
               return;
             }
           }
+          
+          /**************************************************/
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
