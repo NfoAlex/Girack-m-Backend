@@ -50,6 +50,8 @@ module.exports = (io:Server) => {
           }
           //認証済みの人として参加
           socket.join("LOGGEDIN");
+          //このユーザーIdのチャンネルへ参加
+          socket.join(authData.UserInfo.userId);
 
           //オンラインのユーザーとして記録
           const addUserOnlineResult = await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
@@ -94,6 +96,8 @@ module.exports = (io:Server) => {
 
         //認証済みの人として参加
         socket.join("LOGGEDIN");
+        //このユーザーIdのチャンネルへ参加
+        socket.join(authData.UserInfo.userId);
 
         //オンラインのユーザーとして記録
         await addUserOnline(socket.id, dat.userId, dat.sessionId);
