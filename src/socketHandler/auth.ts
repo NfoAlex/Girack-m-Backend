@@ -1,7 +1,6 @@
 import { Socket, Server } from "socket.io";
 
 import authLogin from "../actionHandler/auth/authLogin";
-import { IUserInfo } from "../type/User";
 import authRegister from "../actionHandler/auth/authRegister";
 import IRequestSender from "../type/requestSender";
 import changePassword from "../actionHandler/auth/changePassword";
@@ -9,6 +8,8 @@ import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
+
+import type { IUserInfo } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
