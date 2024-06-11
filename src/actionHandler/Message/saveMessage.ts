@@ -1,8 +1,9 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 import { ServerInfo } from "../../db/InitServer";
+import fetchUserInbox from "../User/fetchUserInbox";
 
-import { IMessage } from "../../type/Message";
+import type { IMessage } from "../../type/Message";
 
 export default async function saveMessage(
   userId: string,
@@ -49,6 +50,14 @@ export default async function saveMessage(
 
     //メッセージIDを作成
     messageData.messageId = message.channelId + randId + timestampJoined;
+
+    //メンションだった時用のInbox追加処理
+    const userIdMentioning = await checkAndAddToInbox(
+      userId,
+      message.channelId,
+      messageData.messageId,
+      message.content
+    );
 
     //DB処理
     return new Promise((resolve) => {
@@ -109,4 +118,82 @@ export default async function saveMessage(
     return null;
 
   }
+}
+
+/**
+ * メンションか返信なら対象のユーザーのInboxへ追加する
+ */
+async function checkAndAddToInbox(
+  senderUserId: string,
+  channelId: string,
+  messageId: string,
+  content: string
+):Promise<string[]|null> {
+  //メンション用のRegex
+  const MentionRegex:RegExp = /@<([0-9]*)>/g;
+  //マッチ結果
+  const matchResult:RegExpMatchArray|null = content.match(MentionRegex);
+  //実際に通知をするユーザーId配列
+  const userIdMentioning:string[] = [];
+
+  //そもそもマッチが無いなら停止
+  if (matchResult === null) return null;
+
+  //db操作用
+  const dbUser = new sqlite3.Database("./records/USER.db");
+
+  //ユーザーがメンションされているなら対象の人のInboxに通知を追加
+  for (let targetUserId of matchResult) {
+    try {
+
+      //メンションクエリーから@<>を削除してユーザーIdを抽出
+      const userIdFormatted = targetUserId.slice(2).slice(0,-1);
+      //この人のinboxを取り出す
+      const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
+      if (inboxOfTargetUser === null) continue;
+
+      //Inbox用の通知Idを乱数生成
+      const notificationId = generateNotificationId();
+
+      //Inboxデータへ通知を追加
+      inboxOfTargetUser[notificationId] = {
+        senderUserId: senderUserId,
+        channelId: channelId,
+        messageId: messageId,
+        type: "MENTION"
+      };
+
+      //Inboxデータを書き込み
+      dbUser.run(
+        `
+        UPDATE USERS_SAVES SET channelOrder=?
+          WHERE userId=?
+        `,
+        [JSON.stringify(inboxOfTargetUser), userIdFormatted],
+        (err:Error) => { if(err) throw Error; }
+      );
+
+      //実際に通知を行うユーザーId配列へ追加
+      userIdMentioning.push(userIdFormatted);
+
+    } catch(e) {}
+  }
+
+  //メンションするユーザーId配列を返す
+  return userIdMentioning;
+}
+
+//Inbox用通知ID生成
+function generateNotificationId():string {
+  const LENGTH = 24; //生成したい文字列の長さ
+  const SOURCE = "abcdefghijklmnopqrstuvwxyz0123456789"; //元になる文字
+
+  //セッションID
+  let result = "";
+
+  for(let i=0; i<LENGTH; i++){
+    result += SOURCE[Math.floor(Math.random() * SOURCE.length)];
+  }
+
+  return result;
 }
