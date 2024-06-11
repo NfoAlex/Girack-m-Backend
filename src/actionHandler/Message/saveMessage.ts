@@ -11,7 +11,14 @@ export default async function saveMessage(
     channelId: string,
     content: string
   }
-):Promise<IMessage|null> {
+):Promise<
+  {
+    messageResult: IMessage,
+    userIdMentioning: string[] | null
+  }
+  |
+  null
+> {
   try {
 
     //形成するメッセージデータ
@@ -101,8 +108,11 @@ export default async function saveMessage(
               resolve(null);
               return;
             } else {
-              //ここでメッセージデータを返す
-              resolve(messageData);
+              //ここでメッセージデータとメンションする人配列を返す
+              resolve({
+                messageResult: messageData,
+                userIdMentioning: userIdMentioning
+              });
               return;
             }
           }
