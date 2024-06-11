@@ -101,13 +101,13 @@ module.exports = (io:Server) => {
         //このユーザーIdのチャンネルへ参加
         socket.join(userInfo.userId);
 
+        //認証の結果をここで送信
+        socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
+
         //オンラインのユーザーとして記録
         await addUserOnline(socket.id, dat.userId, dat.sessionId);
-
         //オンラインになる人としてユーザーIdをログイン済みの全員に送信
         io.to("LOGGEDIN").emit("addOnlineUser", {data:dat.userId});
-
-        socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
 
