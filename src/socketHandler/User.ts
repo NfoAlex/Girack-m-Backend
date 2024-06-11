@@ -9,9 +9,12 @@ import fetchUserAll from "../actionHandler/User/fetchUserAll";
 import banUser from "../actionHandler/User/banUser";
 import pardonUser from "../actionHandler/User/pardonUser";
 import roleCheck from "../util/roleCheck";
+import fetchUserChannelOrder from "../actionHandler/User/fetchUserChannelOrder";
+import saveUserChannelOrder from "../actionHandler/User/saveUserChannelOrder";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
+import type { IChannelOrder } from "../type/Channel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -42,6 +45,33 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_DB_THING", data:null });
       }
     });
+
+    //ユーザーごとのチャンネル順序を取得
+    socket.on("fetchUserChannelOrder", async (dat:{RequestSender:IRequestSender}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: ServerInfoLimited<IServerInfo>
+      }
+      */
+
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //チャンネル順序の読み取り
+        const resultChannelOrder = await fetchUserChannelOrder(dat.RequestSender.userId);
+
+        //返す
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"SUCCESS", data:resultChannelOrder });
+      } catch(e) {
+        //返す
+        socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_DB_THING", data:null });
+      }
+    });
     
     //設定データを保存する
     socket.on("saveUserConfig", async (dat:{RequestSender:IRequestSender, config:IUserConfig}) => {
@@ -69,6 +99,35 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::saveUserConfig", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーごとのチャンネル順序を保存
+    socket.on("saveUserChannelOrder", async (dat:{RequestSender:IRequestSender, channelOrder:IChannelOrder}) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: null
+      }
+      */
+
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::saveUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //書き込み、結果受け取り
+        const resultSaveUserChannelOrder:boolean = await saveUserChannelOrder(dat.RequestSender.userId, dat.channelOrder);
+        //結果に応じて結果と設定データを返す
+        if (resultSaveUserChannelOrder) {
+          socket.emit("RESULT::saveUserChannelOrder", { result:"SUCCESS", data:null});
+        } else {
+          socket.emit("RESULT::saveUserChannelOrder", { result:"ERROR_DB_THING", data:null});
+        }
+      } catch(e) {
+        socket.emit("RESULT::saveUserChannelOrder", { result:"ERROR_DB_THING", data:null });
       }
     });
 
