@@ -86,14 +86,16 @@ module.exports = (io:Server) => {
       } else { //成功
         //参加チャンネル分、Socketルームへ参加させる
         const userInfo = await fetchUser(dat.userId, null);
-          //情報が空じゃなければ参加処理
-        if (userInfo !== null) {
-          //参加ァ
-          for (let channelId of userInfo.channelJoined) {
-            socket.join(channelId);
-          }
+        //ユーザー情報が空ならエラー
+        if (userInfo === null) {
+          socket.emit("RESULT::authSession", { result:"ERROR_DB_THING", data:false });
+          return;
         }
 
+        //情報が空じゃなければチャンネルへの参加処理
+        for (let channelId of userInfo.channelJoined) {
+          socket.join(channelId);
+        }
         //認証済みの人として参加
         socket.join("LOGGEDIN");
         //このユーザーIdのチャンネルへ参加
