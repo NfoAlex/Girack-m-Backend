@@ -83,3 +83,13 @@ export interface IUserConfigBeforeParsing {
   channel: string,
   sidebar: string
 }
+
+//Inbox用の文字列
+export interface IUserInbox {
+  [key: string]: {
+    senderUserId: string,
+    channelId?: string,
+    messageId?: string,
+    type: "MENTION"|"REPLY"
+  }
+}
