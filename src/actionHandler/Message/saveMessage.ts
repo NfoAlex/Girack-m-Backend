@@ -162,15 +162,9 @@ async function checkAndAddToInbox(
       const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
       if (inboxOfTargetUser === null) continue;
 
-      //Inbox用の通知Idを乱数生成
-      const notificationId = generateNotificationId();
-
       //Inboxデータへ通知を追加
-      inboxOfTargetUser[notificationId] = {
+      inboxOfTargetUser.mention[messageId] = {
         senderUserId: senderUserId,
-        channelId: channelId,
-        messageId: messageId,
-        type: "MENTION"
       };
 
       //Inboxデータを書き込み
@@ -191,19 +185,4 @@ async function checkAndAddToInbox(
 
   //メンションするユーザーId配列を返す
   return userIdMentioning;
-}
-
-//Inbox用通知ID生成
-function generateNotificationId():string {
-  const LENGTH = 24; //生成したい文字列の長さ
-  const SOURCE = "abcdefghijklmnopqrstuvwxyz0123456789"; //元になる文字
-
-  //セッションID
-  let result = "";
-
-  for(let i=0; i<LENGTH; i++){
-    result += SOURCE[Math.floor(Math.random() * SOURCE.length)];
-  }
-
-  return result;
 }
