@@ -7,7 +7,7 @@ const db = new sqlite3.Database("./records/USER.db");
 export default async function migration20240612() {
   db.all(
     `
-    ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{}';
+    ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{ "mention": {}, "event": {} }';
     `,
     (err:Error, tables:[{name:string}]) => {
       if (err) {

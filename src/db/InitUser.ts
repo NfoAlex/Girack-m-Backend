@@ -44,7 +44,7 @@ db.serialize(() => {
     userId TEXT PRIMARY KEY,
     messageReadId TEXT DEFAULT '{}',
     channelOrder TEXT DEFAULT '{}',
-    inbox TEXT DEFAULT '{}',
+    inbox TEXT DEFAULT '{ "mention": {}, "event": {} }',
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });
