@@ -86,10 +86,15 @@ export interface IUserConfigBeforeParsing {
 
 //Inbox用の文字列
 export interface IUserInbox {
-  [key: string]: {
-    senderUserId: string,
-    channelId?: string,
-    messageId?: string,
-    type: "MENTION"|"REPLY"
+  "mention": {
+    [key: string]: {
+      senderUserId: string,
+    }
+  },
+  "event": {
+    [key: string]: {
+      senderUserId: string,
+      channelId: string,
+    }
   }
 }
