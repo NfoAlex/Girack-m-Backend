@@ -13,10 +13,16 @@ export default async function fetchUserInbox(userId: string):Promise<IUserInbox|
         `,
         userId,
         (err:Error, inboxData:[{inbox: string}]) => {
-          //console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
-          //文字列をJSONにしてから返す
-          resolve(JSON.parse(inboxData[0].inbox));
-          return;
+          if (err) {
+            console.log("fetchUserInbox :: エラー->", err);
+            resolve(null);
+            return;
+          } else {
+            //console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
+            //文字列をJSONにしてから返す
+            resolve(JSON.parse(inboxData[0].inbox));
+            return;
+          }
         }
       )
     });
