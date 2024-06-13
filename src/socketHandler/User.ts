@@ -11,6 +11,7 @@ import pardonUser from "../actionHandler/User/pardonUser";
 import roleCheck from "../util/roleCheck";
 import fetchUserChannelOrder from "../actionHandler/User/fetchUserChannelOrder";
 import saveUserChannelOrder from "../actionHandler/User/saveUserChannelOrder";
+import fetchUserInbox from "../actionHandler/User/fetchUserInbox";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
@@ -70,6 +71,35 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーの通知リストを取得
+    socket.on("fetchUserInbox", async (RequestSender:IRequestSender) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
+        data: IUserInbox
+      }
+      */
+
+      /* セッション認証 */
+      if (!(await checkSession(RequestSender))) {
+        socket.emit("RESULT::fetchUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //通知Inbox取得
+        const inbox = await fetchUserInbox(RequestSender.userId);
+
+        //とれたならそのまま渡す
+        if (inbox) {
+          socket.emit("RESULT::fetchUserInbox", { result:"SUCCESS", data:inbox });
+        }
+      } catch(e) {
+        //返す
+        socket.emit("RESULT::fetchUserInbox", { result:"ERROR_DB_THING", data:null });
       }
     });
     
