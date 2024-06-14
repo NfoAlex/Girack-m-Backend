@@ -160,6 +160,10 @@ async function checkAndAddToInbox(
       const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
       if (inboxOfTargetUser === null) continue;
 
+      //チャンネル用ホルダーが無ければ空配列を作成
+      if (inboxOfTargetUser.mention[channelId] === undefined) {
+        inboxOfTargetUser.mention[channelId] = [];
+      }
       //InboxデータへメッセIdを追加
       inboxOfTargetUser.mention[channelId].push(messageId);
 
