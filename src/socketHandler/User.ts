@@ -16,6 +16,7 @@ import fetchUserInbox from "../actionHandler/User/fetchUserInbox";
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
 import type { IChannelOrder } from "../type/Channel";
+import removeFromUserInbox from "../actionHandler/User/removeFromUserInbox";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -100,6 +101,40 @@ module.exports = (io:Server) => {
       } catch(e) {
         //返す
         socket.emit("RESULT::fetchUserInbox", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザー通知リストから指定のメッセIdかイベントIdを削除
+    socket.on("removeFromUserInbox", async (
+      dat: {
+        RequestSender: IRequestSender,
+        inboxCategory: "mention"|"event",
+        inboxItemId: string
+      }
+    ) => {
+      /* セッション認証 */
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //Inboxから削除、結果受け取り
+        const inboxEditResult = await removeFromUserInbox(
+          dat.RequestSender.userId,
+          dat.inboxCategory,
+          dat.inboxItemId
+        );
+        if (inboxEditResult) {
+          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
+          return;
+        } else {
+          socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_INTERNAL_THING", data:false });
+          return;
+        }
+      } catch(e) {
+        socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_INTERNAL_THING", data:null });
+        return;
       }
     });
     
