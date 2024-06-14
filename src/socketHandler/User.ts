@@ -109,6 +109,7 @@ module.exports = (io:Server) => {
       dat: {
         RequestSender: IRequestSender,
         inboxCategory: "mention"|"event",
+        channelId: string,
         inboxItemId: string
       }
     ) => {
@@ -123,8 +124,11 @@ module.exports = (io:Server) => {
         const inboxEditResult = await removeFromUserInbox(
           dat.RequestSender.userId,
           dat.inboxCategory,
+          dat.channelId,
           dat.inboxItemId
         );
+
+        //結果を送信
         if (inboxEditResult) {
           socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
           return;
