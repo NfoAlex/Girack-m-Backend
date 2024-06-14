@@ -61,6 +61,7 @@ export default async function saveMessage(
     //メンションだった時用のInbox追加処理
     const userIdMentioning = await checkAndAddToInbox(
       userId,
+      messageData.channelId,
       messageData.messageId,
       message.content
     );
@@ -134,6 +135,7 @@ export default async function saveMessage(
  */
 async function checkAndAddToInbox(
   senderUserId: string,
+  channelId: string,
   messageId: string,
   content: string
 ):Promise<string[]|null> {
@@ -160,10 +162,8 @@ async function checkAndAddToInbox(
       const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
       if (inboxOfTargetUser === null) continue;
 
-      //Inboxデータへ通知を追加
-      inboxOfTargetUser.mention[messageId] = {
-        senderUserId: senderUserId,
-      };
+      //InboxデータへメッセIdを追加
+      inboxOfTargetUser.mention[channelId].push(messageId);
 
       //Inboxデータを書き込み
       dbUser.run(
