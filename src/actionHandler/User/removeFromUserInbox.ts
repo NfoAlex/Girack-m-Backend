@@ -5,6 +5,7 @@ const db = new sqlite3.Database("./records/USER.db");
 export default async function removeFromUserInbox(
   userId: string,
   inboxCategory: "mention"|"event",
+  channelId: string,
   itemId: string
 ):Promise<boolean> {
   try {
@@ -13,8 +14,13 @@ export default async function removeFromUserInbox(
     const inboxEditing = await fetchUserInbox(userId);
     if (!inboxEditing) return false;
 
+    //指定の項目Idの場所取得
+    const indexOfItemId = inboxEditing[inboxCategory][channelId].indexOf(itemId);
+      //消したい項目Idが無ければエラーとして返す
+    if (indexOfItemId === -1) return false;
+
     //指定のIdの項目を削除
-    delete inboxEditing[inboxCategory][itemId];
+    inboxEditing[inboxCategory][channelId].splice(indexOfItemId, 1);
 
     return new Promise((resolve) => {
       db.run(
