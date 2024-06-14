@@ -75,7 +75,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーの通知リストを取得
-    socket.on("fetchUserInbox", async (RequestSender:IRequestSender) => {
+    socket.on("fetchUserInbox", async (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -84,14 +84,14 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(RequestSender))) {
+      if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //通知Inbox取得
-        const inbox = await fetchUserInbox(RequestSender.userId);
+        const inbox = await fetchUserInbox(dat.RequestSender.userId);
 
         //とれたならそのまま渡す
         if (inbox) {
