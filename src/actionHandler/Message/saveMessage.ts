@@ -172,13 +172,21 @@ async function checkAndAddToInbox(
           WHERE userId=?
         `,
         [JSON.stringify(inboxOfTargetUser), userIdFormatted],
-        (err:Error) => { if(err) throw Error; }
+        (err:Error) => {
+          if(err) {
+            console.log("savemessage :: checkAndAddToInbox>db : エラー->", err);
+            throw Error;
+          }
+        }
       );
 
       //実際に通知を行うユーザーId配列へ追加
       userIdMentioning.push(userIdFormatted);
 
-    } catch(e) {}
+    } catch(e) {
+      console.log("savemessage :: checkAndAddToInbox : エラー->", e);
+      return null;
+    }
   }
 
   //メンションするユーザーId配列を返す
