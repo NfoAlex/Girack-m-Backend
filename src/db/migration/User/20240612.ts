@@ -12,7 +12,6 @@ export default async function migration20240612() {
     (err:Error, tables:[{name:string}]) => {
       if (err) {
         console.log("migration(20240612) :: エラー!->", err);
-        throw err;
       }
       return;
     }
