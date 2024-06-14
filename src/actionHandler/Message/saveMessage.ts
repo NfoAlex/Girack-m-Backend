@@ -60,8 +60,7 @@ export default async function saveMessage(
 
     //メンションだった時用のInbox追加処理
     const userIdMentioning = await checkAndAddToInbox(
-      userId,
-      messageData.channelId,
+      message.channelId,
       messageData.messageId,
       message.content
     );
@@ -134,7 +133,6 @@ export default async function saveMessage(
  * メンションか返信なら対象のユーザーのInboxへ追加する
  */
 async function checkAndAddToInbox(
-  senderUserId: string,
   channelId: string,
   messageId: string,
   content: string
