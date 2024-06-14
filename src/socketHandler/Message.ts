@@ -48,7 +48,7 @@ module.exports = (io:Server) => {
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
           //送信
-          io.to(messageData.messageResult.channelId).emit("receiveMessage", messageData);
+          io.to(messageData.messageResult.channelId).emit("receiveMessage", messageData.messageResult);
           //メンション先のユーザーへ通知を送信
           if (messageData.userIdMentioning) { //nullじゃなければ送る
             for (let userId of messageData.userIdMentioning) {
