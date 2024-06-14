@@ -12,7 +12,7 @@ export default async function removeUserOnlineBySocketId(socketId:string)
 :Promise<string | null> {
   try {
 
-    console.log("removeUserOnlineBySocketId :: socketId->", socketId);
+    //console.log("removeUserOnlineBySocketId :: socketId->", socketId);
 
     //切断するユーザーIdを取得
     const userIdDisconnecting:string|null = await new Promise((resolve) => {
@@ -71,7 +71,7 @@ export default async function removeUserOnlineBySocketId(socketId:string)
             if (err) {
               console.log("removeUserOnlineBySocketId :: db(COUNT(*)) : エラー->", err);
             } else {
-              console.log("removeUserOnlineBySocketId :: db(COUNT(*)) : カウント->", onlineUsersNum);
+              //console.log("removeUserOnlineBySocketId :: db(COUNT(*)) : カウント->", onlineUsersNum);
               //ここで接続数調べ
               if (onlineUsersNum[0]['COUNT(*)'] === 0) {
                 resolve(userIdDisconnecting);

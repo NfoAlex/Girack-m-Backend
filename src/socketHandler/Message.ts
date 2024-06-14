@@ -45,6 +45,8 @@ module.exports = (io:Server) => {
           dat.message
         );
 
+        //console.log("Message :: socket(sendMessage) : messageData->", messageData);
+
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
           //送信

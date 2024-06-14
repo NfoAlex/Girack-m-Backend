@@ -32,7 +32,7 @@ module.exports = (io:Server) => {
         //認証処理
         const onlineUsers = await fetchOnlineUsers();
 
-        console.log("onlineUsers :: fetchOnlineUsers : onlineUsers->", onlineUsers);
+        //console.log("onlineUsers :: fetchOnlineUsers : onlineUsers->", onlineUsers);
 
         //成功
         socket.emit("RESULT::fetchOnlineUsers", {
