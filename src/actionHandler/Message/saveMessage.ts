@@ -168,7 +168,7 @@ async function checkAndAddToInbox(
       //Inboxデータを書き込み
       dbUser.run(
         `
-        UPDATE USERS_SAVES SET channelOrder=?
+        UPDATE USERS_SAVES SET inbox=?
           WHERE userId=?
         `,
         [JSON.stringify(inboxOfTargetUser), userIdFormatted],
