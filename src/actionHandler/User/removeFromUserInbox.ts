@@ -18,12 +18,18 @@ export default async function removeFromUserInbox(
 
         //このユーザーのInbox取得
         const inboxEditing = await fetchUserInbox(userId);
-        if (!inboxEditing) return false;
+        if (!inboxEditing) {
+          resolve(false);
+          return;
+        };
 
         //指定の項目Idの場所取得
         const indexOfItemId = inboxEditing[inboxCategory][channelId].indexOf(itemId);
           //消したい項目Idが無ければエラーとして返す
-        if (indexOfItemId === -1) return false;
+        if (indexOfItemId === -1) {
+          resolve(false);
+          return;
+        }
 
         //指定のIdの項目を削除
         inboxEditing[inboxCategory][channelId].splice(indexOfItemId, 1);
