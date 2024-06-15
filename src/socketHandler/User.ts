@@ -12,11 +12,11 @@ import roleCheck from "../util/roleCheck";
 import fetchUserChannelOrder from "../actionHandler/User/fetchUserChannelOrder";
 import saveUserChannelOrder from "../actionHandler/User/saveUserChannelOrder";
 import fetchUserInbox from "../actionHandler/User/fetchUserInbox";
+import removeFromUserInbox from "../actionHandler/User/removeFromUserInbox";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserConfig } from "../type/User";
 import type { IChannelOrder } from "../type/Channel";
-import removeFromUserInbox from "../actionHandler/User/removeFromUserInbox";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {

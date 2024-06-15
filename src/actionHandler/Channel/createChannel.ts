@@ -31,7 +31,7 @@ export default async function createChannel(
         description,
         userId,
         isPrivate,
-        "MEMBER",
+        "",
         (err:Error) => { //結果処理
           //エラーなら失敗と返し、無事ならtrueを返す
           if (err) {
