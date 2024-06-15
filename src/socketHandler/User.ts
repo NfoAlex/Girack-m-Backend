@@ -105,6 +105,16 @@ module.exports = (io:Server) => {
     });
 
     //ユーザー通知リストから指定のメッセIdかイベントIdを削除
+      //キュー
+    const queueRemove:{
+      userId: string,
+      inboxCategory: "mention"|"event",
+      channelId: string,
+      itemId: string
+    }[] = []
+      //キューが動作しているかどうか
+    let ActingremoteFromUserInbox:boolean = false;
+      //Socketハンドラ
     socket.on("removeFromUserInbox", async (
       dat: {
         RequestSender: IRequestSender,
@@ -119,25 +129,49 @@ module.exports = (io:Server) => {
         return;
       }
 
+      //キューに追加
+      queueRemove.push({
+        userId: dat.RequestSender.userId,
+        inboxCategory: dat.inboxCategory,
+        channelId: dat.channelId,
+        itemId: dat.inboxItemId
+      });
+      //console.log("User :: socket(removeFromUserInbox) : ActingremoteFromUserInbox->", ActingremoteFromUserInbox);
+
+      //もしすでに処理始めているなら停止
+      if (ActingremoteFromUserInbox) return;
+
       try {
-        //Inboxから削除、結果受け取り
-        const inboxEditResult = await removeFromUserInbox(
-          dat.RequestSender.userId,
-          dat.inboxCategory,
-          dat.channelId,
-          dat.inboxItemId
-        );
+        //処理をしていると設定
+        ActingremoteFromUserInbox = true;
+        //ループで通知削除処理
+        while (queueRemove.length !== 0) {
+          //キューからデータ取得
+          const q = queueRemove[0];
+          //Inboxから削除、結果受け取り（引数にキューのデータを使う）
+          const inboxEditResult = await removeFromUserInbox(
+            q.userId,
+            q.inboxCategory,
+            q.channelId,
+            q.itemId
+          );
 
-        console.log("User :: socket(removeFromUserInbox) :: 結果->", inboxEditResult);
+          //console.log("User :: socket(removeFromUserInbox) :: 結果->", inboxEditResult);
 
-        //結果を送信
-        if (inboxEditResult) {
-          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
-          return;
-        } else {
-          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS_NO_CHANGES", data:false });
-          return;
+          //結果を送信
+          if (inboxEditResult) {
+            io.to(q.userId).emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
+          } else {
+            io.to(q.userId).emit("RESULT::removeFromUserInbox", { result:"SUCCESS_NO_CHANGES", data:false });
+          }
+
+          //キューから削除
+          queueRemove.splice(0,1);
+          //console.log("User :: socket(removeFromUserInbox) : queueRemove->", queueRemove);
         }
+
+        //処理をやめたと設定
+        ActingremoteFromUserInbox = false;
       } catch(e) {
         socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_INTERNAL_THING", data:null });
         return;
