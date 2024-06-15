@@ -128,12 +128,14 @@ module.exports = (io:Server) => {
           dat.inboxItemId
         );
 
+        console.log("User :: socket(removeFromUserInbox) :: 結果->", inboxEditResult);
+
         //結果を送信
         if (inboxEditResult) {
           socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
           return;
         } else {
-          socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_INTERNAL_THING", data:false });
+          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS_NO_CHANGES", data:false });
           return;
         }
       } catch(e) {
