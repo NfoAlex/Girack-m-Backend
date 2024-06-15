@@ -15,7 +15,7 @@ export default async function fetchOnlineUsers():Promise<string[]|null> {
             resolve(null);
             return;
           } else {
-            console.log("fetchOnlineUser :: db : onlineUsers->", onlineUsers);
+            //console.log("fetchOnlineUser :: db : onlineUsers->", onlineUsers);
             //取得結果を配列にする
             const onlineUsersArr:string[] = [];
             for (let userId of onlineUsers) {

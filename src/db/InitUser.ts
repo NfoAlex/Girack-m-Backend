@@ -1,7 +1,12 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 
+import migration20240612 from "./migration/User/20240612";
+
 db.serialize(() => {
+  //migration
+  migration20240612(); //inboxカラム追加
+
   //ユーザー基本情報を保存するUSERS_INFOテーブルを無ければ作成
   db.run(`create table if not exists USERS_INFO(
     userId TEXT PRIMARY KEY,
@@ -39,6 +44,7 @@ db.serialize(() => {
     userId TEXT PRIMARY KEY,
     messageReadId TEXT DEFAULT '{}',
     channelOrder TEXT DEFAULT '{}',
+    inbox TEXT DEFAULT '{ "mention": {}, "event": {} }',
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`);
 });

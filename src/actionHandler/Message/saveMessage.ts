@@ -1,8 +1,9 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 import { ServerInfo } from "../../db/InitServer";
+import fetchUserInbox from "../User/fetchUserInbox";
 
-import { IMessage } from "../../type/Message";
+import type { IMessage } from "../../type/Message";
 
 export default async function saveMessage(
   userId: string,
@@ -10,7 +11,14 @@ export default async function saveMessage(
     channelId: string,
     content: string
   }
-):Promise<IMessage|null> {
+):Promise<
+  {
+    messageResult: IMessage,
+    userIdMentioning: string[] | null
+  }
+  |
+  null
+> {
   try {
 
     //形成するメッセージデータ
@@ -49,6 +57,13 @@ export default async function saveMessage(
 
     //メッセージIDを作成
     messageData.messageId = message.channelId + randId + timestampJoined;
+
+    //メンションだった時用のInbox追加処理
+    const userIdMentioning = await checkAndAddToInbox(
+      message.channelId,
+      messageData.messageId,
+      message.content
+    );
 
     //DB処理
     return new Promise((resolve) => {
@@ -92,8 +107,11 @@ export default async function saveMessage(
               resolve(null);
               return;
             } else {
-              //ここでメッセージデータを返す
-              resolve(messageData);
+              //ここでメッセージデータとメンションする人配列を返す
+              resolve({
+                messageResult: messageData,
+                userIdMentioning: userIdMentioning
+              });
               return;
             }
           }
@@ -109,4 +127,70 @@ export default async function saveMessage(
     return null;
 
   }
+}
+
+/**
+ * メンションか返信なら対象のユーザーのInboxへ追加する
+ */
+async function checkAndAddToInbox(
+  channelId: string,
+  messageId: string,
+  content: string
+):Promise<string[]|null> {
+  //メンション用のRegex
+  const MentionRegex:RegExp = /@<([0-9]*)>/g;
+  //マッチ結果
+  const matchResult:RegExpMatchArray|null = content.match(MentionRegex);
+  //実際に通知をするユーザーId配列
+  const userIdMentioning:string[] = [];
+
+  //そもそもマッチが無いなら停止
+  if (matchResult === null) return null;
+
+  //db操作用
+  const dbUser = new sqlite3.Database("./records/USER.db");
+
+  //ユーザーがメンションされているなら対象の人のInboxに通知を追加
+  for (let targetUserId of matchResult) {
+    try {
+
+      //メンションクエリーから@<>を削除してユーザーIdを抽出
+      const userIdFormatted = targetUserId.slice(2).slice(0,-1);
+      //この人のinboxを取り出す
+      const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
+      if (inboxOfTargetUser === null) continue;
+
+      //チャンネル用ホルダーが無ければ空配列を作成
+      if (inboxOfTargetUser.mention[channelId] === undefined) {
+        inboxOfTargetUser.mention[channelId] = [];
+      }
+      //InboxデータへメッセIdを追加
+      inboxOfTargetUser.mention[channelId].push(messageId);
+
+      //Inboxデータを書き込み
+      dbUser.run(
+        `
+        UPDATE USERS_SAVES SET inbox=?
+          WHERE userId=?
+        `,
+        [JSON.stringify(inboxOfTargetUser), userIdFormatted],
+        (err:Error) => {
+          if(err) {
+            console.log("savemessage :: checkAndAddToInbox>db : エラー->", err);
+            throw Error;
+          }
+        }
+      );
+
+      //実際に通知を行うユーザーId配列へ追加
+      userIdMentioning.push(userIdFormatted);
+
+    } catch(e) {
+      console.log("savemessage :: checkAndAddToInbox : エラー->", e);
+      return null;
+    }
+  }
+
+  //メンションするユーザーId配列を返す
+  return userIdMentioning;
 }

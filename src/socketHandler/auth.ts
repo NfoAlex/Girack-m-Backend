@@ -1,7 +1,6 @@
 import { Socket, Server } from "socket.io";
 
 import authLogin from "../actionHandler/auth/authLogin";
-import { IUserInfo } from "../type/User";
 import authRegister from "../actionHandler/auth/authRegister";
 import IRequestSender from "../type/requestSender";
 import changePassword from "../actionHandler/auth/changePassword";
@@ -9,6 +8,8 @@ import checkSession from "../actionHandler/auth/checkSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
+
+import type { IUserInfo } from "../type/User";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -50,6 +51,8 @@ module.exports = (io:Server) => {
           }
           //認証済みの人として参加
           socket.join("LOGGEDIN");
+          //このユーザーIdのチャンネルへ参加
+          socket.join(authData.UserInfo.userId);
 
           //オンラインのユーザーとして記録
           const addUserOnlineResult = await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
@@ -84,24 +87,28 @@ module.exports = (io:Server) => {
       } else { //成功
         //参加チャンネル分、Socketルームへ参加させる
         const userInfo = await fetchUser(dat.userId, null);
-          //情報が空じゃなければ参加処理
-        if (userInfo !== null) {
-          //参加ァ
-          for (let channelId of userInfo.channelJoined) {
-            socket.join(channelId);
-          }
+        //ユーザー情報が空ならエラー
+        if (userInfo === null) {
+          socket.emit("RESULT::authSession", { result:"ERROR_DB_THING", data:false });
+          return;
         }
 
+        //情報が空じゃなければチャンネルへの参加処理
+        for (let channelId of userInfo.channelJoined) {
+          socket.join(channelId);
+        }
         //認証済みの人として参加
         socket.join("LOGGEDIN");
+        //このユーザーIdのチャンネルへ参加
+        socket.join(userInfo.userId);
+
+        //認証の結果をここで送信
+        socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
 
         //オンラインのユーザーとして記録
         await addUserOnline(socket.id, dat.userId, dat.sessionId);
-
         //オンラインになる人としてユーザーIdをログイン済みの全員に送信
         io.to("LOGGEDIN").emit("addOnlineUser", {data:dat.userId});
-
-        socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
       }
     });
 

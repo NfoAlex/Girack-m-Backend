@@ -83,3 +83,13 @@ export interface IUserConfigBeforeParsing {
   channel: string,
   sidebar: string
 }
+
+//Inbox用の文字列
+export interface IUserInbox {
+  "mention": {
+    [key: string]: string[] //ここでのkeyはチャンネルId
+  },
+  "event": {
+    [key: string]: string[] //ここでのkeyはチャンネルId
+  }
+}

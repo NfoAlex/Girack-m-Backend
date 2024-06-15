@@ -45,27 +45,39 @@ module.exports = (io:Server) => {
           dat.message
         );
 
+        //console.log("Message :: socket(sendMessage) : messageData->", messageData);
+
         //処理に成功したのならメッセージ送信
         if (messageData !== null) {
-          io.to(messageData.channelId).emit("receiveMessage", messageData);
+          //送信
+          io.to(messageData.messageResult.channelId).emit("receiveMessage", messageData.messageResult);
+          //メンション先のユーザーへ通知を送信
+          if (messageData.userIdMentioning) { //nullじゃなければ送る
+            for (let userId of messageData.userIdMentioning) {
+              io.to(userId).emit("newNotification");
+            }
+          }
+
+          /**************************************************/
+          /* URLがあったときのプレビュー生成、送信 */
 
           //URLが含まれるならプレビューを生成
           const urlRegex = /((https|http)?:\/\/[^\s]+)/g;
-          const urlMatched = messageData.content.match(urlRegex);
+          const urlMatched = messageData.messageResult.content.match(urlRegex);
             //nullじゃなければ生成
           if (urlMatched) {
             const linkDataResult:IMessage["linkData"]|null = await genLinkPreview(
               urlMatched,
-              messageData.channelId,
-              messageData.messageId
+              messageData.messageResult.channelId,
+              messageData.messageResult.messageId
             );
 
             //結果があるなら更新させる
             if (linkDataResult !== null) {
               //リンクデータを上書き
-              messageData.linkData = linkDataResult;
+              messageData.messageResult.linkData = linkDataResult;
               //送信
-              io.to(messageData.channelId).emit(
+              io.to(messageData.messageResult.channelId).emit(
                 "updateMessage",
                 {
                   result: "SUCCESS",
@@ -77,6 +89,8 @@ module.exports = (io:Server) => {
               return;
             }
           }
+          
+          /**************************************************/
         }
       } catch(e) {
         console.log("Message :: socket(sendMessage) : エラー->", e);
