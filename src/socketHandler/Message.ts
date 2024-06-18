@@ -81,7 +81,7 @@ module.exports = (io:Server) => {
                 "updateMessage",
                 {
                   result: "SUCCESS",
-                  data: messageData
+                  data: messageData.messageResult
                 }
               );
             } else {
