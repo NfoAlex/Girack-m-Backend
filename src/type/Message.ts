@@ -25,7 +25,7 @@ export interface IMessage {
         title?: string,
         description?: string,
         favicon: string,
-        images?: {url:string, type:string}[]
+        images: {url:string, type:string}[]
       }
       |
       {
