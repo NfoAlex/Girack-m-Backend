@@ -131,7 +131,7 @@ async function fetchURL(url:string):Promise<IURLParsed> {
       siteName: result.ogSiteName,
       title: result.ogTitle,
       description: result.ogDescription,
-      images: result.ogImage,
+      images: result.ogImage ? [...result.ogImage] : [],
       favicon: result.favicon
     };
   });
@@ -175,7 +175,7 @@ async function fetchURLForTwitter(url:string) {
         siteName: result.ogSiteName,
         title: result.ogTitle,
         description: result.ogDescription,
-        images: result.ogImage,
+        images: result.ogImage ? [...result.ogImage] : [],
         favicon: result.favicon
       };
     });
