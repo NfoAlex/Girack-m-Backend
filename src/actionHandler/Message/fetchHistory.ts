@@ -26,7 +26,15 @@ export default async function fetchHistory(
     let positionIndex:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
-    if (fetchingPosition.positionMessageId !== "" && fetchingPosition.positionMessageId !== undefined) {
+    if (
+      ( //Idの指定があるか？
+        fetchingPosition.positionMessageId !== "" && fetchingPosition.positionMessageId !== undefined
+      )
+      ||
+      ( //または時間の指定があるか？
+        fetchingPosition.positionMessageTime !== "" && fetchingPosition.positionMessageTime !== undefined
+      )
+    ) {
       //メッセージのインデックス番号を計算する
       const positionTemp = await calcPositionOfMessage(
         channelId,
@@ -187,7 +195,7 @@ async function calcPositionOfMessage(
 ):Promise<number|null> {
   return await new Promise((resolve) => {
     try {
-      
+
       //位置計算に使うメッセージ情報
       let calcMode:"messageId"|"time" = "messageId";
       //引数に時間があるかで使う情報切り替え
