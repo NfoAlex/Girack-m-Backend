@@ -4,13 +4,13 @@ import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
 import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
-import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
+import setMessageReadTime from "../actionHandler/Message/setMessageReadTime";
 import getMessageReadId from "../actionHandler/Message/getMessageReadTime";
 import deleteMessage from "../actionHandler/Message/deleteMessage";
 import genLinkPreview from "../util/genLinkPreview";
 
 import type IRequestSender from "../type/requestSender";
-import type { IMessage, IMessageReadId } from "../type/Message";
+import type { IMessage, IMessageReadTime } from "../type/Message";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
