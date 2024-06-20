@@ -6,7 +6,8 @@ import { IMessage, IMessageBeforeParsing } from "../../type/Message";
 export default async function fetchHistory(
   channelId: string,
   fetchingPosition: {
-    positionMessageId: string
+    positionMessageId?: string
+    positionMessageTime?: string
     includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
   }
@@ -25,9 +26,15 @@ export default async function fetchHistory(
     let positionIndex:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
-    if (fetchingPosition.positionMessageId !== "") {
+    if (fetchingPosition.positionMessageId !== "" && fetchingPosition.positionMessageId !== undefined) {
       //メッセージのインデックス番号を計算する
-      const positionTemp = await calcPositionOfMessage(channelId, fetchingPosition.positionMessageId);
+      const positionTemp = await calcPositionOfMessage(
+        channelId,
+        {
+          messageId: fetchingPosition.positionMessageId,
+          time: fetchingPosition.positionMessageTime
+        }
+      );
 
       //結果に応じて値設定
       if (positionTemp === null) {
@@ -171,11 +178,30 @@ export default async function fetchHistory(
 }
 
 //メッセージの位置を取得
-async function calcPositionOfMessage(channelId:string, messageId:string)
-:Promise<number|null> {
+async function calcPositionOfMessage(
+  channelId:string,
+  messagePos: {
+    messageId?: string,
+    time?: string
+  }
+):Promise<number|null> {
   return await new Promise((resolve) => {
     try {
+      //位置計算に使うメッセージ情報
+      let calcMode:"messageId"|"time" = "messageId";
+      //引数に時間があるかで使う情報切り替え
+      if (messagePos.time !== undefined) {
+        calcMode = "time";
+      }
 
+      //検索に使うSQL構文を選択(時間かメッセIdか)
+      const searchQuery = calcMode==="messageId"
+        ?
+          "messageId = " + messagePos.messageId
+        :
+          "time = " + messagePos.time
+
+      //該当メッセージの位置取得
       db.all(
         `
         WITH NumberedRows AS (
@@ -190,7 +216,7 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
         FROM
           NumberedRows
         WHERE
-          messageId = '` + messageId + `';
+          ${searchQuery};
         `,
         (err:Error, messageWithIndex:any) => {
           if (err) {
