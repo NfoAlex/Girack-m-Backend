@@ -187,6 +187,7 @@ async function calcPositionOfMessage(
 ):Promise<number|null> {
   return await new Promise((resolve) => {
     try {
+      
       //位置計算に使うメッセージ情報
       let calcMode:"messageId"|"time" = "messageId";
       //引数に時間があるかで使う情報切り替え
