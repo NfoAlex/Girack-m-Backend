@@ -2,7 +2,7 @@ import sqlite3 from "sqlite3";
 import type { IMessageReadId } from "../../type/Message";
 const db = new sqlite3.Database("./records/USER.db");
 
-import getMessageReadId from "./getMessageReadId";
+import getMessageReadId from "./getMessageReadTime";
 
 export default async function setMessageReadId(
   userId: string,

@@ -5,7 +5,7 @@ import fetchHistory from "../actionHandler/Message/fetchHistory";
 import reactMessage from "../actionHandler/Message/reactMessage";
 import fetchMessage from "../actionHandler/Message/fetchMessage";
 import setMessageReadTime from "../actionHandler/Message/setMessageReadId";
-import getMessageReadId from "../actionHandler/Message/getMessageReadId";
+import getMessageReadId from "../actionHandler/Message/getMessageReadTime";
 import deleteMessage from "../actionHandler/Message/deleteMessage";
 import genLinkPreview from "../util/genLinkPreview";
 
