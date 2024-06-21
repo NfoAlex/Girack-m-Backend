@@ -246,7 +246,7 @@ module.exports = (io:Server) => {
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
-        messageId: string
+        messageTime: string
     }) => {
       //セッション認証
       if (!(await checkSession(dat.RequestSender))) {
@@ -259,7 +259,7 @@ module.exports = (io:Server) => {
         const setMessageReadTimeResult:boolean = await setMessageReadTime(
           dat.RequestSender.userId,
           dat.channelId,
-          dat.messageId
+          dat.messageTime
         );
 
         //結果に応じてboolを送信

@@ -7,7 +7,7 @@ import getMessageReadTime from "./getMessageReadTime";
 export default async function setMessageReadTime(
   userId: string,
   channelId: string,
-  messageId: string
+  messageTime: string
 ):Promise<boolean> {
   try {
 
@@ -17,7 +17,7 @@ export default async function setMessageReadTime(
     if (messageReadTime===null) return false;
 
     //データを更新する
-    messageReadTime[channelId] = messageId;
+    messageReadTime[channelId] = messageTime;
 
     //DBへの書き込み処理
     return new Promise((resolve) => {
