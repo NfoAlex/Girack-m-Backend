@@ -203,6 +203,8 @@ async function calcPositionOfMessage(
         calcMode = "time";
       }
 
+      //console.log("fetchHistory :: calcPositionOfMessage : calcMode->", calcMode);
+
       //検索に使うSQL構文を選択(時間かメッセIdか)
       const searchQuery = calcMode==="messageId"
         ?

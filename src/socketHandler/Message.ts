@@ -179,6 +179,7 @@ module.exports = (io:Server) => {
           atTop: boolean,
           atEnd: boolean
         }|null = await fetchHistory(dat.channelId, dat.fetchingPosition);
+
         //データを送信
         socket.emit(
           "RESULT::fetchHistory",
