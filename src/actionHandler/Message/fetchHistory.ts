@@ -72,7 +72,7 @@ export default async function fetchHistory(
         `,
         (err:Error, length:[{"COUNT(*)":number}]) => {
           if (err) {
-            console.log("fetchHistory :: db(historyLength) : エラー->", err);
+            console.log("fetchHistory :: db(履歴の長さ取得) : エラー->", err);
             resolve(null);
             return;
           } else {
@@ -112,7 +112,7 @@ export default async function fetchHistory(
         `,
         (err:Error, history:IMessageBeforeParsing[]) => {
           if (err) {
-            console.log("fetchHistory :: db : エラー->", err);
+            console.log("fetchHistory :: db(履歴取得) : エラー->", err);
             resolve(null);
             return;
           } else {
@@ -206,9 +206,9 @@ async function calcPositionOfMessage(
       //検索に使うSQL構文を選択(時間かメッセIdか)
       const searchQuery = calcMode==="messageId"
         ?
-          "messageId = " + messagePos.messageId
+          "messageId = '" + messagePos.messageId + "'"
         :
-          "time = " + messagePos.time
+          "time = '" + messagePos.time + "'"
 
       //該当メッセージの位置取得
       db.all(
@@ -229,7 +229,7 @@ async function calcPositionOfMessage(
         `,
         (err:Error, messageWithIndex:any) => {
           if (err) {
-            console.log("fetchHistory :: db : エラー->", err);
+            console.log("fetchHistory :: db(メッセ位置計算) : エラー->", err);
             resolve(null);
             return;
           } else {
