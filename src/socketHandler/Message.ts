@@ -255,6 +255,12 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //もし時間の値がDate型に使えないならエラーとして返す
+        if (isNaN(new Date(dat.messageTime).valueOf())) {
+          socket.emit("RESULT::setMessageReadTime", { result:"ERROR_TIME_CANNOT_VALIDATE", data:null });
+          return;
+        }
+
         //最新既読時間書き込み
         const setMessageReadTimeResult:boolean = await setMessageReadTime(
           dat.RequestSender.userId,
