@@ -2,10 +2,12 @@ import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/USER.db");
 
 import migration20240612 from "./migration/User/20240612";
+import migration20240618 from "./migration/User/20240618";
 
 db.serialize(() => {
   //migration
   migration20240612(); //inboxカラム追加
+  migration20240618(); //messageReadIdからmessageReadTimeへ
 
   //ユーザー基本情報を保存するUSERS_INFOテーブルを無ければ作成
   db.run(`create table if not exists USERS_INFO(

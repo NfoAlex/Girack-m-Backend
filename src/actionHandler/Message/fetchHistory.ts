@@ -6,7 +6,8 @@ import { IMessage, IMessageBeforeParsing } from "../../type/Message";
 export default async function fetchHistory(
   channelId: string,
   fetchingPosition: {
-    positionMessageId: string
+    positionMessageId?: string
+    positionMessageTime?: string
     includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
   }
@@ -25,9 +26,23 @@ export default async function fetchHistory(
     let positionIndex:number = 0;
 
     //メッセージ位置の設定、指定がないなら0
-    if (fetchingPosition.positionMessageId !== "") {
+    if (
+      ( //Idの指定があるか？
+        fetchingPosition.positionMessageId !== "" && fetchingPosition.positionMessageId !== undefined
+      )
+      ||
+      ( //または時間の指定があるか？
+        fetchingPosition.positionMessageTime !== "" && fetchingPosition.positionMessageTime !== undefined
+      )
+    ) {
       //メッセージのインデックス番号を計算する
-      const positionTemp = await calcPositionOfMessage(channelId, fetchingPosition.positionMessageId);
+      const positionTemp = await calcPositionOfMessage(
+        channelId,
+        {
+          messageId: fetchingPosition.positionMessageId,
+          time: fetchingPosition.positionMessageTime
+        }
+      );
 
       //結果に応じて値設定
       if (positionTemp === null) {
@@ -57,7 +72,7 @@ export default async function fetchHistory(
         `,
         (err:Error, length:[{"COUNT(*)":number}]) => {
           if (err) {
-            console.log("fetchHistory :: db(historyLength) : エラー->", err);
+            console.log("fetchHistory :: db(履歴の長さ取得) : エラー->", err);
             resolve(null);
             return;
           } else {
@@ -97,7 +112,7 @@ export default async function fetchHistory(
         `,
         (err:Error, history:IMessageBeforeParsing[]) => {
           if (err) {
-            console.log("fetchHistory :: db : エラー->", err);
+            console.log("fetchHistory :: db(履歴取得) : エラー->", err);
             resolve(null);
             return;
           } else {
@@ -171,11 +186,33 @@ export default async function fetchHistory(
 }
 
 //メッセージの位置を取得
-async function calcPositionOfMessage(channelId:string, messageId:string)
-:Promise<number|null> {
+async function calcPositionOfMessage(
+  channelId:string,
+  messagePos: {
+    messageId?: string,
+    time?: string
+  }
+):Promise<number|null> {
   return await new Promise((resolve) => {
     try {
 
+      //位置計算に使うメッセージ情報
+      let calcMode:"messageId"|"time" = "messageId";
+      //引数に時間があるかで使う情報切り替え
+      if (messagePos.time !== undefined) {
+        calcMode = "time";
+      }
+
+      //console.log("fetchHistory :: calcPositionOfMessage : calcMode->", calcMode);
+
+      //検索に使うSQL構文を選択(時間かメッセIdか)
+      const searchQuery = calcMode==="messageId"
+        ?
+          "messageId = '" + messagePos.messageId + "'"
+        :
+          "time = '" + messagePos.time + "'"
+
+      //該当メッセージの位置取得
       db.all(
         `
         WITH NumberedRows AS (
@@ -190,11 +227,11 @@ async function calcPositionOfMessage(channelId:string, messageId:string)
         FROM
           NumberedRows
         WHERE
-          messageId = '` + messageId + `';
+          ${searchQuery};
         `,
         (err:Error, messageWithIndex:any) => {
           if (err) {
-            console.log("fetchHistory :: db : エラー->", err);
+            console.log("fetchHistory :: db(メッセ位置計算) : エラー->", err);
             resolve(null);
             return;
           } else {
