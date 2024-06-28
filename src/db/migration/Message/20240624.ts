@@ -13,7 +13,7 @@ export default async function migrationMessage20240624() {
     (err:Error, tables:[{name:string}]) => {
       //console.log("20240624 :: tables->", tables);
 
-      //ループしてlinkDataカラムを追加
+      //ループしてreplyDataカラムを追加
       for (let channelName of tables) {
         db.run(
           `ALTER TABLE ` + channelName.name + ` ADD replyData TEXT DEFAULT '{}'`, 
