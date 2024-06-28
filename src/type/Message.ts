@@ -4,6 +4,7 @@ export interface IMessageBeforeParsing {
   channelId: string,
   userId: string,
   content: string,
+  replyData: string,
   linkData: string,
   time: string,
   reaction: string
@@ -15,6 +16,12 @@ export interface IMessage {
   channelId: string,
   userId: string,
   content: string,
+  replyData: {
+    [key: string]: {
+      userId: string,
+      messageId: string
+    }
+  },
   linkData: {
     [key: string]:
       {
