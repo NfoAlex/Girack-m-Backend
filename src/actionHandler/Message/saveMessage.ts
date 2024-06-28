@@ -27,6 +27,7 @@ export default async function saveMessage(
       channelId: message.channelId,
       userId: userId,
       content: message.content,
+      replyData: {},
       linkData: {},
       time: "",
       reaction: {}

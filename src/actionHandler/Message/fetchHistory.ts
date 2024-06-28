@@ -160,6 +160,7 @@ export default async function fetchHistory(
 
               historyParsed.push({
                 ...history[index],
+                replyData: JSON.parse(history[index].replyData),
                 linkData: linkDataParsed,
                 reaction: JSON.parse(history[index].reaction)
               });
