@@ -15,7 +15,10 @@ export default async function migrationMessage20240624() {
 
       //ループしてlinkDataカラムを追加
       for (let channelName of tables) {
-        db.run(`ALTER TABLE ` + channelName.name + ` ADD replyData TEXT DEFAULT '{}'`, (err:Error)=>{});
+        db.run(
+          `ALTER TABLE ` + channelName.name + ` ADD replyData TEXT DEFAULT '{}'`, 
+          (err:Error)=>{/* エラーなら（すでにあるなら）何もしない */}
+        );
       }
       return;
     }
