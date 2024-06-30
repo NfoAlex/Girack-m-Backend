@@ -10,9 +10,7 @@ export default async function migration20240612() {
     ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{ "mention": {}, "event": {} }';
     `,
     (err:Error, tables:[{name:string}]) => {
-      if (err) {
-        console.log("migration(20240612) :: エラー!->", err);
-      }
+      if (err) {/* 何もしない */}
       return;
     }
   );
