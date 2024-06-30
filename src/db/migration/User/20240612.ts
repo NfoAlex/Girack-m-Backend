@@ -4,7 +4,7 @@ const db = new sqlite3.Database("./records/USER.db");
 /**
  * USERS_SAVEへinboxカラム追加
  */
-export default async function migration20240612() {
+export default async function migrationUser20240612() {
   db.all(
     `
     ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{ "mention": {}, "event": {} }';

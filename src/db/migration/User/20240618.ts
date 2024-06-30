@@ -4,7 +4,7 @@ const db = new sqlite3.Database("./records/USER.db");
 /**
  * USERS_SAVEのmessageReadIdをmessageReadTimeへ名前変更
  */
-export default async function migration20240618() {
+export default async function migrationUser20240618() {
   db.serialize(() => {
     //messageReadTimeカラムがあるか調べてこの処理を続けるか判別して止める
     db.all(
