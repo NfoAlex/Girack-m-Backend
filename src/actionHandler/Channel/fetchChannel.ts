@@ -29,11 +29,6 @@ export default async function fetchChannel(channelId:string, userId:string)
               resolve(null);
               return;
             }
-            //もし参加チャンネルに入ってなければnull
-            if (!userInfo.channelJoined.includes(channelId)) {
-              resolve(null);
-              return;
-            }
 
             //このユーザーがサーバー管理権限がありプラベを見られるか調べる
             if (
