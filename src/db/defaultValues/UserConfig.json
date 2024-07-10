@@ -1,6 +1,5 @@
 {
   "notification": {
-    "enabled": true,
     "notifyAllMessages": false,
     "notifyMention": true
   },

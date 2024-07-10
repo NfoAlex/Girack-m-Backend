@@ -61,7 +61,6 @@ export interface IUserSession {
 export interface IUserConfig {
   userId: string,
   notification: {
-    enabled: boolean,
     notifyAllMessages: boolean,
     notifyMention: boolean
   },
