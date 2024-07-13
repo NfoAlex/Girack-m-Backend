@@ -160,6 +160,7 @@ export default async function fetchHistory(
 
               historyParsed.push({
                 ...history[index],
+                isEdited: history[index].isEdited===1?true:false,
                 linkData: linkDataParsed,
                 reaction: JSON.parse(history[index].reaction)
               });

@@ -26,10 +26,11 @@ export default async function saveMessage(
       messageId: "",
       channelId: message.channelId,
       userId: userId,
+      isEdited: false,
       content: message.content,
       linkData: {},
       time: "",
-      reaction: {}
+      reaction: {},
     };
 
     //もしメッセージ長がサーバー設定より長ければエラー
