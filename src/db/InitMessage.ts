@@ -14,6 +14,7 @@ db.serialize(() => {
     channelId TEXT NOT NULL,
     userId TEXT NOT NULL,
     content TEXT NOT NULL,
+    isEdited BOOLEAN NO NULL DEFAULT '0',
     linkData TEXT DEFAULT '{}',
     time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
     reaction TEXT NOT NULL
