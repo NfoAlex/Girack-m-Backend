@@ -172,7 +172,7 @@ module.exports = (io:Server) => {
 
         //結果に応じてデータを送信
         if (msgEditResult) {
-          socket.emit(
+          io.to(dat.channelId).emit(
             "RESULT::editMessage",
             { 
               result: "SUCCESS",
