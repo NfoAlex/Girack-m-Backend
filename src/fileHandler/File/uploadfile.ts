@@ -17,7 +17,7 @@ export default async function uploadfile(req:any, res:any) {
 
     //セッションの認証
     if (!(await checkSession(RequestSender))) {
-      res.status(401).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> ERROR_SESSION_ERROR");
+      res.status(401).send("/uploadfile :: アップロード中にエラーが発生しました -> ERROR_SESSION_ERROR");
       return;
     }
 
@@ -34,10 +34,13 @@ export default async function uploadfile(req:any, res:any) {
     //ファイルを移動
     fs.renameSync(req.file.path, newPath);
 
+    console.log("/uploadfile :: ファイルが書き込まれました");
+
     res.status(200).send("uploadfile");
 
   } catch (e) {
 
+    console.log("/uploadfile :: エラー!->", e);
     res.status(500).send("/uploadfile :: 内部エラーが発生しました -> ", e);
   
   }
