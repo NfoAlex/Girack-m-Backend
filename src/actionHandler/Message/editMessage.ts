@@ -26,6 +26,9 @@ export default async function editMessage(
     const messageEditing = await fetchMessage(channelId, messageId);
     if (messageEditing === null) return null;
 
+    //もし現在のテキストと編集内容が一緒なら停止
+    if (messageEditing.content === contentUpdating) return null;
+
     //操作者とメッセ主が違うならエラーで停止
     if (messageEditing.userId !== userIdBy) return null;
 
