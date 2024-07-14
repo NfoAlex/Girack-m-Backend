@@ -6,6 +6,8 @@ import { Server, Socket } from "socket.io";
 import express from "express";
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //DB用に必要なディレクトリを作成
 try{fs.mkdirSync("./records/");}catch(e){}
