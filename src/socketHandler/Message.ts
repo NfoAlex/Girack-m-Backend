@@ -11,6 +11,7 @@ import genLinkPreview from "../util/genLinkPreview";
 
 import type IRequestSender from "../type/requestSender";
 import type { IMessage, IMessageReadTime } from "../type/Message";
+import editMessage from "../actionHandler/Message/editMessage";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -145,6 +146,51 @@ module.exports = (io:Server) => {
         return;
       }
     });
+
+    //メッセージの編集
+    socket.on("editMessage", async (
+      dat:{
+        RequestSender: IRequestSender,
+        channelId: string,
+        messageId: string,
+        contentUpdating: string,
+      }
+    ) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::editMessage", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        const msgEditResult = await editMessage(
+          dat.channelId,
+          dat.messageId,
+          dat.contentUpdating,
+          dat.RequestSender.userId
+        );
+
+        //結果に応じてデータを送信
+        if (msgEditResult !== null) {
+          //編集の結果
+          socket.emit("RESULT::editMessage", { result:"SUCCESS", data:null });
+          //編集したメッセージそのものをチャンネル参加者へ送信
+          io.to(dat.channelId).emit(
+            "updateMessage",
+            { 
+              result: "SUCCESS",
+              data: msgEditResult
+            }
+          );
+        } else {
+          socket.emit("RESULT::editMessage", { result:"ERROR_DB_THING", data:null });
+          return;
+        }
+      } catch(e) {
+        socket.emit("RESULT::editMessage", { result:"ERROR_INTERNAL_THING", data:null });
+        return;
+      }
+    })
 
     //履歴の取得
     socket.on("fetchHistory", async (

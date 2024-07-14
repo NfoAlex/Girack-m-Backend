@@ -4,6 +4,7 @@ export interface IMessageBeforeParsing {
   channelId: string,
   userId: string,
   content: string,
+  isEdited: 1|0,
   linkData: string,
   time: string,
   reaction: string
@@ -14,6 +15,7 @@ export interface IMessage {
   messageId: string,
   channelId: string,
   userId: string,
+  isEdited: boolean,
   content: string,
   linkData: {
     [key: string]:
