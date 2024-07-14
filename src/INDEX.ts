@@ -32,6 +32,7 @@ const io:Server = new Server(httpServer, {
 //ファイル操作ハンドラインポート
 require("./fileHandler/multerHandler")(app);
 require("./fileHandler/IconHandler")(app);
+require("./fileHandler/FileHandler")(app);
 
 //SocketHandlerインポート
 require("./socketHandler/Server.ts")(io);
