@@ -171,16 +171,15 @@ module.exports = (io:Server) => {
         );
 
         //結果に応じてデータを送信
-        if (msgEditResult) {
+        if (msgEditResult !== null) {
+          //編集の結果
+          socket.emit("RESULT::editMessage", { result:"SUCCESS", data:null });
+          //編集したメッセージそのものをチャンネル参加者へ送信
           io.to(dat.channelId).emit(
-            "RESULT::editMessage",
+            "updateMessage",
             { 
               result: "SUCCESS",
-              data: {
-                channelId: dat.contentUpdating,
-                messageId: dat.messageId,
-                content: dat.contentUpdating
-              }
+              data: msgEditResult
             }
           );
         } else {
