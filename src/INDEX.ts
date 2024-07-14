@@ -11,6 +11,7 @@ const app = express();
 try{fs.mkdirSync("./records/");}catch(e){}
 //ファイルアップロードの保存用ディレクトリ
 try{fs.mkdirSync("./STORAGE/");}catch(e){}
+try{fs.mkdirSync("./STORAGE/USERFILE");}catch(e){}
 try{fs.mkdirSync("./STORAGE/ICON/");}catch(e){}
 try{fs.mkdirSync("./STORAGE/TEMP/");}catch(e){}
 
