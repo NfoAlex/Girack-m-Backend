@@ -1,4 +1,5 @@
 import multer from "multer";
+import type { Express } from 'express';
 
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
@@ -16,7 +17,7 @@ const upload = multer({
 
 import uploadfile from "./File/uploadfile";
 
-module.exports = (app:any) => {
+module.exports = (app:Express) => {
   //ファイルのアップロード処理
   app.post("/uploadfile", upload.single("file"), (req:any, res:any) => uploadfile(req, res));
 }
