@@ -12,6 +12,7 @@ try{fs.mkdirSync("./records/");}catch(e){}
 //ファイルアップロードの保存用ディレクトリ
 try{fs.mkdirSync("./STORAGE/");}catch(e){}
 try{fs.mkdirSync("./STORAGE/ICON/");}catch(e){}
+try{fs.mkdirSync("./STORAGE/TEMP/");}catch(e){}
 
 //DB整備
 import "./db/InitUser";
