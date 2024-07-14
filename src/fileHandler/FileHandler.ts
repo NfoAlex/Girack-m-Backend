@@ -21,11 +21,14 @@ const storage = multer.diskStorage({
         cb(null, "STORAGE/USERFILE/"+RequestSender.userId);
         return;
       } else {
+        const error = new Error("ERROR_WRONG_SESSION");
         console.log("FileHandler :: storage : セッションエラー");
-        return;
+        cb(error, "STORAGE/TEMP");
       }
     } else {
+      const error = new Error("ERROR_INFO_NOT_FOUND");
       console.log("FileHandler :: storage : 不正なreq.body");
+      cb(error, "STORAGE/TEMP");
       return;
     }
   },
