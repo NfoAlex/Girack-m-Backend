@@ -19,6 +19,7 @@ import "./db/InitServer";
 import "./db/InitRole";
 import "./db/InitMessage";
 import "./db/initOnlineUsers";
+import "./db/InitFile";
 
 const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
@@ -28,6 +29,7 @@ const io:Server = new Server(httpServer, {
 
 //ファイル操作ハンドラインポート
 require("./fileHandler/multerHandler")(app);
+require("./fileHandler/IconHandler")(app);
 
 //SocketHandlerインポート
 require("./socketHandler/Server.ts")(io);
