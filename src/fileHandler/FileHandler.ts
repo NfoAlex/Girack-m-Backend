@@ -7,7 +7,8 @@ const storage = multer.diskStorage({
     cb(null, "STORAGE/TEMP"); // アップロードされるファイルの保存先
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now());
+    //ファイル名設定
+    cb(null, file.originalname);
   }
 });
 //アップロード設定を適用
