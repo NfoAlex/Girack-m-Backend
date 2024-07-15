@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
-import { IFile } from "../../type/File";
 const db = new sqlite3.Database("./records/FILEINDEX.db");
+import type { IFile } from "../../type/File";
 
 export default async function fetchFileIndex(
   userId: string
@@ -18,7 +18,7 @@ export default async function fetchFileIndex(
             resolve(null);
             return;
           } else {
-            console.log("fetchFileIndex :: db : 結果->", fileIndex);
+            //console.log("fetchFileIndex :: db : 結果->", fileIndex);
             resolve(fileIndex);
             return;
           }

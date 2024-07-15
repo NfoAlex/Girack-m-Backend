@@ -4,6 +4,7 @@ import checkSession from "../actionHandler/auth/checkSession";
 import type IRequestSender from "../type/requestSender";
 
 import fetchFileIndex from "../actionHandler/File/fetchFileIndex";
+import deleteFile from "../actionHandler/File/deleteFile";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -50,6 +51,31 @@ module.exports = (io:Server) => {
         console.log("onlineUsers :: socket(fetchFileIndex) : error->", e);
       }
     });
+
+    //ファイルを削除する
+    socket.on("deleteFile", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::deleteFile", {
+          result: "ERROR_WRONG_SESSION",
+          data: null
+        });
+        return;
+      }
+
+      try {
+        //ファイル削除し結果を受け取る
+        const deleteFileResult = await deleteFile(dat.RequestSender.userId, dat.fileId);
+        //結果に応じて送信
+        if (deleteFileResult) {
+          socket.emit("RESULT::deleteFile", {result:"SUCCESS", data:null});
+        } else {
+          socket.emit("RESULT::deleteFile", {result:"ERROR_DB_THING", data:null});
+        }
+      } catch(e) {
+        socket.emit("RESULT::deleteFile", {result:"ERROR_INTERNAL_THING", data:null});
+      }
+    })
 
   });
 }
