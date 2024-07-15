@@ -66,13 +66,14 @@ export default async function uploadfile(req:any, res:any) {
             console.log("uploadfile :: エラー->", err);
             res.status(500).send("ERROR_DB_THING");
             return;
+          } else {
+            res.status(200).send("SUCCESS");
+            return;
           }
         }
       )
 
     });
-
-    res.status(200).send("SUCCESS");
 
   } catch (e) {
 
