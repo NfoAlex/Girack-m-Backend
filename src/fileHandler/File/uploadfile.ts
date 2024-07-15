@@ -31,7 +31,11 @@ export default async function uploadfile(req:any, res:any) {
           isPublic BOOLEAN NOT NULL DEFAULT 0,
           size NUMBER NOT NULL
         )
-        `
+        `,
+        (err:Error) => {
+          res.status(500).send("ERROR_DB_THING");
+          return;
+        }
       );
 
       //ファイルId生成
