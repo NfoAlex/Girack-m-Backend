@@ -1,7 +1,6 @@
 import fs from "fs";
 import multer from "multer";
 import checkSession from "../actionHandler/auth/checkSession";
-import path from "path";
 import type { Express, NextFunction } from 'express';
 import type IRequestSender from "../type/requestSender";
 
