@@ -3,5 +3,6 @@ export interface IFile {
   userId: string,
   name: string,
   isPublic: boolean,
-  size: number
+  size: number,
+  uploadedDate: string
 }

@@ -29,7 +29,8 @@ export default async function uploadfile(req:any, res:any) {
           userId TEXT DEFAULT ` + RequestSender.userId + `,
           name TEXT NOT NULL,
           isPublic BOOLEAN NOT NULL DEFAULT 0,
-          size NUMBER NOT NULL
+          size NUMBER NOT NULL,
+          uploadedDate TEXT NOT NULL
         )
         `,
         (err:Error) => {
@@ -46,16 +47,18 @@ export default async function uploadfile(req:any, res:any) {
         }
         return RequestSender.userId + id;
       }
+      //アップロード日時追加用
+      const uploadedDate = new Date().toJSON();
 
       //ファイルデータ書き込み
       db.run(
         `
         INSERT INTO FILE` + RequestSender.userId + ` (
-          id, name, size
+          id, name, size, uploadedDate
         )
-        VALUES (?, ?, ?)
+        VALUES (?, ?, ?, ?)
         `,
-        [fileIdGenerated(), req.file.originalname, req.file.size],
+        [fileIdGenerated(), req.file.originalname, req.file.size, uploadedDate],
         (err:Error) => {
           if (err) {
             console.log("uploadfile :: エラー->", err);
