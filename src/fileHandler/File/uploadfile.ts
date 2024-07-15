@@ -34,8 +34,10 @@ export default async function uploadfile(req:any, res:any) {
         )
         `,
         (err:Error) => {
-          res.status(500).send("ERROR_DB_THING");
-          return;
+          if (err) {
+            res.status(500).send("ERROR_DB_THING");
+            return;
+          }
         }
       );
 
