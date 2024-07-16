@@ -88,7 +88,12 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
         } else {
           //セッション認証
-          if (!(await checkSession(dat.RequestSender))) {
+          if (await checkSession(dat.RequestSender)) {
+            socket.emit("RESULT::fetchFileInfo", {
+              result: "SUCCESS",
+              data: fileInfo
+            });
+          } else {
             socket.emit("RESULT::fetchFileInfo", {
               result: "ERROR_WRONG_SESSION",
               data: null
