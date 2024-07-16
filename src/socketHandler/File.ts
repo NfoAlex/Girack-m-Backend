@@ -83,8 +83,14 @@ module.exports = (io:Server) => {
       try {
         //ファイル情報の取得
         const fileInfo = await fetchFileInfo(dat.fileId);
+        //nullならそう返す
+        if (fileInfo === null) {
+          socket.emit("RESULT::fetchFileInfo", { result:"ERROR_FILE_MISSING", data:null });
+          return;
+        }
+
         //ファイルが公開されているならそのまま送信、違うならセッション確認
-        if (fileInfo?.isPublic) {
+        if (fileInfo.isPublic) {
           socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
         } else {
           //セッション認証
