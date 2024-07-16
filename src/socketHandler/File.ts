@@ -93,8 +93,11 @@ module.exports = (io:Server) => {
         if (fileInfo.isPublic) {
           socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
         } else {
-          //セッション認証
-          if (await checkSession(dat.RequestSender)) {
+          //セッション認証をする
+          const authSessionResult = await checkSession(dat.RequestSender);
+
+          //結果に応じてそう送信
+          if (authSessionResult) {
             socket.emit("RESULT::fetchFileInfo", {
               result: "SUCCESS",
               data: fileInfo
