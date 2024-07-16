@@ -42,10 +42,14 @@ const upload = multer({
 });
 
 import uploadfile from "./File/uploadfile";
+import fetchfile from "./File/fetchfile";
 
 module.exports = (app:Express) => {
 
   //ファイルのアップロード処理
   app.post("/uploadfile", upload.single("file"), (req:any, res:any) => uploadfile(req, res));
+
+  //ファイルの取得
+  app.get("/fetchfile/:id", (req:any, res:any) => fetchfile(req,res));
 
 }
