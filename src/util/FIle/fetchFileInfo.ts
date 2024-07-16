@@ -20,7 +20,7 @@ export default async function fetchFileInfo(fileId: string):Promise<IFile|null> 
             resolve(null);
             return;
           } else {
-            console.log("fetchFileInfo :: db : 結果->", fileInfo);
+            //console.log("fetchFileInfo :: db : 結果->", fileInfo);
             resolve(fileInfo[0]);
             return;
           }
