@@ -34,7 +34,7 @@ export default async function fetchfile(req:any, res:any) {
         res.status(200).send({ result:"SUCCESS" });
         return;
       } else {
-        res.status(400).send({ result:"ERROR_FILE_MISSING" });
+        res.status(400).send({ result:"ERROR_WRONG_SESSION" });
         return;
       }
     }
