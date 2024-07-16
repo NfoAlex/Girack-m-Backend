@@ -10,11 +10,7 @@ import fetchFileInfo from "../../util/FIle/fetchFileInfo";
  */
 export default async function fetchfile(req:any, res:any) {
   try {
-
-    console.log("/uploadfile :: ファイルが書き込まれました");
-    // 補足データ（metadata）を取得し、JSONとしてパース
-    console.log("/uploadfile :: これからの処理に使うreq.body.metadata->", req.body.metadata);
-
+    
     //ファイル情報を取得
     const fileInfo = await fetchFileInfo(req.param.fileId);
     if (fileInfo === null) {
