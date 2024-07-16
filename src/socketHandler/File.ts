@@ -5,6 +5,7 @@ import type IRequestSender from "../type/requestSender";
 
 import fetchFileIndex from "../actionHandler/File/fetchFileIndex";
 import deleteFile from "../actionHandler/File/deleteFile";
+import fetchFileInfo from "../util/FIle/fetchFileInfo";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -75,7 +76,32 @@ module.exports = (io:Server) => {
       } catch(e) {
         socket.emit("RESULT::deleteFile", {result:"ERROR_INTERNAL_THING", data:null});
       }
-    })
+    });
+
+    //ファイル単体情報の取得
+    socket.on("fetchFileInfo", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+      try {
+        //ファイル情報の取得
+        const fileInfo = await fetchFileInfo(dat.fileId);
+        //ファイルが公開されているならそのまま送信、違うならセッション確認
+        if (fileInfo?.isPublic) {
+          socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
+        } else {
+          //セッション認証
+          if (!(await checkSession(dat.RequestSender))) {
+            socket.emit("RESULT::fetchFileInfo", {
+              result: "ERROR_WRONG_SESSION",
+              data: null
+            });
+          }
+        }
+      } catch(e) {
+        socket.emit("RESULT::fetchFileInfo", {
+          result: "ERROR_INTERNAL_THING",
+          data: null
+        });
+      }
+    });
 
   });
 }
