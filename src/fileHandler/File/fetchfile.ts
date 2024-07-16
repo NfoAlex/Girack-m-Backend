@@ -12,7 +12,7 @@ export default async function fetchfile(req:any, res:any) {
   try {
     
     //ファイル情報を取得
-    const fileInfo = await fetchFileInfo(req.param.fileId);
+    const fileInfo = await fetchFileInfo(req.params.id);
     if (fileInfo === null) {
       res.status(400).send({ result:"ERROR_FILE_MISSING" });
       return;
