@@ -93,6 +93,12 @@ module.exports = (io:Server) => {
         if (fileInfo.isPublic) {
           socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
         } else {
+          //もし送信者情報が無いなら非公開ファイルだと言うことだけ送信
+          if (dat.RequestSender === undefined) {
+            socket.emit("RESULT::fetchFileInfo", { result:"ERROR_FILE_IS_PRIVATE", data:null });
+            return;
+          }
+          
           //セッション認証をする
           const authSessionResult = await checkSession(dat.RequestSender);
 
