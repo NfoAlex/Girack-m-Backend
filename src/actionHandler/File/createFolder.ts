@@ -29,11 +29,11 @@ export default async function createFolder(
     return new Promise((resolve) => {
       db.run(
         `
-        INSERT INTO FOLDER (
-          id, userId, name, positionedDirectory
+        INSERT INTO FOLDERS (
+          id, userId, name, positionedDirectoryId
         ) VALUES (?, ?, ?, ?)
         `,
-        [folderIdGenerated(), userId, folderName, directory],
+        [folderIdGenerated(), userId, folderName, directoryId],
         (err:Error) => {
           if (err) {
             console.log("createFolder :: エラー->", err);
