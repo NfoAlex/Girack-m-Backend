@@ -141,13 +141,13 @@ module.exports = (io:Server) => {
         const folder = await fetchFolders(dat.RequestSender.userId);
         //取得内容に応じて結果を送信
         if (folder !== null) {
-          socket.emit("RESULT::fetchFolders", { result:"SUCCESS", dat:folder });
+          socket.emit("RESULT::fetchFolders", { result:"SUCCESS", data:folder });
         } else {
-          socket.emit("RESULT::fetchFolders", { result:"ERROR_DB_THING", dat:null });
+          socket.emit("RESULT::fetchFolders", { result:"ERROR_DB_THING", data:null });
         }
       } catch(e) {
         console.log("socket(fetchFolders) :: エラー->", e);
-        socket.emit("RESULT::fetchFolders", { result:"ERROR_INTERNAL_THING", dat:null });
+        socket.emit("RESULT::fetchFolders", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
