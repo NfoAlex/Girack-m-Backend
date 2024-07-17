@@ -3,7 +3,9 @@ const db = new sqlite3.Database("./records/FILEINDEX.db");
 import type { IFile } from "../../type/File";
 
 export default async function fetchFileIndex(
-  userId: string
+  userId: string,
+  directory: string = "",
+  searchQuery: string = ""
 ):Promise<IFile[]|null> {
   try {
 
@@ -11,7 +13,11 @@ export default async function fetchFileIndex(
       db.all(
         `
         SELECT * FROM FILE` + userId + `
+          WHERE directory=?
+          AND
+          name LIKE '%` + searchQuery + `%'
         `,
+        directory,
         (err:Error, fileIndex:IFile[]) => {
           if (err) {
             console.log("fetchFileIndex :: db : エラー->", err);

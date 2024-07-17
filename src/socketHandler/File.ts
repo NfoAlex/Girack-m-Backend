@@ -13,7 +13,13 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
     
     //自分のファイルインデックスを取得
-    socket.on("fetchFileIndex", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchFileIndex", async (
+      dat: {
+        RequestSender: IRequestSender,
+        directory: string,
+        searchQuery: string
+      }
+    ) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_WRONGINFO",
@@ -32,7 +38,11 @@ module.exports = (io:Server) => {
 
       try {
         //ファイルインデックス取得
-        const fileIndex = await fetchFileIndex(dat.RequestSender.userId);
+        const fileIndex = await fetchFileIndex(
+          dat.RequestSender.userId,
+          dat.directory,
+          dat.searchQuery
+        );
 
         //データに応じて結果を送信
         if (fileIndex !== null) {
@@ -126,7 +136,12 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーを取得
-    socket.on("fetchFolders", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchFolders", async (
+      dat: {
+        RequestSender: IRequestSender,
+        positionedDirectoryId: string
+      }
+    ) => {
       //セッション認証
       if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchFolders", {
@@ -138,7 +153,10 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーを取得
-        const folder = await fetchFolders(dat.RequestSender.userId);
+        const folder = await fetchFolders(
+          dat.RequestSender.userId,
+          dat.positionedDirectoryId
+        );
         //取得内容に応じて結果を送信
         if (folder !== null) {
           socket.emit("RESULT::fetchFolders", { result:"SUCCESS", data:folder });
