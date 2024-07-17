@@ -12,5 +12,5 @@ export interface IFolder {
   id: string,
   userId: string,
   name: string,
-  positionedDirectory: string
+  positionedDirectoryId: string
 }
