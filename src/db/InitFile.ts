@@ -9,7 +9,7 @@ db.serialize(() => {
       id TEXT PRIMARY KEY,
       userId TEXT NOT NULL,
       name TXT NOT NULL,
-      positionedDicretory TEXT NOT NULL
+      positionedDirectoryId TEXT NOT NULL
     )
     `,
     (err:Error) => {
