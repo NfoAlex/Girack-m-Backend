@@ -10,14 +10,17 @@ const storage = multer.diskStorage({
     console.log("FileHandler :: storage : req.body->", req.body);
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
       //送信者情報取り出し
-      const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
+      const metadata:{
+        RequestSender: IRequestSender,
+        directory: string
+      } = JSON.parse(req.body.metadata);
 
       //セッション認証
-      if (await checkSession(RequestSender)) {
+      if (await checkSession(metadata.RequestSender)) {
         //このユーザー用のディレクトリ作成
-        try{fs.mkdirSync("./STORAGE/USERFILE/" + RequestSender.userId);}catch(e){}
+        try{fs.mkdirSync("./STORAGE/USERFILE/" + metadata.RequestSender.userId);}catch(e){}
         // アップロードされるファイルの保存先
-        cb(null, "STORAGE/USERFILE/"+RequestSender.userId);
+        cb(null, "STORAGE/USERFILE/"+metadata.RequestSender.userId);
         return;
       } else {
         const error = new Error("ERROR_WRONG_SESSION");

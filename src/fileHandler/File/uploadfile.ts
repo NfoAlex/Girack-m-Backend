@@ -16,20 +16,24 @@ export default async function uploadfile(req:any, res:any) {
     // 補足データ（metadata）を取得し、JSONとしてパース
     console.log("/uploadfile :: これからの処理に使うreq.body.metadata->", req.body.metadata);
 
-    //送信者情報取り出し
-    const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
+    //送信者情報とディレクトリ取り出し
+    const metadata: {
+      RequestSender: IRequestSender,
+      directory: string
+    } = JSON.parse(req.body.metadata);
 
     db.serialize(() => {
 
       //この人用のファイルインデックス用テーブル作成
       db.run(
         `
-        create table if not exists FILE` + RequestSender.userId + `(
+        create table if not exists FILE` + metadata.RequestSender.userId + `(
           id TEXT PRIMARY KEY,
-          userId TEXT DEFAULT ` + RequestSender.userId + `,
+          userId TEXT DEFAULT ` + metadata.RequestSender.userId + `,
           name TEXT NOT NULL,
           isPublic BOOLEAN NOT NULL DEFAULT 0,
           size NUMBER NOT NULL,
+          directory TEXT NOT NULL,
           uploadedDate TEXT NOT NULL
         )
         `,
@@ -47,7 +51,7 @@ export default async function uploadfile(req:any, res:any) {
         for (let i=0; i<10; i++) {
           id += Math.floor(Math.random()*9).toString();
         }
-        return RequestSender.userId + id;
+        return metadata.RequestSender.userId + id;
       }
       //アップロード日時追加用
       const uploadedDate = new Date().toJSON();
@@ -55,12 +59,12 @@ export default async function uploadfile(req:any, res:any) {
       //ファイルデータ書き込み
       db.run(
         `
-        INSERT INTO FILE` + RequestSender.userId + ` (
-          id, name, size, uploadedDate
+        INSERT INTO FILE` + metadata.RequestSender.userId + ` (
+          id, name, size, directory, uploadedDate
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?)
         `,
-        [fileIdGenerated(), req.file.originalname, req.file.size, uploadedDate],
+        [fileIdGenerated(), req.file.originalname, req.file.size, metadata.directory, uploadedDate],
         (err:Error) => {
           if (err) {
             console.log("uploadfile :: エラー->", err);
