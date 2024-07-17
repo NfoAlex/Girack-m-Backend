@@ -7,3 +7,9 @@ export interface IFile {
   directory: string,
   uploadedDate: string
 }
+
+export interface IFolder {
+  id: string,
+  name: string,
+  positionedDirectory: string
+}
