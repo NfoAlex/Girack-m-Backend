@@ -218,6 +218,12 @@ module.exports = (io:Server) => {
         return;
       }
 
+      //もしディレクトリIdが一番上ならエラー
+      if (dat.folderId === "" || dat.folderId === undefined) {
+        socket.emit("RESULT::deleteFolder", { result:"ERROR_CANNOT_DELETE_ROOT", data:null });
+        return;
+      }
+
       try {
         //フォルダーの削除、結果受け取り
         const deleteFolderResult = await deleteFolder(dat.RequestSender.userId, dat.folderId);
