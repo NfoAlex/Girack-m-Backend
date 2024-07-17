@@ -12,7 +12,7 @@ import fetchFolders from "../../util/FIle/fetchFolders";
 export default async function createFolder(
   userId: string,
   folderName: string,
-  directory: string
+  directoryId: string = ""
 ):Promise<boolean> {
   try {
 
