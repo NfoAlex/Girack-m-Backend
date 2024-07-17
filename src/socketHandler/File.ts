@@ -8,6 +8,7 @@ import deleteFile from "../actionHandler/File/deleteFile";
 import fetchFileInfo from "../util/FIle/fetchFileInfo";
 import createFolder from "../actionHandler/File/createFolder";
 import fetchFolders from "../util/FIle/fetchFolders";
+import deleteFolder from "../actionHandler/File/deleteFolder";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -203,6 +204,32 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("socket(createFolder) :: エラー->", e);
         socket.emit("RESULT::createFolder", { result:"ERROR_INTERNAL_THING", dat:null });
+      }
+    });
+
+    //フォルダーと中身のすべてを削除
+    socket.on("deleteFolder", async (dat:{RequestSender:IRequestSender, folderId:string}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::deleteFolder", {
+          result: "ERROR_WRONG_SESSION",
+          data: null
+        });
+        return;
+      }
+
+      try {
+        //フォルダーの削除、結果受け取り
+        const deleteFolderResult = await deleteFolder(dat.RequestSender.userId, dat.folderId);
+        //結果に応じてそう送信
+        if (deleteFolderResult) {
+          socket.emit("RESULT::deleteFolder", { result:"SUCCESS", data:null });
+        } else {
+          socket.emit("RESULT::deleteFolder", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("socket(deleteFolder) :: エラー->", e);
+        socket.emit("RESULT::deleteFolder", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
