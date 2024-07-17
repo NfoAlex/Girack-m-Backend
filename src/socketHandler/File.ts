@@ -156,7 +156,7 @@ module.exports = (io:Server) => {
       dat: {
         RequestSender: IRequestSender,
         folderName: string,
-        directory: string
+        directoryId: string
       }
     ) => {
       //セッション認証
@@ -173,8 +173,9 @@ module.exports = (io:Server) => {
         const createFolderResult = await createFolder(
           dat.RequestSender.userId,
           dat.folderName,
-          dat.directory
+          dat.directoryId
         );
+
         //結果に応じてそう送信
         if (createFolderResult) {
           socket.emit("RESULT::createFolder", { result:"SUCCESS", dat:null });
