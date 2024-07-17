@@ -4,5 +4,6 @@ export interface IFile {
   name: string,
   isPublic: boolean,
   size: number,
+  directory: string,
   uploadedDate: string
 }
