@@ -10,6 +10,7 @@ export interface IFile {
 
 export interface IFolder {
   id: string,
+  userId: string,
   name: string,
   positionedDirectory: string
 }

@@ -2,11 +2,22 @@ import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/FILEINDEX.db");
 
 db.serialize(() => {
-  //ファイルインデックス用のフォルダ用ホルダー作成
-  db.run(`create table if exists FOLDER_LISTING(
-    userId TEXT PRIMARY KEY,
-    folder TEXT NOT NULL
-  )`);
+  //フォルダー構成用のテーブル作成
+  db.run(
+    `
+    create table if not exists FOLDERS (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      name TXT NOT NULL,
+      positionedDicretory TEXT NOT NULL
+    )
+    `,
+    (err:Error) => {
+      if (err) {
+        console.log("InitFile :: db->", err);
+      }
+    }
+  );
 
   console.log("initFile :: db : ファイルインデックス用DB作成完了");
 });
