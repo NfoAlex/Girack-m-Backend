@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/FILEINDEX.db");
+import fetchFolderInfo from "./fetchFolderInfo";
 
 import type IRequestSender from "../../type/requestSender";
 
@@ -21,6 +22,18 @@ export default async function uploadfile(req:any, res:any) {
       RequestSender: IRequestSender,
       directory: string
     } = JSON.parse(req.body.metadata);
+
+    //チャンネルフォルダを作成するかどうかフラグ
+    let flagCreateChannelFolder:boolean = false;
+    //もしディレクトリIdがチャンネルフォルダに該当するならディレクトリが作成されているかを確認
+    const regexChannelId = /^C\d{4}$/;
+    if (metadata.directory.match(regexChannelId) !== null) {
+      //このチャンネル用のフォルダを取得
+      const directoryForChannel = await fetchFolderInfo(metadata.RequestSender.userId, metadata.directory);
+      console.log("/uploadfile :: フォルダあるかどうか->", directoryForChannel);
+      //フォルダが無いのなら作るようにフラグをたてる
+      if (directoryForChannel === null) flagCreateChannelFolder = true;
+    }
 
     db.serialize(() => {
 
@@ -44,6 +57,25 @@ export default async function uploadfile(req:any, res:any) {
           }
         }
       );
+
+      //チャンネル用フォルダを作るフラグが有効なら作成
+      if (flagCreateChannelFolder) {
+        db.run(
+          `
+          INSERT INTO FOLDERS (
+            id, userId, name, positionedDirectoryId
+          ) VALUES (?, ?, ?, ?)
+          `,
+          [metadata.directory, metadata.RequestSender.userId, metadata.directory, ""],
+          (err:Error) => {
+            if (err) {
+              console.log("/uploadfile :: エラー->", err);
+              res.status(500).send({ result:"ERROR_DB_THING" });
+              return;
+            }
+          }
+        );
+      }
 
       //ファイルId生成
       const fileIdGenerated = generateFileId(metadata.RequestSender.userId);

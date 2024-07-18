@@ -20,7 +20,12 @@ export default async function fetchFolderInfo(userId:string, folderId:string):Pr
             return;
           } else {
             console.log("fetchFolderInfo :: db : 結果->", folderInfo);
-            resolve(folderInfo[0]);
+            //もし最初のものが無いならnullを返す
+            if (folderInfo[0] === undefined) {
+              resolve(null);
+            } else {
+              resolve(folderInfo[0]);
+            }
             return;
           }
         }
