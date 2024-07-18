@@ -39,20 +39,14 @@ export default async function uploadfile(req:any, res:any) {
         `,
         (err:Error) => {
           if (err) {
-            res.status(500).send("ERROR_DB_THING");
+            res.status(500).send({ result:"ERROR_DB_THING" });
             return;
           }
         }
       );
 
       //ファイルId生成
-      const fileIdGenerated = () => {
-        let id = "";
-        for (let i=0; i<10; i++) {
-          id += Math.floor(Math.random()*9).toString();
-        }
-        return metadata.RequestSender.userId + id;
-      }
+      const fileIdGenerated = generateFileId(metadata.RequestSender.userId);
       //アップロード日時追加用
       const uploadedDate = new Date().toJSON();
 
@@ -64,14 +58,14 @@ export default async function uploadfile(req:any, res:any) {
         )
         VALUES (?, ?, ?, ?, ?)
         `,
-        [fileIdGenerated(), req.file.originalname, req.file.size, metadata.directory, uploadedDate],
+        [fileIdGenerated, req.file.originalname, req.file.size, metadata.directory, uploadedDate],
         (err:Error) => {
           if (err) {
             console.log("uploadfile :: エラー->", err);
-            res.status(500).send("ERROR_DB_THING");
+            res.status(500).send({ result:"ERROR_DB_THING" });
             return;
           } else {
-            res.status(200).send("SUCCESS");
+            res.status(200).send({ result:"SUCCESS", data:fileIdGenerated });
             return;
           }
         }
@@ -82,7 +76,22 @@ export default async function uploadfile(req:any, res:any) {
   } catch (e) {
 
     console.log("/uploadfile :: エラー!->", e);
-    res.status(500).send("ERROR_INTERNAL_THING");
+    res.status(500).send({ result:"ERROR_INTERNAL_THING" });
   
   }
+}
+
+/**
+ * ファイルId用の文字列を生成するだけ
+ */
+const generateFileId = (userId: string):string => {
+  //Id用変数
+  let id = "";
+  //乱数（１０桁）を追加していく
+  for (let i=0; i<10; i++) {
+    id += Math.floor(Math.random()*9).toString();
+  }
+  //ユーザーIdへ乱数を統合して返す
+  const result:string = userId + id;
+  return result;
 }
