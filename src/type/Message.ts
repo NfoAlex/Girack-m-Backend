@@ -6,6 +6,7 @@ export interface IMessageBeforeParsing {
   content: string,
   isEdited: 1|0,
   linkData: string,
+  fileId: string,
   time: string,
   reaction: string
 }
@@ -36,6 +37,7 @@ export interface IMessage {
         url: string
       }
   },
+  fileId: string[],
   time: string,
   reaction: {
     [key: string]: {
