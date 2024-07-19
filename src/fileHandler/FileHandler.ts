@@ -46,6 +46,7 @@ const upload = multer({
 
 import uploadfile from "./File/uploadfile";
 import fetchfile from "./File/fetchfile";
+import downloadfile from "./File/downloadfile";
 
 module.exports = (app:Express) => {
 
@@ -54,5 +55,8 @@ module.exports = (app:Express) => {
 
   //ファイルの取得
   app.get("/fetchfile/:id", (req:any, res:any) => fetchfile(req,res));
+
+  //ファイルをダウンロードする
+  app.post("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
 
 }
