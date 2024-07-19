@@ -162,7 +162,7 @@ export default async function fetchHistory(
                 ...history[index],
                 isEdited: history[index].isEdited===1?true:false,
                 linkData: linkDataParsed,
-                fileId: history[index].fileId===undefined?[]:history[index].fileId.split(","),
+                fileId: history[index].fileId===''?[]:history[index].fileId.split(","),
                 reaction: JSON.parse(history[index].reaction)
               });
             }
