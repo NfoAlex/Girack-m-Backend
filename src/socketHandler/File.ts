@@ -98,17 +98,19 @@ module.exports = (io:Server) => {
         const fileInfo = await fetchFileInfo(dat.fileId);
         //nullならそう返す
         if (fileInfo === null) {
-          socket.emit("RESULT::fetchFileInfo", { result:"ERROR_FILE_MISSING", data:null });
+          socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"ERROR_FILE_MISSING", data:null });
           return;
         }
 
+        console.log("File :: socket(fetchFileInfo) : ファイル情報->", fileInfo);
+
         //ファイルが公開されているならそのまま送信、違うならセッション確認
         if (fileInfo.isPublic) {
-          socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
+          socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"SUCCESS", data:fileInfo });
         } else {
           //もし送信者情報が無いなら非公開ファイルだと言うことだけ送信
           if (dat.RequestSender === undefined) {
-            socket.emit("RESULT::fetchFileInfo", { result:"ERROR_FILE_IS_PRIVATE", data:null });
+            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"ERROR_FILE_IS_PRIVATE", data:null });
             return;
           }
           
@@ -117,19 +119,20 @@ module.exports = (io:Server) => {
 
           //結果に応じてそう送信
           if (authSessionResult) {
-            socket.emit("RESULT::fetchFileInfo", {
+            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
               result: "SUCCESS",
               data: fileInfo
             });
           } else {
-            socket.emit("RESULT::fetchFileInfo", {
+            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
               result: "ERROR_WRONG_SESSION",
               data: null
             });
           }
         }
       } catch(e) {
-        socket.emit("RESULT::fetchFileInfo", {
+        console.log("File :: socket(fetchFileInfo) : エラー->", e);
+        socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
           result: "ERROR_INTERNAL_THING",
           data: null
         });
