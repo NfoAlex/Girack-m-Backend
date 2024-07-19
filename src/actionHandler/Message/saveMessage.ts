@@ -95,10 +95,10 @@ export default async function saveMessage(
             userId,
             time,
             content,
-            fileData,
+            fileId,
             reaction
           )
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
           `,
           [
             messageData.messageId,
@@ -106,7 +106,7 @@ export default async function saveMessage(
             messageData.userId,
             messageData.time,
             messageData.content,
-            messageData.fileId,
+            messageData.fileId.join(","),
             "{}" //最初は当然空
           ],
           (err) => {
