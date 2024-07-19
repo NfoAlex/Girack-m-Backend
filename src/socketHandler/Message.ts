@@ -22,7 +22,8 @@ module.exports = (io:Server) => {
         RequestSender:IRequestSender,
         message: {
           channelId: string,
-          content: string
+          content: string,
+          fileId: string[]
         }
       }
     ) => {

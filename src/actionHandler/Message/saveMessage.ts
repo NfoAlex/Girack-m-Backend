@@ -9,7 +9,8 @@ export default async function saveMessage(
   userId: string,
   message: {
     channelId: string,
-    content: string
+    content: string,
+    fileId: string[]
   }
 ):Promise<
   {
@@ -29,6 +30,7 @@ export default async function saveMessage(
       isEdited: false,
       content: message.content,
       linkData: {},
+      fileId: message.fileId,
       time: "",
       reaction: {},
     };
@@ -78,6 +80,9 @@ export default async function saveMessage(
           channelId TEXT NOT NULL,
           userId TEXT NOT NULL,
           content TEXT NOT NULL,
+          isEdited BOOLEAN NOT NULL DEFAULT '0',
+          linkData TEXT DEFAULT '{}',
+          fileId TEXT NOT NULL,
           time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
           reaction TEXT NOT NULL
         )`);
@@ -90,6 +95,7 @@ export default async function saveMessage(
             userId,
             time,
             content,
+            fileData,
             reaction
           )
           VALUES (?, ?, ?, ?, ?, ?)
@@ -100,6 +106,7 @@ export default async function saveMessage(
             messageData.userId,
             messageData.time,
             messageData.content,
+            messageData.fileId,
             "{}" //最初は当然空
           ],
           (err) => {
