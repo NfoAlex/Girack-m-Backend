@@ -10,12 +10,12 @@ export default async function migrationMessage20240714() {
     `
     SELECT name FROM sqlite_master WHERE type='table';
     `,
-    (err:Error, tables:[{name:string}]) => {
+    (err:Error, tables:{name:string}[]) => {
       //console.log("20240714 :: tables->", tables);
 
       //ループしてfileIdカラムを追加
       for (let channelName of tables) {
-        db.run(`ALTER TABLE ` + channelName.name + ` ADD fileId TEXT NOT NULL`, (err:Error)=>{});
+        db.run(`ALTER TABLE ` + channelName.name + ` ADD fileId TEXT NOT NULL DEFAULT ''`, (err:Error)=>{});
       }
       return;
     }
