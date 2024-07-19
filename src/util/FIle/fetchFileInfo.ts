@@ -21,7 +21,11 @@ export default async function fetchFileInfo(fileId: string):Promise<IFile|null> 
             return;
           } else {
             //console.log("fetchFileInfo :: db : 結果->", fileInfo);
-            resolve(fileInfo[0]);
+            if (fileInfo[0] !== undefined) {
+              resolve(fileInfo[0]);
+            } else {
+              resolve(null);
+            }
             return;
           }
         }
