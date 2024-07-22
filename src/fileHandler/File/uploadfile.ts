@@ -15,7 +15,7 @@ export default async function uploadfile(req:any, res:any) {
 
     console.log("/uploadfile :: ファイルが書き込まれました");
     // 補足データ（metadata）を取得し、JSONとしてパース
-    console.log("/uploadfile :: これからの処理に使うreq.body.metadata->", req.body.metadata);
+    //console.log("/uploadfile :: これからの処理に使うreq.body.metadata->", req.body);
 
     //送信者情報とディレクトリ取り出し
     const metadata: {
@@ -45,6 +45,7 @@ export default async function uploadfile(req:any, res:any) {
           userId TEXT DEFAULT ` + metadata.RequestSender.userId + `,
           name TEXT NOT NULL,
           isPublic BOOLEAN NOT NULL DEFAULT 0,
+          type TEXT NOT NULL,
           size NUMBER NOT NULL,
           directory TEXT NOT NULL,
           uploadedDate TEXT NOT NULL
@@ -86,11 +87,18 @@ export default async function uploadfile(req:any, res:any) {
       db.run(
         `
         INSERT INTO FILE` + metadata.RequestSender.userId + ` (
-          id, name, size, directory, uploadedDate
+          id, name, type, size, directory, uploadedDate
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
         `,
-        [fileIdGenerated, req.file.originalname, req.file.size, metadata.directory, uploadedDate],
+        [
+          fileIdGenerated,
+          req.file.originalname,
+          req.file.mimetype,
+          req.file.size,
+          metadata.directory,
+          uploadedDate
+        ],
         (err:Error) => {
           if (err) {
             console.log("uploadfile :: エラー->", err);
