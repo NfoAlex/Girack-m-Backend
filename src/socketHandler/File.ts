@@ -9,6 +9,7 @@ import fetchFileInfo from "../util/FIle/fetchFileInfo";
 import createFolder from "../actionHandler/File/createFolder";
 import fetchFolders from "../util/FIle/fetchFolders";
 import deleteFolder from "../actionHandler/File/deleteFolder";
+import toggleFileIsPublic from "../actionHandler/File/toggleFileIsPublic";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -170,6 +171,41 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("socket(fetchFolders) :: エラー->", e);
         socket.emit("RESULT::fetchFolders", { result:"ERROR_INTERNAL_THING", data:null });
+      }
+    });
+
+    //ファイルの公開設定をトグル
+    socket.on("toggleFileIsPublic", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::toggleFileIsPublic", {
+          result: "ERROR_WRONG_SESSION",
+          data: null
+        });
+        return;
+      }
+
+      try {
+        //ファイルの公開設定をトグル、結果としてboolを受け取る
+        const resultToggle = await toggleFileIsPublic(dat.RequestSender.userId, dat.fileId);
+        //結果に応じて送信
+        if (resultToggle) {
+          socket.emit("RESULT::toggleFileIsPublic", {
+            result: "SUCCESS",
+            data: null
+          });
+        } else {
+          socket.emit("RESULT::toggleFileIsPublic", {
+            result: "ERROR_DB_THING",
+            data: null
+          });
+        }
+      } catch(e) {
+        console.log("File :: socket(toggleFileIsPublic) : エラー->", e);
+        socket.emit("RESULT::toggleFileIsPublic", {
+          result: "ERROR_INTERNAL_THING",
+          data: null
+        });
       }
     });
 
