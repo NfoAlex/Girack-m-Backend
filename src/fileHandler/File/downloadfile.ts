@@ -8,8 +8,6 @@ export default async function downloadfile(req:any, res:any) {
 
     console.log("/downloadfile :: metadata->", req.body);
 
-    //ファイルId
-    const fileId:string|undefined = req.params.id;
     //送信者情報を取得
     const metadata:{RequestSender:IRequestSender} = JSON.parse(req.body.metadata);
 
@@ -20,8 +18,11 @@ export default async function downloadfile(req:any, res:any) {
       return;
     }
 
+    //ユーザーIdをファイルIdから取得
+    const uploaderId:string = req.params.id.slice(0,8);
+
     if (fileInfo.isPublic) {
-      const filePath = path.join("./STORAGE/USERFILE/" + metadata.RequestSender.userId + "/" + fileInfo.name);
+      const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.name);
       res.download(filePath);
       return;
     } else {
@@ -36,7 +37,7 @@ export default async function downloadfile(req:any, res:any) {
       console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
       //セッション認証する
       if (await checkSession(RequestSender)) {
-        const filePath = path.join("./STORAGE/USERFILE/" + RequestSender.userId + "/" + fileInfo.name);
+        const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.name);
         res.download(filePath);
         return;
       } else {
