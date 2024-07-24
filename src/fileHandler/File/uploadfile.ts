@@ -20,8 +20,11 @@ export default async function uploadfile(req:any, res:any) {
     //送信者情報とディレクトリ取り出し
     const metadata: {
       RequestSender: IRequestSender,
-      directory: string
+      directory: string,
+      actualName: string
     } = JSON.parse(req.body.metadata);
+    //バックエンド側で配置している実際のファイル名取り出し
+    const actualName = req.body.actualName;
 
     //チャンネルフォルダを作成するかどうかフラグ
     let flagCreateChannelFolder:boolean = false;
@@ -44,6 +47,7 @@ export default async function uploadfile(req:any, res:any) {
           id TEXT PRIMARY KEY,
           userId TEXT DEFAULT ` + metadata.RequestSender.userId + `,
           name TEXT NOT NULL,
+          actualName TEXT NOT NULL,
           isPublic BOOLEAN NOT NULL DEFAULT 0,
           type TEXT NOT NULL,
           size NUMBER NOT NULL,
@@ -87,13 +91,14 @@ export default async function uploadfile(req:any, res:any) {
       db.run(
         `
         INSERT INTO FILE` + metadata.RequestSender.userId + ` (
-          id, name, type, size, directory, uploadedDate
+          id, name, actualName, type, size, directory, uploadedDate
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
           fileIdGenerated,
           req.file.originalname,
+          actualName,
           req.file.mimetype,
           req.file.size,
           metadata.directory,

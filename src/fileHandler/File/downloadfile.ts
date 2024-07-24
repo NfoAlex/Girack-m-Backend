@@ -22,7 +22,7 @@ export default async function downloadfile(req:any, res:any) {
     const uploaderId:string = req.params.id.slice(0,8);
 
     if (fileInfo.isPublic) {
-      const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.name);
+      const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.actualName);
       res.download(filePath);
       return;
     } else {
@@ -35,9 +35,10 @@ export default async function downloadfile(req:any, res:any) {
       //送信者情報取り出し
       const RequestSender:IRequestSender = metadata.RequestSender;
       console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
+
       //セッション認証する
       if (await checkSession(RequestSender)) {
-        const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.name);
+        const filePath = path.join("./STORAGE/USERFILE/" + uploaderId + "/" + fileInfo.actualName);
         res.download(filePath);
         return;
       } else {
