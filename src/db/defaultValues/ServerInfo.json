@@ -17,8 +17,10 @@
       "defaultJoinOnRegister": ["0001"]
     },
     "MESSAGE": {
-      "TxtMaxLength": 300,
-      "FileMaxSize": 3e7
+      "TxtMaxLength": 300
+    },
+    "STORAGE": {
+      "StorageSizeLimit": 5e7
     }
   }
 }
