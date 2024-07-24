@@ -1,6 +1,7 @@
 import fs from "fs";
 import multer from "multer";
 import path from 'path';
+import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
 import type { Express, NextFunction } from 'express';
@@ -20,6 +21,16 @@ const storage = multer.diskStorage({
         directory: string
       } = JSON.parse(req.body.metadata);
 
+      //容量情報取り出し
+      const contentLength:string|undefined = req.headers['content-length'];
+      if (contentLength === undefined) {
+        const error = new Error("ERROR_MISSING_FILESIZE");
+        cb(error, "STORAGE/TEMP");
+        return;
+      }
+      //取り出した情報を数値化
+      const fileSize = parseInt(contentLength);
+
       ///////////////////////////////////////////////
       //ディレクトリサイズを計算して超えていないか調べる
 
@@ -31,8 +42,12 @@ const storage = multer.diskStorage({
         return;
       }
 
-      //制限を超えているかどうか調べる :: 5000 000 000
-      if (currentFullSize + file.size > 5e9) { // DEBUG :: サンプルとして5GB
+      //制限を超えているかどうか調べる
+      if (
+        currentFullSize + fileSize
+        >
+        ServerInfo.config.STORAGE.StorageSizeLimit
+      ) {
         const error = new Error("ERROR_OVER_TOTAL_SIZE");
         cb(error, "STORAGE/TEMP");
         return;
