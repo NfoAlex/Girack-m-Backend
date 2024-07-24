@@ -27,8 +27,10 @@ let ServerInfoLoading:IServerInfo = {
       defaultJoinOnRegister: []
     },
     MESSAGE: {
-      TxtMaxLength: 0,
-      FileMaxSize: 0
+      TxtMaxLength: 0
+    },
+    STORAGE: {
+      StorageSizeLimit: 0
     }
   }
 };
