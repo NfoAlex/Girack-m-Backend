@@ -14,7 +14,7 @@ export default async function deleteFile(
     if (fileInfo === null) return false;
 
     //ファイルを削除する
-    fs.unlink('./STORAGE/USERFILE/' + userId + '/' + fileInfo.name, (err) => {
+    fs.unlink('./STORAGE/USERFILE/' + userId + '/' + fileInfo.actualName, (err) => {
       if (err) {
         console.log(err);
         return false;
