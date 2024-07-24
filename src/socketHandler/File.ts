@@ -10,6 +10,7 @@ import createFolder from "../actionHandler/File/createFolder";
 import fetchFolders from "../util/FIle/fetchFolders";
 import deleteFolder from "../actionHandler/File/deleteFolder";
 import toggleFileIsPublic from "../actionHandler/File/toggleFileIsPublic";
+import calcFullFolderSize from "../actionHandler/File/calcFullFolderSize";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -171,6 +172,32 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("socket(fetchFolders) :: エラー->", e);
         socket.emit("RESULT::fetchFolders", { result:"ERROR_INTERNAL_THING", data:null });
+      }
+    });
+
+    //全ファイルの容量を取得
+    socket.on("calcFullFolderSize", async (dat:{RequestSender:IRequestSender}) => {
+      //セッション認証
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::calcFullFolderSize", {
+          result: "ERROR_WRONG_SESSION",
+          data: null
+        });
+        return;
+      }
+
+      try {
+        //容量を取得する
+        const fileSize = await calcFullFolderSize(dat.RequestSender.userId);
+        //結果に応じてそう返す
+        if (fileSize !== null) {
+          socket.emit("RESULT::calcFullFolderSize", { result:"SUCCESS", data:fileSize });
+        } else {
+          socket.emit("RESULT::calcFullFolderSize", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("socket(calcFullFolderSize) :: エラー->", e);
+        socket.emit("RESULT::calcFullFolderSize", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
