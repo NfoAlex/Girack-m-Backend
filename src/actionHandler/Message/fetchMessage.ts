@@ -33,7 +33,7 @@ export default function fetchMessage(
               ...message[0],
               isEdited: message[0].isEdited===1?true:false,
               linkData: message[0].linkData!==undefined?JSON.parse(message[0].linkData):{},
-              fileId: message[0].fileId.split(","),
+              fileId: message[0].fileId!==''?message[0].fileId.split(","):[], //空なら''だけなのでこの条件
               reaction: message[0].reaction!==undefined?JSON.parse(message[0].reaction):{}
             };
             resolve(messageParsed);
