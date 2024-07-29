@@ -84,7 +84,7 @@ module.exports = (io:Server) => {
         const deleteFileResult = await deleteFile(dat.RequestSender.userId, dat.fileId);
         //結果に応じて送信
         if (deleteFileResult) {
-          socket.emit("RESULT::deleteFile", {result:"SUCCESS", data:null});
+          socket.emit("RESULT::deleteFile", {result:"SUCCESS", data:dat.fileId});
         } else {
           socket.emit("RESULT::deleteFile", {result:"ERROR_DB_THING", data:null});
         }
@@ -100,7 +100,16 @@ module.exports = (io:Server) => {
         const fileInfo = await fetchFileInfo(dat.fileId);
         //nullならそう返す
         if (fileInfo === null) {
-          socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"ERROR_FILE_MISSING", data:null });
+          socket.emit(
+            "RESULT::fetchFileInfo",
+            {
+              result: "ERROR_FILE_MISSING",
+              data: {
+                fileId: dat.fileId,
+                fileInfo: null
+              }
+            }
+          );
           return;
         }
 
@@ -108,11 +117,30 @@ module.exports = (io:Server) => {
 
         //ファイルが公開されているならそのまま送信、違うならセッション確認
         if (fileInfo.isPublic) {
-          socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"SUCCESS", data:fileInfo });
+          //socket.emit("RESULT::fetchFileInfo", { result:"SUCCESS", data:fileInfo });
+          socket.emit(
+            "RESULT::fetchFileInfo",
+            {
+              result: "SUCCESS",
+              data: {
+                fileId: dat.fileId,
+                fileInfo: fileInfo
+              }
+            }
+          );
         } else {
           //もし送信者情報が無いなら非公開ファイルだと言うことだけ送信
           if (dat.RequestSender === undefined) {
-            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, { result:"ERROR_FILE_IS_PRIVATE", data:null });
+            socket.emit(
+              "RESULT::fetchFileInfo",
+              {
+                result: "ERROR_FILE_IS_PRIVATE",
+                data: {
+                  fileId: dat.fileId,
+                  fileInfo: null
+                }
+              }
+            );
             return;
           }
           
@@ -121,20 +149,29 @@ module.exports = (io:Server) => {
 
           //結果に応じてそう送信
           if (authSessionResult) {
-            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
-              result: "SUCCESS",
-              data: fileInfo
-            });
+            socket.emit(
+              "RESULT::fetchFileInfo",
+              {
+                result: "SUCCESS",
+                data: {
+                  fileId: dat.fileId,
+                  fileInfo: fileInfo
+                }
+              }
+            );
           } else {
-            socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
+            socket.emit("RESULT::fetchFileInfo", {
               result: "ERROR_WRONG_SESSION",
-              data: null
+              data: {
+                fileId: dat.fileId,
+                fileInfo: null
+              }
             });
           }
         }
       } catch(e) {
         console.log("File :: socket(fetchFileInfo) : エラー->", e);
-        socket.emit("RESULT::fetchFileInfo:" + dat.fileId, {
+        socket.emit("RESULT::fetchFileInfo", {
           result: "ERROR_INTERNAL_THING",
           data: null
         });
