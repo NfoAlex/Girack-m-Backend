@@ -18,8 +18,10 @@ export default interface IServerInfo {
       defaultJoinOnRegister: string[],
     },
     MESSAGE: {
-      TxtMaxLength: number,
-      FileMaxSize: number
+      TxtMaxLength: number
+    },
+    STORAGE: {
+      StorageSizeLimit: number
     }
   }
 };

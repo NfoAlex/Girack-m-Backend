@@ -12,12 +12,19 @@ export default async function checkSession(RequestSender:IRequestSender)
       //データ確認
       if (RequestSender.userId === undefined && RequestSender.sessionId === undefined) {
         resolve(false);
+        return;
       }
 
       //ユーザー情報があるか、BANされているかどうかを確認
       const userInfo = await fetchUser(RequestSender.userId, null);
-      if (userInfo === null) return false;
-      if (userInfo.banned) return false;
+      if (userInfo === null) {
+        resolve(false);
+        return;
+      }
+      if (userInfo.banned) {
+        resolve(false);
+        return;
+      }
 
       //ユーザーIdで検索、セッションIDを一致を探す
       db.all(
