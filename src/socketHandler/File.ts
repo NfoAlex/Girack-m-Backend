@@ -256,7 +256,7 @@ module.exports = (io:Server) => {
         if (resultToggle) {
           socket.emit("RESULT::toggleFileIsPublic", {
             result: "SUCCESS",
-            data: null
+            data: dat.fileId
           });
         } else {
           socket.emit("RESULT::toggleFileIsPublic", {

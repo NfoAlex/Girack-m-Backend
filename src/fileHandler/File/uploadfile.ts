@@ -29,7 +29,8 @@ export default async function uploadfile(req:any, res:any) {
     //チャンネルフォルダを作成するかどうかフラグ
     let flagCreateChannelFolder:boolean = false;
     //もしディレクトリIdがチャンネルフォルダに該当するならディレクトリが作成されているかを確認
-    const regexChannelId = /^C\d{4}$/;
+    //const regexChannelId = /^C\d{4}$/;
+    const regexChannelId = /^C\d{4}_\d+$/;
     if (metadata.directory.match(regexChannelId) !== null) {
       //このチャンネル用のフォルダを取得
       const directoryForChannel = await fetchFolderInfo(metadata.RequestSender.userId, metadata.directory);
