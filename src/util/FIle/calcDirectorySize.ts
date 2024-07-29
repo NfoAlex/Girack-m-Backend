@@ -42,10 +42,6 @@ export default function calcDirectorySize(
               if (err) {
                 resolve(null);
                 return;
-              } else {
-                //成功したら容量0で返す
-                resolve(0);
-                return;
               }
             }
           );
@@ -98,10 +94,6 @@ export default function calcDirectorySize(
             (err:Error) => {
               if (err) {
                 resolve(null);
-                return;
-              } else {
-                //成功したら容量0で返す
-                resolve(0);
                 return;
               }
             }
