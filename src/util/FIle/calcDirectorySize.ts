@@ -22,61 +22,120 @@ export default function calcDirectorySize(
       //ルートディレクトリを計算するかどうかで処理を変える
       if (optionCalculatingRootDirectory) {
 
-        db.all(
-          `
-          SELECT * FROM FILE` + userId + `
-          `
-          ,
-          (err:Error, files:IFile[]) => {
-            if (err) {
-              console.log("calcDirectorySize :: db : エラー->", err);
-              resolve(null);
-              return;
-            } else {
-              console.log("calcDirectorySize :: db : 結果(filesの数)->", files.length);
-              
-              //ループして容量を加算
-              for (let file of files) {
-                totalSize += file.size;
+        db.serialize(() => {
+          //この人用のファイルインデックス用テーブルが無ければここで作成
+          db.run(
+            `
+            create table if not exists FILE` + userId + `(
+              id TEXT PRIMARY KEY,
+              userId TEXT DEFAULT ` + userId + `,
+              name TEXT NOT NULL,
+              actualName TEXT NOT NULL,
+              isPublic BOOLEAN NOT NULL DEFAULT 0,
+              type TEXT NOT NULL,
+              size NUMBER NOT NULL,
+              directory TEXT NOT NULL,
+              uploadedDate TEXT NOT NULL
+            )
+            `,
+            (err:Error) => {
+              if (err) {
+                resolve(null);
+                return;
+              } else {
+                //成功したら容量0で返す
+                resolve(0);
+                return;
               }
-  
-              console.log("calcDirectorySize :: db : 結果->", totalSize);
-  
-              resolve(totalSize);
-              return;
             }
-          }
-        );
+          );
+          
+          db.all(
+            `
+            SELECT * FROM FILE` + userId + `
+            `
+            ,
+            (err:Error, files:IFile[]) => {
+              if (err) {
+                console.log("calcDirectorySize :: db : エラー->", err);
+                resolve(null);
+                return;
+              } else {
+                console.log("calcDirectorySize :: db : 結果(filesの数)->", files.length);
+                
+                //ループして容量を加算
+                for (let file of files) {
+                  totalSize += file.size;
+                }
+    
+                console.log("calcDirectorySize :: db : 結果->", totalSize);
+    
+                resolve(totalSize);
+                return;
+              }
+            }
+          );
+        });
 
       } else {
 
-        db.all(
-          `
-          SELECT * FROM FILE` + userId + `
-            WHERE directory=?
-          `
-          ,
-          [directoryId],
-          (err:Error, files:IFile[]) => {
-            if (err) {
-              console.log("calcDirectorySize :: db : エラー->", err);
-              resolve(null);
-              return;
-            } else {
-              console.log("calcDirectorySize :: db : 結果(filesの数)->", files.length);
-              
-              //ループして容量を加算
-              for (let file of files) {
-                totalSize += file.size;
+        db.serialize(() => {
+          //この人用のファイルインデックス用テーブルが無ければここで作成
+          db.run(
+            `
+            create table if not exists FILE` + userId + `(
+              id TEXT PRIMARY KEY,
+              userId TEXT DEFAULT ` + userId + `,
+              name TEXT NOT NULL,
+              actualName TEXT NOT NULL,
+              isPublic BOOLEAN NOT NULL DEFAULT 0,
+              type TEXT NOT NULL,
+              size NUMBER NOT NULL,
+              directory TEXT NOT NULL,
+              uploadedDate TEXT NOT NULL
+            )
+            `,
+            (err:Error) => {
+              if (err) {
+                resolve(null);
+                return;
+              } else {
+                //成功したら容量0で返す
+                resolve(0);
+                return;
               }
-  
-              console.log("calcDirectorySize :: db : 結果->", totalSize);
-  
-              resolve(totalSize);
-              return;
             }
-          }
-        );
+          );
+
+          db.all(
+            `
+            SELECT * FROM FILE` + userId + `
+              WHERE directory=?
+            `
+            ,
+            [directoryId],
+            (err:Error, files:IFile[]) => {
+              if (err) {
+                console.log("calcDirectorySize :: db : エラー->", err);
+                resolve(null);
+                return;
+              } else {
+                console.log("calcDirectorySize :: db : 結果(filesの数)->", files.length);
+                
+                //ループして容量を加算
+                for (let file of files) {
+                  totalSize += file.size;
+                }
+    
+                console.log("calcDirectorySize :: db : 結果->", totalSize);
+    
+                resolve(totalSize);
+                return;
+              }
+            }
+          );
+
+        });
 
       }
       
