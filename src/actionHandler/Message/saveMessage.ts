@@ -75,7 +75,7 @@ export default async function saveMessage(
 
         //存在しなければそのチャンネル用のテーブルを作成する
         db.run(
-          `create table if not exists C` + message.channelId + `(
+          `create table if not exists C${message.channelId}(
           messageId TEXT PRIMARY KEY,
           channelId TEXT NOT NULL,
           userId TEXT NOT NULL,
@@ -89,7 +89,7 @@ export default async function saveMessage(
 
         //メッセージを挿入
         db.run(`
-          INSERT INTO C` + message.channelId + ` (
+          INSERT INTO C${message.channelId} (
             messageId,
             channelId,
             userId,
@@ -110,18 +110,19 @@ export default async function saveMessage(
             "{}" //最初は当然空
           ],
           (err) => {
+            //エラーなら停止
             if (err) {
               console.log("saveMessage :: db : エラー->", err);
               resolve(null);
               return;
-            } else {
-              //ここでメッセージデータとメンションする人配列を返す
-              resolve({
-                messageResult: messageData,
-                userIdMentioning: userIdMentioning
-              });
-              return;
             }
+
+            //ここでメッセージデータとメンションする人配列を返す
+            resolve({
+              messageResult: messageData,
+              userIdMentioning: userIdMentioning
+            });
+            return;
           }
         );
 
@@ -159,7 +160,7 @@ async function checkAndAddToInbox(
   const dbUser = new sqlite3.Database("./records/USER.db");
 
   //ユーザーがメンションされているなら対象の人のInboxに通知を追加
-  for (let targetUserId of matchResult) {
+  for (const targetUserId of matchResult) {
     try {
 
       //メンションクエリーから@<>を削除してユーザーIdを抽出
