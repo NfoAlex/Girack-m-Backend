@@ -151,7 +151,12 @@ async function checkAndAddToInbox(
   //マッチ結果
   const matchResult:RegExpMatchArray|null = content.match(MentionRegex);
   //実際に通知をするユーザーId配列
-  const userIdMentioning:string[] = [];
+  //const userIdMentioning:string[] = [];
+  const userIdMentioning:string[] = Array.from(new Set(matchResult));
+  //処理を終えて"@<>"を取り除いたユーザーId配列
+  const userIdMentioningProcessed:string[] = [];
+
+  console.log("saveMessage :: checkAndAddToInbox : マッチ結果->", matchResult, " フィルター結果->", userIdMentioning);
 
   //そもそもマッチが無いなら停止
   if (matchResult === null) return null;
@@ -160,7 +165,7 @@ async function checkAndAddToInbox(
   const dbUser = new sqlite3.Database("./records/USER.db");
 
   //ユーザーがメンションされているなら対象の人のInboxに通知を追加
-  for (const targetUserId of matchResult) {
+  for (const targetUserId of userIdMentioning) {
     try {
 
       //メンションクエリーから@<>を削除してユーザーIdを抽出
@@ -192,7 +197,7 @@ async function checkAndAddToInbox(
       );
 
       //実際に通知を行うユーザーId配列へ追加
-      userIdMentioning.push(userIdFormatted);
+      userIdMentioningProcessed.push(userIdFormatted);
 
     } catch(e) {
       console.log("savemessage :: checkAndAddToInbox : エラー->", e);
@@ -200,6 +205,6 @@ async function checkAndAddToInbox(
     }
   }
 
-  //メンションするユーザーId配列を返す
-  return userIdMentioning;
+  //処理を終えてメンションするユーザーId配列を返す
+  return userIdMentioningProcessed;
 }
