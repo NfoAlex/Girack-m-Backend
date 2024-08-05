@@ -55,7 +55,7 @@ module.exports = (io:Server) => {
           io.to(messageData.messageResult.channelId).emit("receiveMessage", messageData.messageResult);
           //メンション先のユーザーへ通知を送信
           if (messageData.userIdMentioning) { //nullじゃなければ送る
-            for (let userId of messageData.userIdMentioning) {
+            for (const userId of messageData.userIdMentioning) {
               io.to(userId).emit("newNotification");
             }
           }
@@ -183,6 +183,40 @@ module.exports = (io:Server) => {
               data: msgEditResult
             }
           );
+
+          /**************************************************/
+          /* URLがあったときのプレビュー生成、送信(プレビュー更新させる) */
+
+          //URLが含まれるならプレビューを生成
+          const urlRegex = /((https|http)?:\/\/[^\s]+)/g;
+          const urlMatched = msgEditResult.content.match(urlRegex);
+            //nullじゃなければ生成
+          if (urlMatched) {
+            const linkDataResult:IMessage["linkData"]|null = await genLinkPreview(
+              urlMatched,
+              msgEditResult.channelId,
+              msgEditResult.messageId
+            );
+
+            //結果があるなら更新させる
+            if (linkDataResult !== null) {
+              //リンクデータを上書き
+              msgEditResult.linkData = linkDataResult;
+              //送信
+              io.to(msgEditResult.channelId).emit(
+                "updateMessage",
+                {
+                  result: "SUCCESS",
+                  data: msgEditResult
+                }
+              );
+            } else {
+              console.log("Message :: socket(sendMessage) : URL結果がnull");
+              return;
+            }
+          }
+          
+          /**************************************************/
         } else {
           socket.emit("RESULT::editMessage", { result:"ERROR_DB_THING", data:null });
           return;
