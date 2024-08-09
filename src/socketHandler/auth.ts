@@ -11,6 +11,7 @@ import addUserOnline from "../util/onlineUsers/addUserOnline";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserInfo } from "../type/User";
+import sessionLogout from "../actionHandler/auth/sessionLogout";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -190,7 +191,7 @@ module.exports = (io:Server) => {
     });
 
     //セッション情報を取得
-    socket.on("fetchSession", async(dat:{RequestSender:IRequestSender, indexNum:number}) => {
+    socket.on("fetchSession", async (dat:{RequestSender:IRequestSender, indexNum:number}) => {
       //セッション確認
       if (!(await checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchSession", { result:"ERROR_SESSION_ERROR", data:null });
@@ -213,6 +214,29 @@ module.exports = (io:Server) => {
         console.log("auth :: socket(fetchSession) : エラー->", e);
         socket.emit("RESULT::fetchSession", { result:"ERROR_INTERNAL_THING", data:null });
         return;
+      }
+    });
+
+    //セッション情報をログアウトさせる
+    socket.on("sessionLogout", async (dat:{RequestSender: IRequestSender, targetSessionId:string}) => {
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::sessionLogout", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //セッションデータを削除する
+        const sessionLogoutResult = await sessionLogout(dat.RequestSender.userId, dat.targetSessionId);
+
+        if (sessionLogoutResult) {
+          socket.emit("RESULT::sessionLogout", { result:"SUCCESS", data:null });
+        } else {
+          socket.emit("RESULT::sessionLogout", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("auth :: socket(sessionLogout) : エラー->", e);
+        socket.emit("RESULT::sessionLogout", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
