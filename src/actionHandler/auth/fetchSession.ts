@@ -14,7 +14,7 @@ export default async function fetchSession(_userId: string, _indexNumber: number
   try {
 
     //オフセットでずらすデータ数
-    const offsetNum = 10 * (_indexNumber || 1);
+    const offsetNum = 10 * (_indexNumber-1 || 0);
 
     return new Promise((resolve) => {
       db.all(
