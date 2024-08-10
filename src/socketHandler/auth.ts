@@ -12,6 +12,7 @@ import addUserOnline from "../util/onlineUsers/addUserOnline";
 import type IRequestSender from "../type/requestSender";
 import type { IUserInfo } from "../type/User";
 import sessionLogout from "../actionHandler/auth/sessionLogout";
+import changeSessionName from "../actionHandler/auth/changeSessionname";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -213,6 +214,38 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("auth :: socket(fetchSession) : エラー->", e);
         socket.emit("RESULT::fetchSession", { result:"ERROR_INTERNAL_THING", data:null });
+        return;
+      }
+    });
+
+    //セッション名前
+    socket.on("changeSessionName", async (
+      dat: {
+        RequestSender: IRequestSender,
+        targetSessionId: string,
+        newName: string
+      }
+    ) => {
+      //セッション確認
+      if (!(await checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::changeSessionName", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //セッション名を変更
+        const changeSessionname:boolean = await changeSessionName(dat.RequestSender.userId, dat.targetSessionId, dat.newName);
+        //成功ならそう送信
+        if (changeSessionname) {
+          socket.emit("RESULT::changeSessionName", { result:"SUCCESS", data:null });
+          return;
+        }
+        
+        socket.emit("RESULT::changeSessionName", { result:"ERROR_DB_THING", data:null });
+
+      } catch(e) {
+        console.log("auth :: socket(changeSessionName) : エラー->", e);
+        socket.emit("RESULT::changeSessionName", { result:"ERROR_INTERNAL_THING", data:null });
         return;
       }
     });
