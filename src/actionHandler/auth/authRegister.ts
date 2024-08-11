@@ -1,11 +1,13 @@
-import fs from "fs";
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import fs from "node:fs";
 import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
-import { IUserConfig, IUserInfo } from "../../type/User";
-import IServerInfo from "../../type/Server";
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db', {verbose: console.log });
+db.pragma('journal_mode = WAL');
+
+import type { IUserConfig, IUserInfo } from "../../type/User";
+import type IServerInfo from "../../type/Server";
 
 export default async function authRegister(username:string, inviteCode:string|null)
 :Promise<{userInfo:IUserInfo, password:string}|"ERROR_WRONGINVITECODE"|"ERROR_DB_THING"> {
@@ -21,7 +23,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
 
     //一番最初のユーザーを登録するのかどうか
       //最後に返すロールの内容用
-    let isFirstUser:boolean = false;
+    let isFirstUser = false;
 
     //ユーザー名の空きを確認
     if ((await fetchUser(null, username)) !== null) throw Error;
@@ -37,56 +39,53 @@ export default async function authRegister(username:string, inviteCode:string|nu
     //サーバーの設定ファイル読み取り
     const ServerConfig:IServerInfo = JSON.parse(fs.readFileSync("./records/server.json", "utf-8"));
 
-    //一番最初のユーザーかどうかを調べてそうならHostロールを付与して登録
-    db.all("SELECT COUNT(*) FROM USERS_INFO", (err:Error, num:{"COUNT(*)":number}[]) => {
-      if (err) {
-        console.log("authRegister :: db : エラー->", err);
-      } else {
-        console.log("authRegister :: db : num->", num, typeof(num[0]["COUNT(*)"]), (num[0]["COUNT(*)"] === 0));
-        //最初のユーザーだからHostロールを付与
-        if (num[0]["COUNT(*)"] === 0) {
-          //ユーザー情報をDBへ作成
-          db.run("insert into USERS_INFO values (?,?,?,?,?)",
-            userIdGen,
-            username,
-            "HOST",
-            "0001",
-            false
-          );
-          //最初のユーザーであることを設定
-          isFirstUser = true;
-        } else { //ユーザーがいたからMember
-          db.run("insert into USERS_INFO values (?,?,?,?,?)",
-            userIdGen,
-            username,
-            "MEMBER",
-            ServerConfig.config.CHANNEL.defaultJoinOnRegister.join(","), //サーバー設定のデフォルト参加チャンネル
-            false
-          );
-        }
-      }
-    });
+    const count = db.prepare("SELECT COUNT(*) FROM USERS_INFO").get() as {"COUNT(*)":number};
+    console.log("authRegister :: カウント->", count);
+
+    //ユーザー数が0ならHOSTアカウントを作る、1以上ならMemberで普通に作る
+    if (count["COUNT(*)"] === 0) {
+      db.prepare(
+        "insert into USERS_INFO values (?,?,?,?,?)"
+      ).run(userIdGen, username, "HOST", "0001", 0);
+
+      //一人目のユーザーであることを記憶しておく
+      isFirstUser = true;
+    } else {
+      db.prepare(
+        "insert into USERS_INFO values (?,?,?,?,?)"
+      ).run(
+        userIdGen,
+        username,
+        "Member",
+        ServerConfig.config.CHANNEL.defaultJoinOnRegister.join(","), //デフォで参加するチャンネル
+        0
+      );
+    }
 
     //生成したパスワードを記録
-    db.run("insert into USERS_PASSWORD values (?,?)", userIdGen, passwordGenerated);
+    db.prepare(
+      "INSERT INTO USERS_PASSWORD values (?,?)"
+    ).run(userIdGen, passwordGenerated);
 
     //デフォルトのユーザー設定のJSON読み込み
     const defaultConfigData:IUserConfig = JSON.parse(
       fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')
     );
     //デフォルトの設定の値をDBへ挿入
-    db.run("INSERT INTO USERS_CONFIG (userId, notification, theme, channel, sidebar) values (?,?,?,?,?)",
+    db.prepare(
+      "INSERT INTO USERS_CONFIG (userId, notification, theme, channel, sidebar) values (?,?,?,?,?)"
+    ).run(
       userIdGen,
       JSON.stringify(defaultConfigData.notification),
       defaultConfigData.theme,
       JSON.stringify(defaultConfigData.channel),
-      JSON.stringify(defaultConfigData.sidebar),
+      JSON.stringify(defaultConfigData.sidebar)
     );
 
     //デフォルトのユーザーデータ用テーブルのデータを作成
-    db.run("INSERT INTO USERS_SAVES (userId) values (?)",
-      userIdGen
-    );
+    db.prepare(
+      "INSERT INTO USERS_SAVES (userId) values (?)"
+    ).run(userIdGen);
 
     //console.log("authRegister :: アカウント作成したよ ->", userIdGen, passwordGenerated);
 
@@ -111,7 +110,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
 
 //ユーザーIDの空きを探す
 async function getNewUserId():Promise<string> {
-  let tryCount:number = 0;
+  let tryCount = 0;
 
   return new Promise<string>((resolve) => {
     try {
