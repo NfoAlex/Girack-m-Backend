@@ -174,7 +174,7 @@ module.exports = (io:Server) => {
       try {
         //パスワードを変更し結果を受け取る
         const changePasswordResult = 
-          await changePassword(
+          changePassword(
             dat.RequestSender.userId,
             dat.currentPassword,
             dat.newPassword
