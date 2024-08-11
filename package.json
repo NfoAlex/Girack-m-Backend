@@ -9,6 +9,7 @@
 		"sqlite3": "^5.1.7"
 	},
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.11",
 		"@types/multer": "^1.4.11",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.3.3"
