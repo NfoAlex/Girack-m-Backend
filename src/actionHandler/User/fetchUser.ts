@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
-const _db = new Database('./records/USER.db', {verbose: console.log });
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/USER.db', {verbose: console.log });
+db.pragma('journal_mode = WAL');
 
 import type { IUserInfo } from "../../type/User";
 
@@ -9,7 +9,7 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
   return new Promise<IUserInfo|null>((resolve) => {
     //ユーザーIDが引数に無かったらユーザー名で検索する
     if (_userId === null) {
-      const userInfo = _db.prepare(
+      const userInfo = db.prepare(
         "SELECT * FROM USERS_INFO WHERE userName = ?"
       ).get(_username) as IUserInfo|undefined;
       console.log("fetchUser :: 結果->", userInfo);
@@ -23,7 +23,7 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
       return;
     }
 
-    const userInfo = _db.prepare(
+    const userInfo = db.prepare(
       "SELECT * FROM USERS_INFO WHERE userId = ?"
     ).get(_userId) as IUserInfo|undefined;
     console.log("fetchUser :: 結果->", userInfo);
