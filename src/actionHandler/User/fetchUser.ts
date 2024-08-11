@@ -4,6 +4,12 @@ db.pragma('journal_mode = WAL');
 
 import type { IUserInfo } from "../../type/User";
 
+/**
+ * ユーザー検索
+ * @param _userId 
+ * @param _username 
+ * @returns 
+ */
 export default async function fetchUser(_userId:string|null, _username:string|null)
 :Promise<IUserInfo|null> {
   return new Promise<IUserInfo|null>((resolve) => {
