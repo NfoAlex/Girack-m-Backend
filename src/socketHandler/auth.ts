@@ -8,11 +8,11 @@ import fetchSession from "../actionHandler/auth/fetchSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
+import changeSessionName from "../actionHandler/auth/changeSessionname";
+import sessionLogout from "../actionHandler/auth/sessionLogout";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserInfo } from "../type/User";
-import sessionLogout from "../actionHandler/auth/sessionLogout";
-import changeSessionName from "../actionHandler/auth/changeSessionname";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -48,7 +48,7 @@ module.exports = (io:Server) => {
         ) {
           //参加したチャンネル全部分のSocketルーム参加
           if (authData.UserInfo.channelJoined !== undefined) {
-            for (let channelId of authData.UserInfo.channelJoined) {
+            for (const channelId of authData.UserInfo.channelJoined) {
               socket.join(channelId);
             }
           }
@@ -97,7 +97,7 @@ module.exports = (io:Server) => {
         }
 
         //情報が空じゃなければチャンネルへの参加処理
-        for (let channelId of userInfo.channelJoined) {
+        for (const channelId of userInfo.channelJoined) {
           socket.join(channelId);
         }
         //認証済みの人として参加
