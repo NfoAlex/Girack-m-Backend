@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
-const _db = new Database('./records/USER.db', {verbose: console.log });
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/USER.db', {verbose: console.log });
+db.pragma('journal_mode = WAL');
 
 import type { IUserPassword } from "../../type/User";
 
@@ -19,7 +19,7 @@ export default function changePassword(
 
     //認証できたならパスワード変更
     if (authResult) {
-      _db.prepare(
+      db.prepare(
         "UPDATE USERS_PASSWORD SET password=? WHERE userId=?"
       ).run(_newPassword, _userId);
 
@@ -43,7 +43,7 @@ export default function changePassword(
  * @returns 
  */
 function checkPassword(_userId:string, _currentPassword:string):boolean {
-  const passwordData = _db.prepare(
+  const passwordData = db.prepare(
     "SELECT * FROM USERS_PASSWORD WHERE userId=?"
   ).get(_userId) as IUserPassword|undefined;
   //パスワードデータがundefinedか、あるいは違うかを確認
