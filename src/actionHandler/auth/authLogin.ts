@@ -21,10 +21,10 @@ export default async function authLogin(username:string, password:string)
     const authResult:boolean = await new Promise((resolve) => {
       const passwordData =
         db.prepare("SELECT * FROM USERS_PASSWORD WHERE userId=?")
-        .get(RESULT.userId) as IUserPassword|null;
+        .get(RESULT.userId) as IUserPassword|undefined;
       
       console.log("authLogin :: passwordData->", passwordData);
-      if (passwordData !== null) {
+      if (passwordData !== undefined) {
         if (passwordData.password === password) {
           resolve(true);
           return;
