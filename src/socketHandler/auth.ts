@@ -260,7 +260,7 @@ module.exports = (io:Server) => {
 
       try {
         //セッションデータを削除する
-        const sessionLogoutResult = await sessionLogout(dat.RequestSender.userId, dat.targetSessionId);
+        const sessionLogoutResult = sessionLogout(dat.RequestSender.userId, dat.targetSessionId);
 
         if (sessionLogoutResult) {
           socket.emit("RESULT::sessionLogout", { result:"SUCCESS", data:null });

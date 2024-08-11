@@ -1,29 +1,18 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * セッションをログアウトさせる
  */
-export default async function sessionLogout(_userId:string, _targetSessionId:string):Promise<boolean> {
+export default function sessionLogout(_userId:string, _targetSessionId:string):boolean {
   try {
 
-    return new Promise((resolve) => {
-      db.run(
-        "DELETE FROM USERS_SESSION WHERE userId=? AND sessionId=?",
-        [_userId, _targetSessionId],
-        (err:Error) => {
-          //エラーハンドラ
-          if (err) {
-            console.log("sessionLogout :: db(削除) : エラー->", err);
-            resolve(false);
-            return;
-          } 
-          
-          resolve(true);
-          return;
-        }
-      )
-    })
+    db.prepare(
+      "DELETE FROM USERS_SESSION WHERE userId=? AND sessionId=?"
+    ).run(_userId, _targetSessionId);
+
+    return true;
 
   } catch(e) {
 
