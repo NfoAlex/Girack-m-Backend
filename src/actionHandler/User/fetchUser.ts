@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 const db = new Database('./records/USER.db', {verbose: console.log });
 db.pragma('journal_mode = WAL');
 
-import type { IUserInfo } from "../../type/User";
+import type { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
 
 /**
  * ユーザー検索
@@ -31,11 +31,18 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
 
     const userInfo = db.prepare(
       "SELECT * FROM USERS_INFO WHERE userId = ?"
-    ).get(_userId) as IUserInfo|undefined;
+    ).get(_userId) as IUserInfoBeforeParsing|undefined;
     console.log("fetchUser :: 結果->", userInfo);
 
     if (userInfo !== undefined) {
-      resolve(userInfo);
+      //パースして返す
+      const userInfoParsed:IUserInfo = {
+        ...userInfo,
+        channelJoined: userInfo.channelJoined.split(","),
+        role: userInfo.role.split(","),
+        banned: userInfo.banned===1
+      };
+      resolve(userInfoParsed);
       return;
     }
 
