@@ -234,7 +234,7 @@ module.exports = (io:Server) => {
 
       try {
         //セッション名を変更
-        const changeSessionname:boolean = await changeSessionName(dat.RequestSender.userId, dat.targetSessionId, dat.newName);
+        const changeSessionname:boolean = changeSessionName(dat.RequestSender.userId, dat.targetSessionId, dat.newName);
         //成功ならそう送信
         if (changeSessionname) {
           socket.emit("RESULT::changeSessionName", { result:"SUCCESS", data:null });
