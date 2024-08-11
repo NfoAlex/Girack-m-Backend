@@ -3,7 +3,7 @@ import type { IUserSession } from "../../type/User";
 import type IRequestSender from "../../type/requestSender";
 
 import Database from 'better-sqlite3';
-const db = new Database('./records/USER.db', {verbose: console.log });
+const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
 export default async function checkSession(RequestSender:IRequestSender)

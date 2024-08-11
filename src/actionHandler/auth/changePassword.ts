@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-const db = new Database('./records/USER.db', {verbose: console.log });
+const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
 import type { IUserPassword } from "../../type/User";

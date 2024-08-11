@@ -3,7 +3,7 @@ import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
 
 import Database from 'better-sqlite3';
-const db = new Database('./records/USER.db', {verbose: console.log });
+const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
 import type { IUserConfig, IUserInfo } from "../../type/User";
