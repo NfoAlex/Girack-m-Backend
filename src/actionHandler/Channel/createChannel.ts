@@ -25,6 +25,23 @@ export default async function createChannel(
     //IDが空なら失敗として返す
     if (channelIdGen === "") return false;
 
+    //チャンネル用履歴テーブル作成
+    db.exec(
+      `
+      create table if not exists C${channelIdGen}(
+        messageId TEXT PRIMARY KEY,
+        channelId TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        content TEXT NOT NULL,
+        isEdited BOOLEAN NOT NULL DEFAULT '0',
+        linkData TEXT DEFAULT '{}',
+        fileId TEXT NOT NULL,
+        time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+        reaction TEXT NOT NULL
+      )
+      `
+    );
+
     db.prepare(
       `
       INSERT INTO CHANNELS (
