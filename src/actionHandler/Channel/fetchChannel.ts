@@ -45,7 +45,7 @@ export default async function fetchChannel(channelId:string, userId:string)
           //チャンネル情報を整形する
           const infoGotIt:IChannel = {
             ...datChannels[0],
-            isPrivate: datChannels[0].isPrivate===1?true:false,
+            isPrivate: datChannels[0].isPrivate === 1,
             speakableRole: //空文字列なら空配列にする
               datChannels[0].speakableRole!==""?datChannels[0].speakableRole.split(","):[]
           };
