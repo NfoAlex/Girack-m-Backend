@@ -1,13 +1,21 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
 import { ServerInfo } from "../../db/InitServer";
 import fetchUserInbox from "../User/fetchUserInbox";
 
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
+
 import type { IMessage } from "../../type/Message";
 
+/**
+ * メッセージデータを履歴テーブルへ書き込む
+ * @param _userId 
+ * @param _message 
+ * @returns 
+ */
 export default async function saveMessage(
-  userId: string,
-  message: {
+  _userId: string,
+  _message: {
     channelId: string,
     content: string,
     fileId: string[]
@@ -25,18 +33,18 @@ export default async function saveMessage(
     //形成するメッセージデータ
     const messageData:IMessage = {
       messageId: "",
-      channelId: message.channelId,
-      userId: userId,
+      channelId: _message.channelId,
+      userId: _userId,
       isEdited: false,
-      content: message.content,
+      content: _message.content,
       linkData: {},
-      fileId: message.fileId,
+      fileId: _message.fileId,
       time: "",
       reaction: {},
     };
 
     //もしメッセージ長がサーバー設定より長ければエラー
-    if (message.content.length > ServerInfo.config.MESSAGE.TxtMaxLength) {
+    if (_message.content.length > ServerInfo.config.MESSAGE.TxtMaxLength) {
       return null;
     }
 
@@ -59,76 +67,43 @@ export default async function saveMessage(
     messageData.time = new Date().toJSON();
 
     //メッセージIDを作成
-    messageData.messageId = message.channelId + randId + timestampJoined;
+    messageData.messageId = _message.channelId + randId + timestampJoined;
 
     //メンションだった時用のInbox追加処理
     const userIdMentioning = await checkAndAddToInbox(
-      message.channelId,
+      _message.channelId,
       messageData.messageId,
-      message.content
+      _message.content
     );
 
-    //DB処理
-    return new Promise((resolve) => {
+    //テーブルへデータ挿入
+    db.prepare(
+      `
+      INSERT INTO C${_message.channelId} (
+        messageId,
+        channelId,
+        userId,
+        time,
+        content,
+        fileId,
+        reaction
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `
+    ).run(
+      messageData.messageId,
+      messageData.channelId,
+      messageData.userId,
+      messageData.time,
+      messageData.content,
+      messageData.fileId.join(","),
+      "{}" //最初は当然空
+    );
 
-      db.serialize(() => {
-
-        //存在しなければそのチャンネル用のテーブルを作成する
-        db.run(
-          `create table if not exists C${message.channelId}(
-          messageId TEXT PRIMARY KEY,
-          channelId TEXT NOT NULL,
-          userId TEXT NOT NULL,
-          content TEXT NOT NULL,
-          isEdited BOOLEAN NOT NULL DEFAULT '0',
-          linkData TEXT DEFAULT '{}',
-          fileId TEXT NOT NULL,
-          time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-          reaction TEXT NOT NULL
-        )`);
-
-        //メッセージを挿入
-        db.run(`
-          INSERT INTO C${message.channelId} (
-            messageId,
-            channelId,
-            userId,
-            time,
-            content,
-            fileId,
-            reaction
-          )
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-          `,
-          [
-            messageData.messageId,
-            messageData.channelId,
-            messageData.userId,
-            messageData.time,
-            messageData.content,
-            messageData.fileId.join(","),
-            "{}" //最初は当然空
-          ],
-          (err) => {
-            //エラーなら停止
-            if (err) {
-              console.log("saveMessage :: db : エラー->", err);
-              resolve(null);
-              return;
-            }
-
-            //ここでメッセージデータとメンションする人配列を返す
-            resolve({
-              messageResult: messageData,
-              userIdMentioning: userIdMentioning
-            });
-            return;
-          }
-        );
-
-      });
-
-    });
+    return {
+      messageResult: messageData,
+      userIdMentioning: userIdMentioning
+    };
 
   } catch(e) {
 
@@ -162,7 +137,8 @@ async function checkAndAddToInbox(
   if (matchResult === null) return null;
 
   //db操作用
-  const dbUser = new sqlite3.Database("./records/USER.db");
+  const dbUser = new Database('./records/USER.db');
+  dbUser.pragma('journal_mode = WAL');
 
   //ユーザーがメンションされているなら対象の人のInboxに通知を追加
   for (const targetUserId of userIdMentioning) {
@@ -182,19 +158,9 @@ async function checkAndAddToInbox(
       inboxOfTargetUser.mention[channelId].push(messageId);
 
       //Inboxデータを書き込み
-      dbUser.run(
-        `
-        UPDATE USERS_SAVES SET inbox=?
-          WHERE userId=?
-        `,
-        [JSON.stringify(inboxOfTargetUser), userIdFormatted],
-        (err:Error) => {
-          if(err) {
-            console.log("savemessage :: checkAndAddToInbox>db : エラー->", err);
-            throw Error;
-          }
-        }
-      );
+      dbUser.prepare(
+        "UPDATE USERS_SAVES SET inbox=? WHERE userId=?"
+      ).run(JSON.stringify(inboxOfTargetUser), userIdFormatted);
 
       //実際に通知を行うユーザーId配列へ追加
       userIdMentioningProcessed.push(userIdFormatted);
