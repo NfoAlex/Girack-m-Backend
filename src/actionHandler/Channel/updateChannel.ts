@@ -1,10 +1,8 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/SERVER.db");
 import roleCheck from "../../util/roleCheck";
 
 import Database from 'better-sqlite3';
-const _db = new Database('./records/SERVER.db');
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/SERVER.db');
+db.pragma('journal_mode = WAL');
 
 
 import type { IChannel } from "../../type/Channel";
@@ -27,7 +25,7 @@ export default async function updateChannel(
     const resultRoleCheck = await roleCheck(_userId, "ChannelManage");
     if (!resultRoleCheck) return false;
 
-    _db.prepare(
+    db.prepare(
       `
       UPDATE CHANNELS SET
         channelName=?,
