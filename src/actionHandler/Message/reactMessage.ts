@@ -1,58 +1,47 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
+
 import fetchMessage from "./fetchMessage";
 
-import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
-
 export default async function reactMessage(
-  channelId: string,
-  messageId: string,
-  reactionName: string,
-  userId: string
+  _channelId: string,
+  _messageId: string,
+  _reactionName: string,
+  _userId: string
 ):Promise<boolean> {
   try {
 
     //メッセージ情報を取得
-    const message = await fetchMessage(channelId, messageId);
+    const message = await fetchMessage(_channelId, _messageId);
     //もしメッセージがnullなら停止
     if (message === null) return false;
 
     //もしそもそも対象のリアクションデータが空なら新しく作る
-    if (message.reaction[reactionName] === undefined) {
+    if (message.reaction[_reactionName] === undefined) {
       //空のを作る
-      message.reaction[reactionName] = {};
+      message.reaction[_reactionName] = {};
       //このユーザーID分のリアクション数を設定
-      message.reaction[reactionName][userId] = 1;
+      message.reaction[_reactionName][_userId] = 1;
     } else {
       //このユーザーIDによるリアクション数を取得
-      const reactionNumberByThisUser:number|undefined = message.reaction[reactionName][userId];
+      const reactionNumberByThisUser:number|undefined = message.reaction[_reactionName][_userId];
 
       //リアクションJSONへ追加(取得してundefinedなら0に)
-      message.reaction[reactionName][userId] =
+      message.reaction[_reactionName][_userId] =
         reactionNumberByThisUser===undefined ? 0 : reactionNumberByThisUser+1;
     }
 
-    //DBへの書き込み処理
-    return new Promise((resolve) => {
-      db.run(
-        `
-        UPDATE C` + channelId + ` SET
-          reaction=?
-        WHERE messageId='` + messageId + `'
-        `,
-        JSON.stringify(message.reaction),
-        (err:Error) => {
-          if (err) {
-            console.log("reactMessage :: db : エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //DBへ書き込む
+    db.prepare(
+      `
+      UPDATE C${_channelId} SET
+        reaction=?
+      WHERE messageId='${_messageId}'
+      `
+    ).run(JSON.stringify(message.reaction));
+
+    return true;
 
   } catch(e) {
     
