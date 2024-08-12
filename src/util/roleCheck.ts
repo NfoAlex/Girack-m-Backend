@@ -1,72 +1,61 @@
-//権限チェック
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/ROLE.db");
 import fetchUser from "../actionHandler/User/fetchUser";
-import { IUserRole } from "../type/User";
+import type { IUserRole } from "../type/User";
+
+import Database from 'better-sqlite3';
+const db = new Database('./records/ROLE.db');
+db.pragma('journal_mode = WAL');
 
 //ロールのJSONデータをキーで参照できるように
 type UserRoleKey = keyof IUserRole;
 
-export default async function roleCheck(userId:string, termChecking:UserRoleKey):Promise<boolean> {
+export default async function roleCheck(_userId:string, _termChecking:UserRoleKey):Promise<boolean> {
   try {
 
-    return new Promise(async (resolve) => {
-      //SYSTEMならtrue
-      if (userId === "SYSTEM") {
-        resolve(true);
-        return;
+    //SYSTEMならtrue
+    if (_userId === "SYSTEM") {
+      return true;
+    }
+
+    //ユーザー情報を取得する
+    const userInfo = await fetchUser(_userId, null);
+    //ユーザーがなければ取りやめ
+    if (userInfo === null) {
+      return false
+    }
+
+    //SQLでWHERE条件を指定するためのSQL文用変数
+    //👇このSQL文を使ってロールIDに引っかかるROLEをすべて取得する
+    let sqlContextWhereFull = "";
+    //ロールの数分条件文追加
+    for (const index in userInfo.role) {
+      //追加するのが最後のロールIDかどうか
+      const isLastRole:boolean = (userInfo.role.length-1)===Number.parseInt(index);
+
+      //SQLへ条件追加するこのロール用の文
+      let sqlContextWhereSingle = "";
+      //SQLへ条件追加する文を作成、最後ならANDをつけない
+      if (isLastRole) {
+        sqlContextWhereSingle = `roleId='${userInfo.role[index]}'`;
+      } else {
+        sqlContextWhereSingle = `roleId='${userInfo.role[index]}' OR `;
       }
 
-      //ユーザー情報を取得する
-      const userInfo = await fetchUser(userId, null);
-      //ユーザーがなければ取りやめ
-      if (userInfo === null) {
-        resolve(false);
-        return;
+      sqlContextWhereFull += sqlContextWhereSingle;
+    }
+
+    //ロールデータを取得するSQL処理
+    const stmtRoles = db.prepare(`SELECT * FROM ROLES WHERE ${sqlContextWhereFull}`);
+    //データ取得をループする処理
+    const iterateRoles = stmtRoles.iterate() as Iterable<IUserRole>;
+
+    //ループでロールの該当権限が有効かどうか調べる
+    for (const role of iterateRoles) {
+      if (role[_termChecking]) {
+        return true;
       }
+    }
 
-      //SQLでWHERE条件を指定するためのSQL文用変数
-        //👇このSQL文を使ってロールIDに引っかかるROLEをすべて取得する
-      let sqlContextWhereFull = "";
-      //ロールの数分条件文追加
-      for (let index in userInfo.role) {
-        //追加するのが最後のロールIDかどうか
-        const isLastRole:boolean = (userInfo.role.length-1)===parseInt(index);
-
-        //SQLへ条件追加するこのロール用の文
-        let sqlContextWhereSingle:string = "";
-        //SQLへ条件追加する文を作成、最後ならANDをつけない
-        if (isLastRole) {
-          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "'";
-        } else {
-          sqlContextWhereSingle = "roleId='" + userInfo.role[index] + "' OR ";
-        }
-
-        sqlContextWhereFull += sqlContextWhereSingle;
-      }
-
-      //ユーザーが持つロールの権限データをすべて取得する
-      db.all("SELECT * FROM ROLES WHERE " + sqlContextWhereFull, (err:Error, datRoles:IUserRole[]) => {
-        if (err) {
-          console.log("roleCheck :: db : エラー->", err);
-          resolve(false);
-        } else {
-          //console.log("roleCheck :: db : 結果->", datRoles);
-          //ロール分調べて権限が足りるか調べる
-          for (let role of datRoles) {
-            //権限の値がtrueなら「できる」と返す
-              //SQLiteでのboolは数字なので=が二つ
-            if (role[termChecking] == true) {
-              resolve(true);
-              return;
-            }
-          }
-          //ループ抜けちゃったらできないと返す
-          resolve(false);
-          return;
-        }
-      });
-    });
+    return false;
 
   } catch(e) {
 
