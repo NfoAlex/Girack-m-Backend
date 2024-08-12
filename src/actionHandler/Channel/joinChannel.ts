@@ -1,11 +1,9 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../User/fetchUser";
 import fetchChannel from "./fetchChannel";
 
 import Database from 'better-sqlite3';
-const _db = new Database('./records/USER.db');
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * チャンネルへ参加させる
@@ -44,7 +42,7 @@ export default async function joinChannel(_userId:string, _channelId:string)
     }
 
     //ユーザーのレコードへ挿入
-    _db.prepare(
+    db.prepare(
       "UPDATE USERS_INFO SET channelJoined=? WHERE userId=?"
     ).run(channelJoinedArr.join(","), _userId);
 
