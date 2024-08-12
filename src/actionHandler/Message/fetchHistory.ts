@@ -1,9 +1,6 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
-
 import Database from 'better-sqlite3';
-const _db = new Database('./records/MESSAGE.db');
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
 
 import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
 
@@ -74,7 +71,7 @@ export default async function fetchHistory(
     }
 
     //履歴の長さを取得
-    const historyLengthRaw = _db.prepare(
+    const historyLengthRaw = db.prepare(
       `SELECT COUNT(*) FROM C${_channelId}`
     ).get() as {"COUNT(*)":number};
     const historyLength = historyLengthRaw["COUNT(*)"];
@@ -98,7 +95,7 @@ export default async function fetchHistory(
     /////////////////////////////////////////////
 
     //履歴取得
-    const history = _db.prepare(
+    const history = db.prepare(
       `
       SELECT * FROM C${_channelId}
         ORDER BY time DESC
@@ -205,7 +202,7 @@ function calcPositionOfMessage(
     interface IMessageBeforeParsingWithRowNum extends IMessageBeforeParsing, IRowNum {};
 
     //履歴の位置を計算
-    const dbResultCalcPosition = _db.prepare(
+    const dbResultCalcPosition = db.prepare(
       `
       WITH NumberedRows AS (
         SELECT
