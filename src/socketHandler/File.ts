@@ -41,7 +41,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイルインデックス取得
-        const fileIndex = await fetchFileIndex(
+        const fileIndex = fetchFileIndex(
           dat.RequestSender.userId,
           dat.directory,
           dat.searchQuery
