@@ -1,40 +1,62 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/SERVER.db");
 import fetchUser from "../User/fetchUser";
 import roleCheck from "../../util/roleCheck";
 
-import type { IChannel } from "../../type/Channel";
+import Database from 'better-sqlite3';
+const db = new Database('./records/SERVER.db');
+db.pragma('journal_mode = WAL');
 
-export default async function fetchChannelList(userId: string)
-:Promise<any[]|null> {
+import type { IChannel, IChannelbeforeParsing } from "../../type/Channel";
 
-  //ユーザー情報を取得、ないならnull
-  const userInfo = await fetchUser(userId, null);
-  if (userInfo === null) return null;
+/**
+ * チャンネル情報を一括で取得
+ * @param _userId 
+ * @returns 
+ */
+export default async function fetchChannelList(_userId: string)
+:Promise<IChannel[]|null> {
+  try {
 
-  //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-  const roleServerManage = await roleCheck(userId, "ServerManage");
+    //ユーザー情報を取得、ないならnull
+    const userInfo = await fetchUser(_userId, null);
+    if (userInfo === null) return null;
 
-  return new Promise<IChannel[]|null>((resolve) => {
-    db.all("SELECT * FROM CHANNELS", (err:Error, datChannels:IChannel[]) => {
-      if (err) {
-        console.log("fetchChannelList :: db : エラー->", err);
-        resolve(null);
-      } else {
-        //プラベチャンネルを見れる権限があるなら参加確認しない
-        if (!roleServerManage) {
-          //権限を持っておらず、参加していないなら除去
-          let datChannelsFiltered = datChannels.filter((channel) => {
-            return userInfo.channelJoined.includes(channel.channelId)
-                  ||
-                  !channel.isPrivate
-          });
+    //このユーザーがサーバー管理権限がありプラベを見られるか調べる
+    const roleServerManage = await roleCheck(_userId, "ServerManage");
 
-          resolve(datChannelsFiltered);
-        } else {
-          resolve(datChannels);
-        }
-      }
-    });
-  });
+    //チャンネル情報を一括取得
+    const channelList = db.prepare(
+      "SELECT * FROM CHANNELS"
+    ).all() as IChannelbeforeParsing[];
+
+    //チャンネルリストから自分の権限でみられるチャンネルのみにフィルターする
+    let channelListFiltered:IChannelbeforeParsing[] = [];
+      //サーバー管理権限がないならフィルター、ないならそのまま格納
+    if (!roleServerManage) {
+      channelListFiltered = channelList.filter((channel) => {
+        return userInfo.channelJoined.includes(channel.channelId)
+          ||
+          !channel.isPrivate;
+      });
+    } else {
+      channelListFiltered = channelList;
+    }
+
+    //チャンネル情報をパースする
+    const channelListParsed:IChannel[] = [];
+    for (const channel of channelListFiltered) {
+      channelListParsed.push({
+        ...channel,
+        isPrivate: channel.isPrivate === 1,
+        speakableRole: channel.speakableRole.split(",")
+      });
+    }
+
+    return channelListParsed;
+
+  } catch(e) {
+
+    console.log("fetchChannelList :: エラー->", e);
+    return null;
+
+  }
 }
