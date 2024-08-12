@@ -1,47 +1,47 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/SERVER.db");
-import fetchUser from "../User/fetchUser";
 import fetchChannel from "./fetchChannel";
 
+import Database from 'better-sqlite3';
+const db = new Database('./records/SERVER.db');
+db.pragma('journal_mode = WAL');
+
+/**
+ * チャンネルを作成する
+ * @param channelName 
+ * @param description 
+ * @param isPrivate 
+ * @param userId 
+ * @returns 
+ */
 export default async function createChannel(
-    channelName:string,
-    description:string,
-    isPrivate:boolean,
-    userId:string,
+    _channelName:string,
+    _description:string,
+    _isPrivate:boolean,
+    _userId:string,
   ):Promise<boolean> {
   try {
 
-    return new Promise(async (resolve) => {
-      //TODO :: ロールチェック
+    //空いているチャンネルIDを探して取得
+    const channelIdGen = await getNewChannelId();
+    //IDが空なら失敗として返す
+    if (channelIdGen === "") return false;
 
-      //空いているチャンネルIDを探して取得
-      const channelIdGen = await getNewChannelId();
-      //IDが空なら失敗として返す
-      if (channelIdGen === "") return false;
+    db.prepare(
+      `
+      INSERT INTO CHANNELS (
+        channelId, channelName, description, createdBy, isPrivate, speakableRole
+      )
+      values (?,?,?,?,?,?)
+      `
+    ).run(
+      channelIdGen,
+      _channelName,
+      _description,
+      _userId,
+      _isPrivate?1:0,
+      ""
+    );
 
-      //チャンネルデータを挿入
-      return db.run(`
-        INSERT INTO CHANNELS (
-          channelId, channelName, description, createdBy, isPrivate, speakableRole
-        )
-        values (?,?,?,?,?,?)
-        `,
-        channelIdGen,
-        channelName,
-        description,
-        userId,
-        isPrivate,
-        "",
-        (err:Error) => { //結果処理
-          //エラーなら失敗と返し、無事ならtrueを返す
-          if (err) {
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        }
-      );
-    });
+    return true;
 
   } catch(e) {
 
@@ -53,7 +53,7 @@ export default async function createChannel(
 
 //チャンネルIDの空きを探す
 async function getNewChannelId():Promise<string> {
-  let tryCount:number = 0;
+  let tryCount = 0;
 
   return new Promise<string>((resolve) => {
     try {
