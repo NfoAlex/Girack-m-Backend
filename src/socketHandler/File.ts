@@ -81,7 +81,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイル削除し結果を受け取る
-        const deleteFileResult = await deleteFile(dat.RequestSender.userId, dat.fileId);
+        const deleteFileResult = deleteFile(dat.RequestSender.userId, dat.fileId);
         //結果に応じて送信
         if (deleteFileResult) {
           socket.emit("RESULT::deleteFile", {result:"SUCCESS", data:dat.fileId});
