@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-const db = new Database('./records/USER.db', {verbose: console.log });
+const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
 import type { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
@@ -18,7 +18,6 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
       const userInfo = db.prepare(
         "SELECT * FROM USERS_INFO WHERE userName = ?"
       ).get(_username) as IUserInfo|undefined;
-      console.log("fetchUser :: 結果->", userInfo);
 
       if (userInfo !== undefined) {
         resolve(userInfo);
@@ -32,7 +31,6 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
     const userInfo = db.prepare(
       "SELECT * FROM USERS_INFO WHERE userId = ?"
     ).get(_userId) as IUserInfoBeforeParsing|undefined;
-    console.log("fetchUser :: 結果->", userInfo);
 
     if (userInfo !== undefined) {
       //パースして返す
