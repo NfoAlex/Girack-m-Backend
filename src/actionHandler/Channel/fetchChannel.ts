@@ -1,59 +1,56 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/SERVER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/SERVER.db');
+db.pragma('journal_mode = WAL');
+
 import fetchUser from "../User/fetchUser";
 import roleCheck from "../../util/roleCheck";
 
 import type { IChannelbeforeParsing, IChannel } from "../../type/Channel";
 
-export default async function fetchChannel(channelId:string, userId:string)
+/**
+ * チャンネル情報を取得する
+ * @param _channelId 
+ * @param _userId 
+ * @returns 
+ */
+export default async function fetchChannel(_channelId:string, _userId:string)
 :Promise<IChannel|null> {
-  return new Promise<IChannel|null>(async (resolve) => {
-    db.all("SELECT * FROM CHANNELS WHERE channelId = ?", [channelId], async (err:Error, datChannels:IChannelbeforeParsing[]) => {
-      if (err) {
-        console.log("fetchChannel :: db : エラー->", err);
-        resolve(null);
-        return;
-      } else {
-        //console.log("fetchChannel :: db : 取得結果->", datChannels);
-        //チャンネルデータが無ければnull、あれば整形して返す
-        if (datChannels.length === 0) {
-          resolve(null);
-          return;
-        } else {
-          //プラベなら権限と参加を調べて無いならnull
-          if (datChannels[0].isPrivate) {
-            //ユーザー情報を取得
-            const userInfo = await fetchUser(userId, null);
-            //ユーザー情報がそもそもないならnull
-            if (userInfo === null) {
-              resolve(null);
-              return;
-            }
+  try {
 
-            //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-            if (
-              !userInfo.channelJoined.includes(channelId)
-                &&
-              !(await roleCheck(userId, "ServerManage"))
-            ) {
-              //返す
-              resolve(null);
-              return;
-            }
-          }
-          
-          //チャンネル情報を整形する
-          const infoGotIt:IChannel = {
-            ...datChannels[0],
-            isPrivate: datChannels[0].isPrivate === 1,
-            speakableRole: //空文字列なら空配列にする
-              datChannels[0].speakableRole!==""?datChannels[0].speakableRole.split(","):[]
-          };
-          //返す
-          resolve(infoGotIt);
-          return;
-        }
-      }
-    });
-  });
+    const channelInfo = db.prepare(
+      "SELECT * FROM CHANNELS WHERE channelId=?"
+    ).get(_channelId) as IChannelbeforeParsing|undefined;
+
+    if (channelInfo === undefined) return null;
+
+    //プライベートならユーザーの権限、あるいは作成者と同じか調べる
+    if (channelInfo.isPrivate) {
+      //ユーザー情報を取得
+      const userInfo = await fetchUser(_userId, null);
+      if (userInfo === null) return null;
+
+      //チャンネル作成者と同じか、あるいはサーバー管理権限があるか調べる
+      if (
+        !userInfo.channelJoined.includes(_channelId)
+        &&
+        !(await roleCheck(_userId, "ServerManage"))
+      ) return null;
+    }
+
+    //チャンネル情報をパースする
+    const channelInfoParsed:IChannel = {
+      ...channelInfo,
+      isPrivate: channelInfo.isPrivate === 1,
+      speakableRole: //👇空文字列なら空配列にする
+        channelInfo.speakableRole!==""?channelInfo.speakableRole.split(","):[]
+    }
+
+    return channelInfoParsed;
+
+  } catch(e) {
+
+    console.log("fetchChannel :: エラー->", e);
+    return null;
+
+  }
 }

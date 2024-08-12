@@ -4,7 +4,6 @@ import Database from 'better-sqlite3';
 const db = new Database('./records/SERVER.db');
 db.pragma('journal_mode = WAL');
 
-
 import type { IChannel } from "../../type/Channel";
 
 /**
