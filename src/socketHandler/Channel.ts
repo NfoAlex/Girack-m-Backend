@@ -86,9 +86,9 @@ module.exports = (io:Server) => {
       }
 
       try {
-        //Randomチャンネルは削除できないようにするため
+        //最初のRandomチャンネルは削除できないようにするため
         if (dat.channelId === "0001") {
-          socket.emit("RESULT::deleteChannel", { result:"ERROR_CANNOT_DELETE_RANDOM", data:null });
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_CANNOT_DELETE_0001", data:null });
           return;
         }
 
