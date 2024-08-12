@@ -1,46 +1,42 @@
-import sqlite3 from "sqlite3";
-import type { IMessageReadTime } from "../../type/Message";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
 import getMessageReadTime from "./getMessageReadTime";
 
+import type { IMessageReadTime } from "../../type/Message";
+
+/**
+ * チャンネルの最新既読時間を設定
+ * @param _userId 
+ * @param _channelId 
+ * @param _messageTime 
+ * @returns 
+ */
 export default async function setMessageReadTime(
-  userId: string,
-  channelId: string,
-  messageTime: string
+  _userId: string,
+  _channelId: string,
+  _messageTime: string
 ):Promise<boolean> {
   try {
 
     //メッセージ既読時間の読み取り
-    const messageReadTime:IMessageReadTime|null = await getMessageReadTime(userId);
+    const messageReadTime:IMessageReadTime|null = await getMessageReadTime(_userId);
     //取得できなかったら失敗と返す
     if (messageReadTime===null) return false;
 
     //データを更新する
-    messageReadTime[channelId] = messageTime;
+    messageReadTime[_channelId] = _messageTime;
 
-    //DBへの書き込み処理
-    return new Promise((resolve) => {
-      db.run(
-        `
-        UPDATE USERS_SAVES SET
-          messageReadTime=?
-        WHERE userId='` + userId + `'
-        `,
-        JSON.stringify(messageReadTime),
-        (err:Error) => {
-          if (err) {
-            console.log("setMessageReadTime :: db : エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            //console.log("setMessageReadTime :: db : 成功 messageReadTime->", messageReadTime);
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    db.prepare(
+      `
+      UPDATE USERS_SAVES SET
+        messageReadTime=?
+      WHERE userId=?
+      `
+    ).run(JSON.stringify(messageReadTime), _userId);
+
+    return true;
 
   } catch(e) {
 
