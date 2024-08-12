@@ -148,8 +148,6 @@ module.exports = (io:Server) => {
       }
     });
 
-    //ここまでbetter-sqlite3 - DONE
-
     //メッセージの編集
     socket.on("editMessage", async (
       dat:{
