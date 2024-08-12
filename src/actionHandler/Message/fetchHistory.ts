@@ -1,11 +1,21 @@
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 
-import { IMessage, IMessageBeforeParsing } from "../../type/Message";
+import Database from 'better-sqlite3';
+const _db = new Database('./records/MESSAGE.db');
+_db.pragma('journal_mode = WAL');
 
+import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
+
+/**
+ * 履歴を取得する
+ * @param _channelId 
+ * @param _fetchingPosition 
+ * @returns 
+ */
 export default async function fetchHistory(
-  channelId: string,
-  fetchingPosition: {
+  _channelId: string,
+  _fetchingPosition: {
     positionMessageId?: string
     positionMessageTime?: string
     includeThisPosition: boolean,
@@ -21,26 +31,26 @@ export default async function fetchHistory(
   try {
 
     //履歴の取り込み数
-    let historyLimit:number = 30;
+    let historyLimit = 30;
     //履歴を読み出し始める位置
-    let positionIndex:number = 0;
+    let positionIndex = 0;
 
     //メッセージ位置の設定、指定がないなら0
     if (
       ( //Idの指定があるか？
-        fetchingPosition.positionMessageId !== "" && fetchingPosition.positionMessageId !== undefined
+        _fetchingPosition.positionMessageId !== "" && _fetchingPosition.positionMessageId !== undefined
       )
       ||
       ( //または時間の指定があるか？
-        fetchingPosition.positionMessageTime !== "" && fetchingPosition.positionMessageTime !== undefined
+        _fetchingPosition.positionMessageTime !== "" && _fetchingPosition.positionMessageTime !== undefined
       )
     ) {
       //メッセージのインデックス番号を計算する
-      const positionTemp = await calcPositionOfMessage(
-        channelId,
+      const positionTemp = calcPositionOfMessage(
+        _channelId,
         {
-          messageId: fetchingPosition.positionMessageId,
-          time: fetchingPosition.positionMessageTime
+          messageId: _fetchingPosition.positionMessageId,
+          time: _fetchingPosition.positionMessageTime
         }
       );
 
@@ -48,14 +58,13 @@ export default async function fetchHistory(
       if (positionTemp === null) {
         //nullなら処理停止
         return null;
-      } else {
-        //成功なら値を格納
-        positionIndex = positionTemp;
       }
+      
+      positionIndex = positionTemp;
 
       //もし取得はじめの位置も履歴に含めるならpositionIndexをずらす
-      if (fetchingPosition.includeThisPosition) {
-        if (fetchingPosition.fetchDirection === "newer") {
+      if (_fetchingPosition.includeThisPosition) {
+        if (_fetchingPosition.fetchDirection === "newer") {
           positionIndex += 1;
         } else {
           positionIndex =
@@ -65,30 +74,13 @@ export default async function fetchHistory(
     }
 
     //履歴の長さを取得
-    const historyLength:number|null = await new Promise((resolve):number|null => {
-      db.all(
-        `
-        SELECT COUNT(*) FROM C` + channelId + `
-        `,
-        (err:Error, length:[{"COUNT(*)":number}]) => {
-          if (err) {
-            console.log("fetchHistory :: db(履歴の長さ取得) : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            resolve(length[0]['COUNT(*)']);
-            //console.log("fetchHistory :: db(historyLength) : historyLength->", length);
-            return;
-          }
-        }
-      );
-      return null;
-    });
-    //もし長さを取得できなかったのならエラーとして停止
-    if (historyLength === null) return null;
+    const historyLengthRaw = _db.prepare(
+      `SELECT COUNT(*) FROM C${_channelId}`
+    ).get() as {"COUNT(*)":number};
+    const historyLength = historyLengthRaw["COUNT(*)"];
 
     //履歴取得方向がnewerなら取得開始位置を30上にする(時系列的に古く)
-    if (fetchingPosition.fetchDirection === "newer") {
+    if (_fetchingPosition.fetchDirection === "newer") {
       //そもそも30ないなら0にする
       if (positionIndex - 30 < 0) {
         //履歴の取り込み数を開始位置にしてその分だけしかとらないようにする
@@ -101,83 +93,73 @@ export default async function fetchHistory(
       }
     }
 
-    //履歴出力
-    return await new Promise ((resolve) => {
-      db.all(
-        `
-        SELECT * FROM C` + channelId + `
-          ORDER BY time DESC
-          LIMIT ` + historyLimit + `
-          OFFSET ` + positionIndex + `
-        `,
-        (err:Error, history:IMessageBeforeParsing[]) => {
-          if (err) {
-            console.log("fetchHistory :: db(履歴取得) : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchHistory :: db : history->", history);
-            
-            //履歴の先頭あるいは終わりにいるかどうか用変数
-            let atTop:boolean = false;
-            let atEnd:boolean = false;
-            //履歴の長さから取得開始位置を引いて30以内なら末端
-            if (historyLength - positionIndex < 30) {
-              atTop = true;
-            }
-            ////  ↓atEnd計算  ////
-            //新しい方に履歴を取得している場合
-            if (fetchingPosition.fetchDirection === "newer") {
-              //取得開始位置が0なら最新
-              if (positionIndex === 0) {
-                atEnd = true;
-              }
-            } else { //古い方を取っている場合
-              //もし取得位置も含めてメッセージをとっていて0なら最新
-              if (
-                fetchingPosition.includeThisPosition
-                  &&
-                positionIndex === 0
-              ) {
-                atEnd = true;
-              }
-            }
-            ////  ↑atEnd計算ここまで  ////
+    /////////////////////////////////////////////
+    // ここから履歴の取得、位置計算
+    /////////////////////////////////////////////
 
-            //console.log("fetchHistory :: db : atTop?->", historyLength - positionIndex);
+    //履歴取得
+    const history = _db.prepare(
+      `
+      SELECT * FROM C${_channelId}
+        ORDER BY time DESC
+        LIMIT ${historyLimit}
+        OFFSET ${positionIndex}
+      `
+    ).all() as IMessageBeforeParsing[];
 
-            //JSONでメッセージパースした用の配列
-            let historyParsed:IMessage[] = [];
-            //パース処理
-            for (let index in history) {
-              //リンクプレビューのJSONパース、nullかundefinedなら空JSONに
-              const linkDataParsed:IMessage["linkData"] =
-                (history[index].linkData!==null && history[index].linkData!==undefined)
-                  ?
-                    JSON.parse(history[index].linkData)
-                      :
-                    {};
+    //履歴の先頭あるいは終わりにいるかどうか用変数
+    let atTop = false;
+    let atEnd = false;
+    //履歴の長さから取得開始位置を引いて30以内なら末端
+    if (historyLength - positionIndex < 30) {
+      atTop = true;
+    }
 
-              historyParsed.push({
-                ...history[index],
-                isEdited: history[index].isEdited===1?true:false,
-                linkData: linkDataParsed,
-                fileId: history[index].fileId===''?[]:history[index].fileId.split(","),
-                reaction: JSON.parse(history[index].reaction)
-              });
-            }
+    ////  ↓最新履歴位置にいるか計算  ////
+    //新しい方に履歴を取得している場合
+    if (_fetchingPosition.fetchDirection === "newer") {
+      //取得開始位置が0なら最新
+      if (positionIndex === 0) {
+        atEnd = true;
+      }
+    } else { //古い方を取っている場合
+      //もし取得位置も含めてメッセージをとっていて0なら最新
+      if (
+        _fetchingPosition.includeThisPosition
+          &&
+        positionIndex === 0
+      ) {
+        atEnd = true;
+      }
+    }
+    ////  ↑最新履歴位置にいるか計算ここまで  ////
 
-            //最後に返す結果
-            resolve({
-              history: historyParsed,
-              atTop: atTop,
-              atEnd: atEnd
-            });
-            return;
-          }
-        }
-      );
-    });
+    //JSONで履歴をパースした用の配列
+    const historyParsed:IMessage[] = [];
+    //履歴のパース処理
+    for (const index in history) {
+      //リンクプレビューのJSONパース、nullかundefinedなら空JSONに
+      const linkDataParsed:IMessage["linkData"] =
+        (history[index].linkData!==null && history[index].linkData!==undefined)
+          ?
+            JSON.parse(history[index].linkData)
+              :
+            {};
+
+      historyParsed.push({
+        ...history[index],
+        isEdited: history[index].isEdited === 1,
+        linkData: linkDataParsed,
+        fileId: history[index].fileId===''?[]:history[index].fileId.split(","),
+        reaction: JSON.parse(history[index].reaction)
+      });
+    }
+
+    return {
+      history: historyParsed,
+      atTop: atTop,
+      atEnd: atEnd
+    };
 
   } catch(e) {
 
@@ -187,73 +169,65 @@ export default async function fetchHistory(
   }
 }
 
-//メッセージの位置を取得
-async function calcPositionOfMessage(
-  channelId:string,
-  messagePos: {
+/**
+ * メッセージの位置を取得
+ * @param _channelId 
+ * @param _messagePos 
+ * @returns 
+ */
+function calcPositionOfMessage(
+  _channelId:string,
+  _messagePos: {
     messageId?: string,
     time?: string
   }
-):Promise<number|null> {
-  return await new Promise((resolve) => {
-    try {
+):number|null {
+  try {
 
-      //位置計算に使うメッセージ情報
-      let calcMode:"messageId"|"time" = "messageId";
-      //引数に時間があるかで使う情報切り替え
-      if (messagePos.time !== undefined) {
-        calcMode = "time";
-      }
-
-      //console.log("fetchHistory :: calcPositionOfMessage : calcMode->", calcMode);
-
-      //検索に使うSQL構文を選択(時間かメッセIdか)
-      const searchQuery = calcMode==="messageId"
-        ?
-          "messageId = '" + messagePos.messageId + "'"
-        :
-          "time = '" + messagePos.time + "'"
-
-      //該当メッセージの位置取得
-      db.all(
-        `
-        WITH NumberedRows AS (
-          SELECT
-            *,
-            ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
-          FROM
-            C` + channelId + `
-        )
-        SELECT
-          *
-        FROM
-          NumberedRows
-        WHERE
-          ${searchQuery};
-        `,
-        (err:Error, messageWithIndex:any) => {
-          if (err) {
-            console.log("fetchHistory :: db(メッセ位置計算) : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchHistory :: calcPositionOfMessage(db) : data->", messageWithIndex);
-            //もし長さが0じゃないならそれを返す
-            if (messageWithIndex.length === 0) {
-              resolve(null);
-            } else {
-              resolve(messageWithIndex[0].RowNum);
-            }
-            return;
-          }
-        }
-      );
-
-    } catch(e) {
-
-      resolve(null);
-      return;
-
+    //位置計算に使うメッセージ情報
+    let calcMode:"messageId"|"time" = "messageId";
+    //引数に時間があるかで使う情報切り替え
+    if (_messagePos.time !== undefined) {
+      calcMode = "time";
     }
-  });
+
+    //console.log("fetchHistory :: calcPositionOfMessage : calcMode->", calcMode);
+
+    //検索に使うSQL構文を選択(時間かメッセIdか)
+    const searchQuery = calcMode==="messageId"
+      ?
+        `messageId = '${_messagePos.messageId}'`
+      :
+        `time = '${_messagePos.time}'`
+
+    //RowNumとメッセのInterfaceを結合したものを作る
+    interface IRowNum {RowNum: number};
+    interface IMessageBeforeParsingWithRowNum extends IMessageBeforeParsing, IRowNum {};
+
+    //履歴の位置を計算
+    const dbResultCalcPosition = _db.prepare(
+      `
+      WITH NumberedRows AS (
+        SELECT
+          *,
+          ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
+        FROM
+          C${_channelId}
+      )
+      SELECT
+        *
+      FROM
+        NumberedRows
+      WHERE
+        ${searchQuery};
+      `
+    ).get() as IMessageBeforeParsingWithRowNum;
+
+    return dbResultCalcPosition.RowNum;
+
+  } catch(e) {
+
+    return null;
+
+  }
 }
