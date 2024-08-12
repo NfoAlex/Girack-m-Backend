@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";

@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 
 import fetchRoles from "../actionHandler/Role/fetchRoles";
 import checkSession from "../actionHandler/auth/checkSession";

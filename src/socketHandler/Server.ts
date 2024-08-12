@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import { ServerInfo } from "../db/InitServer";
 import checkSession from "../actionHandler/auth/checkSession";
 import updateServerConfig from "../actionHandler/Server/updateServerConfig";

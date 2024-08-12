@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import checkSession from "../actionHandler/auth/checkSession";
 import saveMessage from "../actionHandler/Message/saveMessage";
 import fetchHistory from "../actionHandler/Message/fetchHistory";
@@ -139,7 +139,7 @@ module.exports = (io:Server) => {
           });
           return;
         }
-        
+
         socket.emit("RESULT::deleteMessage", { result:"ERROR_DB_THING", data:null });
         return;
       } catch(e) {
@@ -147,6 +147,8 @@ module.exports = (io:Server) => {
         return;
       }
     });
+
+    //ここまでbetter-sqlite3 - DONE
 
     //メッセージの編集
     socket.on("editMessage", async (

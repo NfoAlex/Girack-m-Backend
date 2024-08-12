@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 
 import checkSession from "../actionHandler/auth/checkSession";
 import type IRequestSender from "../type/requestSender";
