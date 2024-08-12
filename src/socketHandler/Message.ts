@@ -377,7 +377,7 @@ module.exports = (io:Server) => {
 
       try {
         //既読状態取得
-        const getMessageReadTimeResult:IMessageReadTime|null = await getMessageReadTime(dat.RequestSender.userId);
+        const getMessageReadTimeResult:IMessageReadTime|null = getMessageReadTime(dat.RequestSender.userId);
 
         //nullじゃないならデータを送信
         if (getMessageReadTimeResult !== null) {

@@ -9,8 +9,8 @@ import type { IMessageReadTime } from "../../type/Message";
  * @param _userId 
  * @returns 
  */
-export default async function getMessageReadTime(_userId:string)
-:Promise<IMessageReadTime|null> {
+export default function getMessageReadTime(_userId:string)
+:IMessageReadTime|null {
   try {
 
     //最新既読時間を取得する
