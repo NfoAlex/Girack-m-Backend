@@ -4,6 +4,14 @@ db.pragma('journal_mode = WAL');
 
 import fetchMessage from "./fetchMessage";
 
+/**
+ * メッセージへリアクションを追加
+ * @param _channelId 
+ * @param _messageId 
+ * @param _reactionName 
+ * @param _userId 
+ * @returns 
+ */
 export default async function reactMessage(
   _channelId: string,
   _messageId: string,
