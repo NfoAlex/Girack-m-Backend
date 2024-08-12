@@ -1,55 +1,42 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
 import fetchUser from "../User/fetchUser";
 
-export default async function leaveChannel(userId:string, channelId:string)
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
+
+/**
+ * チャンネルから脱退する
+ * @param _userId 
+ * @param _channelId 
+ * @returns 
+ */
+export default async function leaveChannel(_userId:string, _channelId:string)
 :Promise<boolean> {
   try {
     
-    return new Promise(async (resolve) => {
-      
-      //TODO :: ロール確認(ChannelViewPrivate)
+    //現在のユーザー情報を取得
+    const userInfo = await fetchUser(_userId, null);
+    //情報が空なら処理停止
+    if (userInfo === null) {
+      return false;
+    }
+    //参加しているチャンネルの配列抜き出し
+    const channelJoinedArr = userInfo.channelJoined;
+    
+    //参加チャンネル配列にチャンネルIDが無いなら停止
+    if (!channelJoinedArr.includes(_channelId)) {
+      return false;
+    }
 
-      //現在のユーザー情報を取得
-      const userInfo = await fetchUser(userId, null);
-      //情報が空なら処理停止
-      if (userInfo === null) {
-        resolve(false);
-        return;
-      }
-      //参加しているチャンネルの配列抜き出し
-      const channelJoinedArr = userInfo.channelJoined;
-      
-      //参加チャンネル配列にチャンネルIDが無いなら停止
-      if (!channelJoinedArr.includes(channelId)) {
-        resolve(false);
-        return;
-      }
+    //チャンネルIDを配列から削除
+    channelJoinedArr.splice(channelJoinedArr.indexOf(_channelId), 1);
 
-      //チャンネルIDを配列から削除
-      channelJoinedArr.splice(channelJoinedArr.indexOf(channelId), 1);
+    //テーブルへチャンネル参加配列を適用
+    db.prepare(
+      "UPDATE USERS_INFO SET channelJoined=? WHERE userId=?"
+    ).run(channelJoinedArr.join(","), _userId);
 
-      //DBにて更新
-      db.run(
-        "UPDATE USERS_INFO SET channelJoined=? WHERE userId=?",
-        [
-          channelJoinedArr.join(","), //更新した参加チャンネル配列
-          userId //参加するユーザーID
-        ],
-        (err) => {
-          if (err) {
-            console.log("leaveChannel :: db : エラー->", err);
-            //エラーなら失敗
-            resolve(false);
-            return;
-          } else {
-            //無事なら成功
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    return true;
 
   } catch(e) {
 
