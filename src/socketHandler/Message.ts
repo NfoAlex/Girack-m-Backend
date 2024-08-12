@@ -138,10 +138,10 @@ module.exports = (io:Server) => {
             }
           });
           return;
-        } else {
-          socket.emit("RESULT::deleteMessage", { result:"ERROR_DB_THING", data:null });
-          return;
         }
+        
+        socket.emit("RESULT::deleteMessage", { result:"ERROR_DB_THING", data:null });
+        return;
       } catch(e) {
         console.log("socket(Message) :: deleteMessage : エラー->", e);
         return;
