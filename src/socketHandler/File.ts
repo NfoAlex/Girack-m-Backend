@@ -225,7 +225,7 @@ module.exports = (io:Server) => {
 
       try {
         //容量を取得する
-        const fileSize = await calcFullFolderSize(dat.RequestSender.userId);
+        const fileSize = calcFullFolderSize(dat.RequestSender.userId);
         //結果に応じてそう返す
         if (fileSize !== null) {
           socket.emit("RESULT::calcFullFolderSize", { result:"SUCCESS", data:fileSize });
