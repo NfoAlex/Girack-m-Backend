@@ -10,9 +10,10 @@ import type { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
  * @param _username 
  * @returns 
  */
-export default async function fetchUser(_userId:string|null, _username:string|null)
-:Promise<IUserInfo|null> {
-  return new Promise<IUserInfo|null>((resolve) => {
+export default function fetchUser(_userId:string|null, _username:string|null)
+:IUserInfo|null {
+  try {
+
     //ユーザーIDが引数に無かったらユーザー名で検索する
     if (_userId === null) {
       const userInfo = db.prepare(
@@ -20,12 +21,10 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
       ).get(_username) as IUserInfo|undefined;
 
       if (userInfo !== undefined) {
-        resolve(userInfo);
-        return;
+        return userInfo;
       }
 
-      resolve(null);
-      return;
+      return null;
     }
 
     const userInfo = db.prepare(
@@ -40,11 +39,15 @@ export default async function fetchUser(_userId:string|null, _username:string|nu
         role: userInfo.role.split(","),
         banned: userInfo.banned===1
       };
-      resolve(userInfoParsed);
-      return;
+      return userInfoParsed;
     }
 
-    resolve(null);
-    return;
-  });
+    return null;
+
+  } catch(e) {
+
+    console.log("fetchUser :: エラー->", e);
+    return null;
+
+  }
 }
