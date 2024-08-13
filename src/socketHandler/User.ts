@@ -387,7 +387,7 @@ module.exports = (io:Server) => {
       try {
         //もし操作者と標的が一緒なら停止
         if (dat.RequestSender.userId === dat.targetUserId) {
-          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          socket.emit("RESULT::banUser", { result:"ERROR_CANNOT_BAN_YOURSELF", data:false });
           return;
         }
 
