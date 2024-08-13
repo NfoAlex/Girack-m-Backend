@@ -392,26 +392,26 @@ module.exports = (io:Server) => {
         }
 
         //ユーザー情報が空、あるいはホスト権限を持つユーザーなら停止
-        const userInfo = await fetchUser(dat.targetUserId, null);
+        const userInfo = fetchUser(dat.targetUserId, null);
         if (userInfo === null || userInfo.userId === "HOST") {
           socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
           return;
         }
 
         //権限確認
-        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "UserManage"))) {
           socket.emit("RESULT::banUser", { result:"ERROR_ROLE", data:false });
           return;
         }
 
         //BAN処理
-        const banUserResult = await banUser(dat.RequestSender.userId, dat.targetUserId);
+        const banUserResult = banUser(dat.RequestSender.userId, dat.targetUserId);
         //結果を返す
         if (banUserResult) {
           socket.emit("RESULT::banUser", { result:"SUCCESS", data:true });
 
           //現在のユーザー情報を取得して送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });

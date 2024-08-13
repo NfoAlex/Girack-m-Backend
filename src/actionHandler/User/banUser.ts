@@ -1,35 +1,32 @@
-import sqlite3 from "sqlite3";
-import calcRoleUser from "../Role/calcRoleUser";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-export default async function banUser(sendersUserId:string, targetUserId:string)
-:Promise<boolean> {
+import calcRoleUser from "../Role/calcRoleUser";
+
+/**
+ * ユーザーをBANする
+ * @param sendersUserId 操作者のユーザーId
+ * @param targetUserId BANするユーザーId
+ * @returns 
+ */
+export default function banUser(_sendersUserId:string, _targetUserId:string)
+:boolean {
   try {
     //送信者と標的のロールレベルを取得
-    const targetUserRoleLevel = await calcRoleUser(targetUserId);
-    const sendersUserRoleLevel = await calcRoleUser(sendersUserId);
+    const targetUserRoleLevel = calcRoleUser(_targetUserId);
+    const sendersUserRoleLevel = calcRoleUser(_sendersUserId);
     //もし標的者のレベルが送信者より上なら停止
     if (targetUserRoleLevel > sendersUserRoleLevel) {
       return false;
     }
 
-    //書き込み
-    return new Promise((resolve) => {
-      db.run(
-        "UPDATE USERS_INFO SET banned=? WHERE userId=?",
-        [true, targetUserId],
-        (err) => {
-          if (err) {
-            console.log("banUser :: db : エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //DBへ記録
+    db.prepare(
+      "UPDATE USERS_INFO SET banned=? WHERE userId=?"
+    ).run(1, _targetUserId);
+
+    return true;
 
   } catch(e) {
 
