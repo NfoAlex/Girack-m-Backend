@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
-const _db = new Database('./records/ROLE.db');
-_db.pragma('journal_mode = WAL');
+const db = new Database('./records/ROLE.db');
+db.pragma('journal_mode = WAL');
 
 import type { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
 
@@ -11,7 +11,7 @@ import type { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
 export default function fetchRoles():IUserRole[] | null {
   try {
 
-    const roles = _db.prepare("SELECT * FROM ROLES").all() as IUserRoleBeforeParsing[];
+    const roles = db.prepare("SELECT * FROM ROLES").all() as IUserRoleBeforeParsing[];
 
     //変数パース用の配列変数
     const roleDataParsed:IUserRole[] = [];
