@@ -31,7 +31,7 @@ module.exports = (io:Server) => {
 
       try {
         //認証処理
-        const onlineUsers = await fetchOnlineUsers();
+        const onlineUsers = fetchOnlineUsers();
 
         //console.log("onlineUsers :: fetchOnlineUsers : onlineUsers->", onlineUsers);
 
