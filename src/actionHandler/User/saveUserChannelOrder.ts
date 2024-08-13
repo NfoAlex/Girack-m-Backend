@@ -1,40 +1,30 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
 import type { IChannelOrder } from "../../type/Channel";
 
-export default async function saveUserChannelOrder(userId:string, channelOrder:IChannelOrder)
-:Promise<boolean> {
-  return new Promise((resolve) => {
-    try {
+/**
+ * チャンネルの順番データを保存する
+ * @param userId 
+ * @param channelOrder 
+ * @returns 
+ */
+export default function saveUserChannelOrder(userId:string, channelOrder:IChannelOrder)
+:boolean {
+  try {
 
-      //設定データを書き込み更新
-      db.run(
-        `
-        UPDATE USERS_SAVES SET channelOrder=?
-          WHERE userId=?
-        `
-        ,
-        [JSON.stringify(channelOrder), userId],
-      (err) => {
-        if (err) {
-          console.log("saveUserChannelOrder :: エラー->", err);
-          //失敗と返す
-          resolve(false);
-          return;
-        } else {
-          //成功と返す
-          resolve(true);
-          return;
-        }
-      });
-      
-    } catch(e) {
+    //DBへ記録
+    db.prepare(
+      "UPDATE USERS_SAVES SET channelOrder=? WHERE userId=?"
+    ).run(JSON.stringify(channelOrder), userId);
 
-      console.log("saveUserChannelOrder :: エラー->", e);
-      resolve(false);
-      return;
+    return true;
 
-    }
-  });
+  } catch(e) {
+
+    console.log("saveUserChannelOrder :: エラー->", e);
+    return false;
+
+  }
 }

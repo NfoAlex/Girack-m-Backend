@@ -40,8 +40,6 @@ module.exports = (io:Server) => {
         //設定データ読み取り
         const configData = fetchUserConfig(RequestSender.userId);
 
-        console.log("User :: socket(fetchUserConfig) : configData->", configData);
-
         //返す
         socket.emit("RESULT::fetchUserConfig", { result:"SUCCESS", data:configData });
       } catch(e) {
@@ -245,7 +243,7 @@ module.exports = (io:Server) => {
 
       try {
         //書き込み、結果受け取り
-        const resultSaveUserChannelOrder:boolean = await saveUserChannelOrder(dat.RequestSender.userId, dat.channelOrder);
+        const resultSaveUserChannelOrder:boolean = saveUserChannelOrder(dat.RequestSender.userId, dat.channelOrder);
         //結果に応じて結果と設定データを返す
         if (resultSaveUserChannelOrder) {
           socket.emit("RESULT::saveUserChannelOrder", { result:"SUCCESS", data:null});
