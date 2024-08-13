@@ -14,17 +14,17 @@ import fetchRoleSingle from "./fetchRoleSingle";
  * @param _roleId 付与するロールId
  * @returns 
  */
-export default async function addRole(
+export default function addRole(
   _sendersUserId: string,
   _targetUserId: string,
   _roleId: string
-):Promise<boolean> {
+): boolean {
   try {
 
     //ロールのレベルを計算
-    const userRoleLevel = await calcRoleUser(_sendersUserId);
-    const addingRoleLevel = await calcRoleData(
-      await fetchRoleSingle(_roleId)
+    const userRoleLevel = calcRoleUser(_sendersUserId);
+    const addingRoleLevel = calcRoleData(
+      fetchRoleSingle(_roleId)
     );
 
     //console.log("addRole :: 操作者レベル->", userRoleLevel);

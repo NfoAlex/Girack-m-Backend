@@ -22,8 +22,8 @@ const errorRoleHolder:IUserRole = {
  * @param _targetRoleId 
  * @returns 
  */
-export default async function fetchRoleSingle(_targetRoleId:string)
-:Promise<IUserRole> {
+export default function fetchRoleSingle(_targetRoleId:string)
+:IUserRole {
   try {
 
     //ロールを取得

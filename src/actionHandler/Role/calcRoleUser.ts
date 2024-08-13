@@ -16,8 +16,8 @@ const roleLevel:{
 };
 */
 
-export default async function calcRoleUser(userId:string)
-:Promise<number> {
+export default function calcRoleUser(userId:string)
+:number {
   try {
 
     //権限をそれぞれ調べてレベルを返す

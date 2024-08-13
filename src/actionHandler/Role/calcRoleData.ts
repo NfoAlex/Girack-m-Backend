@@ -14,22 +14,33 @@ const roleLevel:{
 };
 */
 
-export default async function calcRoleData(roleDataChecking:IUserRole)
-:Promise<number> {
+/**
+ * ロールデータのロールレベルを取得
+ * @param roleDataChecking 
+ * @returns 
+ */
+export default function calcRoleData(roleDataChecking:IUserRole)
+:number {
   try {
 
     //権限をそれぞれ調べてレベルを返す
     if (roleDataChecking.ServerManage) {
       return 5;
-    } else if (roleDataChecking.RoleManage) {
+    }
+    
+    if (roleDataChecking.RoleManage) {
       return 4;
-    } else if (
+    }
+    
+    if (
       roleDataChecking.ChannelManage
       ||
       roleDataChecking.UserManage
     ) {
       return 3;
-    } else if (
+    }
+    
+    if (
       roleDataChecking.MessageDelete
     ) {
       return 2;
