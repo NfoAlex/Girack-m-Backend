@@ -1,6 +1,9 @@
-import fs from "fs";
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
+import fs from "node:fs";
+
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
+
 import fetchFolders from "../../util/FIle/fetchFolders";
 import fetchFileIndex from "./fetchFileIndex";
 
@@ -8,30 +11,30 @@ import type { IFolder } from "../../type/File";
 
 /**
  * フォルダを削除する
- * @param userId 
- * @param folderId 
+ * @param _userId 
+ * @param _folderId 
  * @returns 
  */
-export default async function deleteFolder(
-  userId: string,
-  folderId: string
-) {
+export default function deleteFolder(
+  _userId: string,
+  _folderId: string
+):boolean {
   try {
 
     //削除するフォルダーに含まれるすべての下部フォルダId配列
-    let folderIdArr:string[] = [folderId];
+    let folderIdArr:string[] = [_folderId];
     //下部フォルダId用配列の順番用変数
     let index = 0;
 
     //探索結果に配列がある限り追加を続ける
     while (folderIdArr[index] !== undefined) {
       //その中のフォルダを取得
-      const foldersFetched:IFolder[]|null = await fetchFolders(userId, folderIdArr[index]);
+      const foldersFetched:IFolder[]|null = fetchFolders(_userId, folderIdArr[index]);
       //もしフォルダ情報がとれたのなら探索結果配列へIdを追加
       if (foldersFetched !== null) {
-        foldersFetched.forEach((folder:IFolder) => {
+        for (const folder of foldersFetched) {
           folderIdArr.push(folder.id);
-        });
+        }
         //重複を省く
         folderIdArr = Array.from(new Set(folderIdArr));
       }
@@ -41,42 +44,27 @@ export default async function deleteFolder(
     }
 
     //フォルダId配列をループしそれぞれにあるファイルを全削除
-    for (let folderId of folderIdArr) {
+    for (const folderId of folderIdArr) {
 
       //ファイルインデックス取得
-      const fileIndex = await fetchFileIndex(userId, folderId);
+      const fileIndex = fetchFileIndex(_userId, folderId);
 
       //もしファイルが存在するなら削除
       if (fileIndex !== null) {
-        for (let file of fileIndex) {
+        for (const file of fileIndex) {
           //ファイルを削除する
-          fs.unlink('./STORAGE/USERFILE/' + userId + '/' + file.name, (err) => {
+          fs.unlink(`./STORAGE/USERFILE/${_userId}/${file.actualName}`, (err) => {
             if (err) {
               console.log("deleteFolder :: ファイル削除 : このファイル削除ではエラー->", err);
             }
           });
           //ファイルインデックスを削除
-          db.run(
-            "DELETE FROM FILE" + userId + " WHERE id=?",
-            file.id,
-            (err) => {
-            if (err) {
-              console.log("deleteFolder :: DB(インデックス削除) : このファイルインデックス削除ではエラー->", err);
-            }
-          });
+          db.prepare(`DELETE FROM FILE${_userId} WHERE id=?`).run(file.id);
         }
       }
 
       //ファイルインデックスを削除
-      db.run(
-        "DELETE FROM FOLDERS WHERE id=?",
-        folderId,
-        (err) => {
-        if (err) {
-          console.log("deleteFolder :: DB(フォルダー削除) : このフォルダー削除ではエラー->", err);
-        }
-      });
-
+      db.prepare("DELETE FROM FOLDERS WHERE id=?").run(folderId);
     }
 
     return true;

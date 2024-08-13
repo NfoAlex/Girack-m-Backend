@@ -10,10 +10,10 @@ import type { IFolder } from "../../type/File";
  * @param _positionedDirectoryId 
  * @returns 
  */
-export default async function fetchFolders(
+export default function fetchFolders(
   _userId: string,
   _positionedDirectoryId = ""
-):Promise<IFolder[]|null> {
+):IFolder[]|null {
   try {
 
     //フォルダId群を取得する

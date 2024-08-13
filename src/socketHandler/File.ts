@@ -329,7 +329,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーの削除、結果受け取り
-        const deleteFolderResult = await deleteFolder(dat.RequestSender.userId, dat.folderId);
+        const deleteFolderResult = deleteFolder(dat.RequestSender.userId, dat.folderId);
         //結果に応じてそう送信
         if (deleteFolderResult) {
           socket.emit("RESULT::deleteFolder", { result:"SUCCESS", data:null });
