@@ -292,7 +292,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーを作成する
-        const createFolderResult = await createFolder(
+        const createFolderResult = createFolder(
           dat.RequestSender.userId,
           dat.folderName,
           dat.directoryId
