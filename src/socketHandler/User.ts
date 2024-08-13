@@ -270,7 +270,7 @@ module.exports = (io:Server) => {
       }
 
       try {
-        const userInfo = await fetchUser(dat.userId, null);
+        const userInfo = fetchUser(dat.userId, null);
         socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
@@ -295,7 +295,7 @@ module.exports = (io:Server) => {
 
       try {
         //ユーザーを取得
-        const fetchUserAllResult = await fetchUserAll(dat.indexPage);
+        const fetchUserAllResult = fetchUserAll(dat.indexPage);
         //結果に応じてデータを送信
         if (fetchUserAllResult !== null) {
           socket.emit("RESULT::fetchUserAll", {
