@@ -16,7 +16,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
     
     //自分のファイルインデックスを取得
-    socket.on("fetchFileIndex", async (
+    socket.on("fetchFileIndex", (
       dat: {
         RequestSender: IRequestSender,
         directory: string,
@@ -31,7 +31,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchFileIndex", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -71,7 +71,7 @@ module.exports = (io:Server) => {
     //ファイルを削除する
     socket.on("deleteFile", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteFile", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -97,7 +97,7 @@ module.exports = (io:Server) => {
     socket.on("fetchFileInfo", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
       try {
         //ファイル情報の取得
-        const fileInfo = await fetchFileInfo(dat.fileId);
+        const fileInfo = fetchFileInfo(dat.fileId);
         //nullならそう返す
         if (fileInfo === null) {
           socket.emit(
@@ -145,7 +145,7 @@ module.exports = (io:Server) => {
           }
           
           //セッション認証をする
-          const authSessionResult = await checkSession(dat.RequestSender);
+          const authSessionResult = checkSession(dat.RequestSender);
 
           //結果に応じてそう送信
           if (authSessionResult) {
