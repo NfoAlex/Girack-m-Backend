@@ -35,7 +35,7 @@ module.exports = (io:Server) => {
 
       try {
         //全ロールを取得
-        const roles = await fetchRoles();
+        const roles = fetchRoles();
 
         //nullじゃないならそれを返す
         if (roles !== null) {
