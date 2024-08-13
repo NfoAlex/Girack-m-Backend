@@ -1,8 +1,5 @@
 import type { Socket, Server } from "socket.io";
 
-import authLogin from "../actionHandler/auth/authLogin";
-import { IUserInfo } from "../type/User";
-import addUserOnline from "../util/onlineUsers/addUserOnline";
 import fetchOnlineUsers from "../actionHandler/onlineUsers/fetchOnlineUsers";
 import checkSession from "../actionHandler/auth/checkSession";
 
