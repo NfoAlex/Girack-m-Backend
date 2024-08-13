@@ -6,34 +6,32 @@ db.pragma('journal_mode = WAL');
 
 import type { IUserInfo, IUserPassword } from "../../type/User";
 
-export default async function authLogin(username:string, password:string)
-:Promise<{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null}> {
+/**
+ * パスワード認証を行う
+ * @param _username 
+ * @param _password 
+ * @returns 
+ */
+export default function authLogin(_username:string, _password:string)
+:{authResult:boolean, UserInfo:IUserInfo|null, sessionId:string|null} {
   try {
 
     //ユーザー情報取得
-    const RESULT = await fetchUser(null, username);
+    const RESULT = fetchUser(null, _username);
     //console.log("authLogin :: authLogin : RESULT ->", RESULT);
 
     //そもそもユーザーが見つからないなら失敗として返す
     if (RESULT === null) return {authResult:false, UserInfo:null, sessionId:null};
 
-    //パスワードを比較して結果保存
-    const authResult:boolean = await new Promise((resolve) => {
-      const passwordData =
-        db.prepare("SELECT * FROM USERS_PASSWORD WHERE userId=?")
-        .get(RESULT.userId) as IUserPassword|undefined;
-      
-      console.log("authLogin :: passwordData->", passwordData);
-      if (passwordData !== undefined) {
-        if (passwordData.password === password) {
-          resolve(true);
-          return;
-        }
-      }
+    //パスワードデータを取得
+    const passwordData = db.prepare(
+      "SELECT * FROM USERS_PASSWORD WHERE userId=?"
+    ).get(RESULT.userId) as IUserPassword|undefined;
+    //undefinedなら停止
+    if (passwordData === undefined) return {authResult:false, UserInfo:null, sessionId:null};
 
-      resolve(false);
-      return;
-    });
+    //パスワード比較
+    const authResult = passwordData.password === _password;
 
     //違うなら失敗結果を返す
     if (authResult === false) return {authResult:false, UserInfo:null, sessionId:null};

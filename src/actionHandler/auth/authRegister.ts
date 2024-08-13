@@ -26,7 +26,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
     let isFirstUser = false;
 
     //ユーザー名の空きを確認
-    if ((await fetchUser(null, username)) !== null) throw Error;
+    if ((fetchUser(null, username)) !== null) throw Error;
     
     //空いているユーザーIDを見つける
     const userIdGen = await getNewUserId();
