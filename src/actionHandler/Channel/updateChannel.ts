@@ -13,15 +13,15 @@ import type { IChannel } from "../../type/Channel";
  * @param _channelInfo 適用するチャンネル情報
  * @returns 
  */
-export default async function updateChannel(
+export default function updateChannel(
   _userId: string,
   _channelId: string,
   _channelInfo: IChannel
-):Promise<boolean> {
+):boolean {
   try {
 
     //チャンネル編集権限があるか調べて、なければfalse
-    const resultRoleCheck = await roleCheck(_userId, "ChannelManage");
+    const resultRoleCheck = roleCheck(_userId, "ChannelManage");
     if (!resultRoleCheck) return false;
 
     db.prepare(

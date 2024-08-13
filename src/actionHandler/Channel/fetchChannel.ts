@@ -13,8 +13,8 @@ import type { IChannelbeforeParsing, IChannel } from "../../type/Channel";
  * @param _userId 
  * @returns 
  */
-export default async function fetchChannel(_channelId:string, _userId:string)
-:Promise<IChannel|null> {
+export default function fetchChannel(_channelId:string, _userId:string)
+:IChannel|null {
   try {
 
     const channelInfo = db.prepare(
@@ -26,14 +26,14 @@ export default async function fetchChannel(_channelId:string, _userId:string)
     //プライベートならユーザーの権限、あるいは作成者と同じか調べる
     if (channelInfo.isPrivate) {
       //ユーザー情報を取得
-      const userInfo = await fetchUser(_userId, null);
+      const userInfo = fetchUser(_userId, null);
       if (userInfo === null) return null;
 
       //チャンネル作成者と同じか、あるいはサーバー管理権限があるか調べる
       if (
         !userInfo.channelJoined.includes(_channelId)
         &&
-        !(await roleCheck(_userId, "ServerManage"))
+        !(roleCheck(_userId, "ServerManage"))
       ) return null;
     }
 

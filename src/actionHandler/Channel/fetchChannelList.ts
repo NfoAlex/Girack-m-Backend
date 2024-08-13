@@ -21,7 +21,7 @@ export default async function fetchChannelList(_userId: string)
     if (userInfo === null) return null;
 
     //このユーザーがサーバー管理権限がありプラベを見られるか調べる
-    const roleServerManage = await roleCheck(_userId, "ServerManage");
+    const roleServerManage = roleCheck(_userId, "ServerManage");
 
     //チャンネル情報を一括取得
     const channelList = db.prepare(

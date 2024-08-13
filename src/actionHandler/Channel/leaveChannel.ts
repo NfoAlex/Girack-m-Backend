@@ -10,12 +10,12 @@ db.pragma('journal_mode = WAL');
  * @param _channelId 
  * @returns 
  */
-export default async function leaveChannel(_userId:string, _channelId:string)
-:Promise<boolean> {
+export default function leaveChannel(_userId:string, _channelId:string)
+:boolean {
   try {
     
     //現在のユーザー情報を取得
-    const userInfo = await fetchUser(_userId, null);
+    const userInfo = fetchUser(_userId, null);
     //情報が空なら処理停止
     if (userInfo === null) {
       return false;

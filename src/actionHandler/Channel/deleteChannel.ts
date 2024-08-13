@@ -11,21 +11,21 @@ db.pragma('journal_mode = WAL');
  * @param _channelId 削除するチャンネルId
  * @returns 
  */
-export default async function deleteChannel(
+export default function deleteChannel(
     _userId: string,
     _channelId: string
-  ):Promise<boolean> {
+  ):boolean {
   try {
 
     //チャンネル情報を取得
-    const channelInfo = await fetchChannel(_channelId, _userId);
+    const channelInfo = fetchChannel(_channelId, _userId);
     //無ければ停止
     if (channelInfo === null) return false;
 
     //チャンネル作成者でない場合権限があるかを確認
     if (channelInfo.createdBy !== _userId) {
       //チャンネル管理のロール権限を確認する
-      const roleCheckResult = await roleCheck(_userId, "ChannelManage");
+      const roleCheckResult = roleCheck(_userId, "ChannelManage");
       if (!roleCheckResult) { //falseなら停止
         return false;
       }
