@@ -304,13 +304,13 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::deleteRole", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //ロールの更新、結果を格納
-        const deleteRoleResult = await deleteRole(dat.roleId);
+        const deleteRoleResult = deleteRole(dat.roleId);
         //結果に応じて送信
         if (deleteRoleResult) {
           socket.emit("RESULT::deleteRole", {result:"SUCCESS", data:null});
