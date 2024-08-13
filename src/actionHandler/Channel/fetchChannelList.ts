@@ -17,7 +17,7 @@ export default async function fetchChannelList(_userId: string)
   try {
 
     //ユーザー情報を取得、ないならnull
-    const userInfo = await fetchUser(_userId, null);
+    const userInfo = fetchUser(_userId, null);
     if (userInfo === null) return null;
 
     //このユーザーがサーバー管理権限がありプラベを見られるか調べる
