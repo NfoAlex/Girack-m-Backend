@@ -325,7 +325,7 @@ module.exports = (io:Server) => {
     });
 
     //メッセージの最終既読メッセ時間を保存する
-    socket.on("setMessageReadTime", async (
+    socket.on("setMessageReadTime", (
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
