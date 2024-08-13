@@ -1,55 +1,62 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-import { IUserInfo } from "../../type/User";
+import type { IUserInfo, IUserInfoBeforeParsing } from "../../type/User";
 
-export default async function searchUser(
-  userName: string,
-  rule: "FULL"|"PARTIAL",
-  channelId?: string
-):Promise<IUserInfo[]> {
-  return new Promise<IUserInfo[]>((resolve) => {
+/**
+ * ユーザーを検索する
+ * @param _userName 
+ * @param _rule 
+ * @param _channelId 
+ * @returns 
+ */
+export default function searchUser(
+  _userName: string,
+  _rule: "FULL"|"PARTIAL",
+  _channelId?: string
+):IUserInfo[] {
+  try {
+
     //チャンネルIdの指定があるかどうかでSQL文へ追加する文構成
-    const optionChannel =
-      channelId!==undefined 
+    const stmtOptionChannel =
+      _channelId!==undefined 
       ?
-        " AND channelJoined LIKE '%" + channelId + "%'"
+        ` AND channelJoined LIKE '%${_channelId}%'`
       :
         "";
 
   
     //検索用クエリー
     const searchQuery = 
-      rule==='PARTIAL'
+      _rule==='PARTIAL'
       ?
-        "%" + userName + "%" //部分検索
+        `%${_userName}%` //部分検索
       :
-        userName; //完全検索
+        _userName; //完全検索
 
-    console.log("searchUser :: sql文 ->", 
-      `
-      SELECT * FROM USERS_INFO
-        WHERE userName LIKE 
-      ` + searchQuery + optionChannel
-    );
+    const users = db.prepare(
+      `SELECT * FROM USERS_INFO WHERE userName LIKE ? ${stmtOptionChannel}`
+    ).all(searchQuery) as IUserInfoBeforeParsing[];
 
-    //ユーザー名でクエリが含まれるものを取得
-    db.all(
-      `
-      SELECT * FROM USERS_INFO
-        WHERE userName LIKE ?
-      ` + optionChannel,
-      [searchQuery],
-      (err:Error, datUser:IUserInfo[]) => {
-        if (err) {
-          console.log("searchUser :: ERROR ->", err);
-          resolve([]);
-        } else {
-          //console.log("searchUser :: 検索結果->", userName, datUser);
-          resolve(datUser);
-        }
-      }
-    );
-    
-  });
+    //パースしたユーザー情報配列
+    const usersParsed:IUserInfo[] = []
+    //パース処理
+    for (const user of users) {
+      usersParsed.push({
+        ...user,
+        channelJoined: user.channelJoined.split(","),
+        role: user.role.split(","),
+        banned: user.banned===1
+      })
+    }
+
+    return usersParsed;
+
+  } catch(e) {
+
+    console.log("searchUser :: エラー->", e);
+    return [];
+
+  }
 }
