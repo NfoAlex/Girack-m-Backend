@@ -1,5 +1,7 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
+
 import fetchFolderInfo from "./fetchFolderInfo";
 
 import type IRequestSender from "../../type/requestSender";
@@ -10,7 +12,7 @@ import type IRequestSender from "../../type/requestSender";
  * @param res 
  * @returns 
  */
-export default async function uploadfile(req:any, res:any) {
+export default function uploadfile(req:any, res:any) {
   try {
 
     console.log("/uploadfile :: ファイルが書き込まれました");
@@ -27,97 +29,77 @@ export default async function uploadfile(req:any, res:any) {
     const actualName = req.body.actualName;
 
     //チャンネルフォルダを作成するかどうかフラグ
-    let flagCreateChannelFolder:boolean = false;
+    let flagCreateChannelFolder = false;
+
     //もしディレクトリIdがチャンネルフォルダに該当するならディレクトリが作成されているかを確認
     //const regexChannelId = /^C\d{4}$/;
     const regexChannelId = /^C\d{4}_\d+$/;
     if (metadata.directory.match(regexChannelId) !== null) {
       //このチャンネル用のフォルダを取得
-      const directoryForChannel = await fetchFolderInfo(metadata.RequestSender.userId, metadata.directory);
+      const directoryForChannel = fetchFolderInfo(metadata.RequestSender.userId, metadata.directory);
       console.log("/uploadfile :: フォルダあるかどうか->", directoryForChannel);
       //フォルダが無いのなら作るようにフラグをたてる
       if (directoryForChannel === null) flagCreateChannelFolder = true;
     }
 
-    db.serialize(() => {
-
-      //この人用のファイルインデックス用テーブル作成
-      db.run(
-        `
-        create table if not exists FILE` + metadata.RequestSender.userId + `(
-          id TEXT PRIMARY KEY,
-          userId TEXT DEFAULT ` + metadata.RequestSender.userId + `,
-          name TEXT NOT NULL,
-          actualName TEXT NOT NULL,
-          isPublic BOOLEAN NOT NULL DEFAULT 0,
-          type TEXT NOT NULL,
-          size NUMBER NOT NULL,
-          directory TEXT NOT NULL,
-          uploadedDate TEXT NOT NULL
-        )
-        `,
-        (err:Error) => {
-          if (err) {
-            res.status(500).send({ result:"ERROR_DB_THING" });
-            return;
-          }
-        }
-      );
-
-      //チャンネル用フォルダを作るフラグが有効なら作成
-      if (flagCreateChannelFolder) {
-        db.run(
-          `
-          INSERT INTO FOLDERS (
-            id, userId, name, positionedDirectoryId
-          ) VALUES (?, ?, ?, ?)
-          `,
-          [metadata.directory, metadata.RequestSender.userId, metadata.directory, ""],
-          (err:Error) => {
-            if (err) {
-              console.log("/uploadfile :: エラー->", err);
-              res.status(500).send({ result:"ERROR_DB_THING" });
-              return;
-            }
-          }
-        );
-      }
-
-      //ファイルId生成
-      const fileIdGenerated = generateFileId(metadata.RequestSender.userId);
-      //アップロード日時追加用
-      const uploadedDate = new Date().toJSON();
-
-      //ファイルデータ書き込み
-      db.run(
-        `
-        INSERT INTO FILE` + metadata.RequestSender.userId + ` (
-          id, name, actualName, type, size, directory, uploadedDate
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        `,
-        [
-          fileIdGenerated,
-          req.file.originalname,
-          actualName,
-          req.file.mimetype,
-          req.file.size,
-          metadata.directory,
-          uploadedDate
-        ],
-        (err:Error) => {
-          if (err) {
-            console.log("uploadfile :: エラー->", err);
-            res.status(500).send({ result:"ERROR_DB_THING" });
-            return;
-          } else {
-            res.status(200).send({ result:"SUCCESS", data:fileIdGenerated });
-            return;
-          }
-        }
+    //無いならファイルインデックス用テーブル作成
+    db.exec(
+      `
+      create table if not exists FILE${metadata.RequestSender.userId}(
+        id TEXT PRIMARY KEY,
+        userId TEXT DEFAULT ${metadata.RequestSender.userId},
+        name TEXT NOT NULL,
+        actualName TEXT NOT NULL,
+        isPublic BOOLEAN NOT NULL DEFAULT 0,
+        type TEXT NOT NULL,
+        size NUMBER NOT NULL,
+        directory TEXT NOT NULL,
+        uploadedDate TEXT NOT NULL
       )
+      `
+    );
 
-    });
+    //このチャンネル用フォルダを作るオプションが有効なら作成
+    if (flagCreateChannelFolder) {
+      db.prepare(
+        `
+        INSERT INTO FOLDERS (
+          id, userId, name, positionedDirectoryId
+        ) VALUES (?, ?, ?, ?)
+        `
+      ).run(
+        metadata.directory,
+        metadata.RequestSender.userId,
+        metadata.directory,
+        ""
+      );
+    }
+
+    //ファイルId生成
+    const fileIdGenerated = generateFileId(metadata.RequestSender.userId);
+    //アップロード日時追加用
+    const uploadedDate = new Date().toJSON();
+
+    //ファイル情報をDBへ記録
+    db.prepare(
+      `
+      INSERT INTO FILE${metadata.RequestSender.userId} (
+        id, name, actualName, type, size, directory, uploadedDate
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `
+    ).run(
+      fileIdGenerated,
+      req.file.originalname,
+      actualName,
+      req.file.mimetype,
+      req.file.size,
+      metadata.directory,
+      uploadedDate
+    );
+
+    res.status(200).send({ result:"SUCCESS", data:fileIdGenerated });
+    return;
 
   } catch (e) {
 

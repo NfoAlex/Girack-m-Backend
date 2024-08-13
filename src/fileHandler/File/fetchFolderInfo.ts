@@ -1,36 +1,26 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
 
-import { IFolder } from "../../type/File";
+import type { IFolder } from "../../type/File";
 
-export default async function fetchFolderInfo(userId:string, folderId:string):Promise<IFolder|null> {
+/**
+ * フォルダ情報を取得
+ * @param _userId 
+ * @param _folderId 
+ * @returns 
+ */
+export default function fetchFolderInfo(_userId:string, _folderId:string):IFolder|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT * FROM FOLDERS
-          WHERE userId=? AND id=?
-        `,
-        [userId, folderId],
-        (err:Error, folderInfo:[IFolder]) => {
-          if (err) {
-            console.log("fetchFolderInfo :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            console.log("fetchFolderInfo :: db : 結果->", folderInfo);
-            //もし最初のものが無いならnullを返す
-            if (folderInfo[0] === undefined) {
-              resolve(null);
-            } else {
-              resolve(folderInfo[0]);
-            }
-            return;
-          }
-        }
-      );
-    });
+    //フォルダ情報取得
+    const folderInfo = db.prepare(
+      "SELECT * FROM FOLDERS WHERE userId=? AND id=?"
+    ).get(_userId, _folderId) as IFolder|undefined;
+    //undefinedならnull
+    if (folderInfo === undefined) return null;
+
+    return folderInfo;
 
   } catch(e) {
 
