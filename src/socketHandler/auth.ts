@@ -8,7 +8,7 @@ import fetchSession from "../actionHandler/auth/fetchSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
-import changeSessionName from "../actionHandler/auth/changeSessionname";
+import changeSessionName from "../actionHandler/auth/changeSessionName";
 import sessionLogout from "../actionHandler/auth/sessionLogout";
 
 import type IRequestSender from "../type/requestSender";
