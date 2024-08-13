@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-const db = new Database('./records/FILEINDEX.db', {verbose: console.log});
+const db = new Database('./records/FILEINDEX.db');
 db.pragma('journal_mode = WAL');
 
 import type { IFile } from "../../type/File";
