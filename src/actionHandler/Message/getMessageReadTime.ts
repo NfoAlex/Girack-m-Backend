@@ -1,37 +1,28 @@
-import sqlite3 from "sqlite3";
-import type { IMessageReadTime } from "../../type/Message";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-//メッセージの最終既読時間をJSONで取得
-export default async function getMessageReadTime(userId:string)
-:Promise<IMessageReadTime|null> {
+import type { IMessageReadTime } from "../../type/Message";
+
+/**
+ * メッセージの最終既読時間をJSONで取得
+ * @param _userId 
+ * @returns 
+ */
+export default function getMessageReadTime(_userId:string)
+:IMessageReadTime|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT messageReadTime FROM USERS_SAVES
-          WHERE userId='` + userId + `'
-        `,
-        (err:Error, messageReadTimeBeforeParsed:[{messageReadTime:string}]) => {
-          if (err) {
-            console.log("getMessageReadTime :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("getMessageReadTime :: db : data->", messageReadTimeBeforeParsed);
-            //パースして返す
-            const messageReadTime:IMessageReadTime =
-              JSON.parse(
-                messageReadTimeBeforeParsed[0]['messageReadTime']
-              );
+    //最新既読時間を取得する
+    const messageReadTimeBeforeParsed = db.prepare(
+      `
+      SELECT messageReadTime FROM USERS_SAVES
+        WHERE userId=?
+      `
+    ).get(_userId) as {messageReadTime:string};
 
-            resolve(messageReadTime);
-            return;
-          }
-        }
-      );
-    });
+    //SQLからの生値をJSONへパースして返す
+    return JSON.parse(messageReadTimeBeforeParsed.messageReadTime);
 
   } catch(e) {
 

@@ -1,46 +1,47 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/SERVER.db");
 import roleCheck from "../../util/roleCheck";
+
+import Database from 'better-sqlite3';
+const db = new Database('./records/SERVER.db');
+db.pragma('journal_mode = WAL');
 
 import type { IChannel } from "../../type/Channel";
 
-export default async function updateChannel(userId:string, channelId:string, channelInfo:IChannel)
-:Promise<boolean> {
+/**
+ * チャンネルの情報を更新する
+ * @param _userId 操作元のユーザーId
+ * @param _channelId 対象のチャンネルId
+ * @param _channelInfo 適用するチャンネル情報
+ * @returns 
+ */
+export default function updateChannel(
+  _userId: string,
+  _channelId: string,
+  _channelInfo: IChannel
+):boolean {
   try {
 
     //チャンネル編集権限があるか調べて、なければfalse
-    const resultRoleCheck = await roleCheck(userId, "ChannelManage");
+    const resultRoleCheck = roleCheck(_userId, "ChannelManage");
     if (!resultRoleCheck) return false;
 
-    return new Promise((resolve) => {
-      //更新
-      db.run(
-        `
-        UPDATE CHANNELS SET
-          channelName=?,
-          description=?,
-          isPrivate=?,
-          speakableRole=?
-        WHERE channelId=?
-        `,
-        [
-          channelInfo.channelName,
-          channelInfo.description,
-          channelInfo.isPrivate,
-          channelInfo.speakableRole.join(),
-          channelId
-        ], (err:Error) => {
-          if (err) {
-            console.log("updateChannel :: db : エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    db.prepare(
+      `
+      UPDATE CHANNELS SET
+        channelName=?,
+        description=?,
+        isPrivate=?,
+        speakableRole=?
+      WHERE channelId=?
+      `
+    ).run(
+      _channelInfo.channelName,
+      _channelInfo.description,
+      _channelInfo.isPrivate?1:0,
+      _channelInfo.speakableRole.join(),
+      _channelId
+    );
+
+    return true;
 
   } catch(e) {
 

@@ -1,44 +1,42 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
+
 import calcRoleUser from "../Role/calcRoleUser";
 import fetchMessage from "./fetchMessage";
 
-export default async function deleteMessage(
-  channelId: string,
-  messageId: string,
-  userIdBy: string,
-):Promise<boolean> {
+/**
+ * メッセージを削除する
+ * @param _channelId 
+ * @param _messageId 
+ * @param _userIdBy 削除操作をしているユーザーのId
+ * @returns 
+ */
+export default function deleteMessage(
+  _channelId: string,
+  _messageId: string,
+  _userIdBy: string,
+):boolean {
   try {
 
     //削除するメッセージを取得
-    const messageDeleting = await fetchMessage(channelId, messageId);
+    const messageDeleting = fetchMessage(_channelId, _messageId);
     if (messageDeleting === null) return false;
 
     //削除する人の権限レベル
-    const rolePower = await calcRoleUser(userIdBy);
+    const rolePower = calcRoleUser(_userIdBy);
     //削除される人の権限レベル
-    const rolePowerAgainst = await calcRoleUser(messageDeleting.userId);
+    const rolePowerAgainst = calcRoleUser(messageDeleting.userId);
 
     //レベル比較
     if (rolePowerAgainst > rolePower) return false;
 
-    return new Promise((resolve) => {
-      //メッセージを削除
-      db.run(
-        "DELETE FROM C" + channelId + " WHERE messageId=?",
-        messageId,
-        (err) => {
-          //結果に応じてbooleanで結果を返す
-          if (err) {
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //メッセージを削除
+    db.prepare(
+      `DELETE FROM C${_channelId} WHERE messageId=?`
+    ).run(_messageId);
+
+    return true;
 
   } catch(e) {
 

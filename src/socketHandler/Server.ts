@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import { ServerInfo } from "../db/InitServer";
 import checkSession from "../actionHandler/auth/checkSession";
 import updateServerConfig from "../actionHandler/Server/updateServerConfig";
@@ -23,6 +23,7 @@ module.exports = (io:Server) => {
       //転送するインスタンス情報を削るためにクローンする
       const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
       //招待コードを削除
+      // biome-ignore lint/performance/noDelete: 完全に削除したいため
       delete ServerInfoLimited.registration.invite.inviteCode;
 
       //返す
@@ -30,7 +31,7 @@ module.exports = (io:Server) => {
     });
 
     //全てのインスタンス情報を取得
-    socket.on("fetchServerInfoFull", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchServerInfoFull", (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_MISSINGROLE",
@@ -39,13 +40,13 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       //権限確認
-      const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+      const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
       if (!roleCheckResult) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_ROLE", data:null });
         return;
@@ -55,7 +56,7 @@ module.exports = (io:Server) => {
     });
 
     //サーバー設定の更新
-    socket.on("updateServerConfig", async (dat:{ RequestSender:IRequestSender, ServerConfig:IServerInfo["config"]}) => {
+    socket.on("updateServerConfig", (dat:{ RequestSender:IRequestSender, ServerConfig:IServerInfo["config"]}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_INTERNAL_ERROR|ERROR_DB_THING|ERROR_SESSION_ERROR",
@@ -64,14 +65,14 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::updateServerConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //権限確認
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::updateServerConfig", { result:"ERROR_ROLE", data:null });
           return;
@@ -86,6 +87,7 @@ module.exports = (io:Server) => {
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
           //招待コードを削除
+          // biome-ignore lint/performance/noDelete: 完全に削除したいため
           delete ServerInfoLimited.registration.invite.inviteCode;
           //サーバー情報を返す
           io.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
@@ -98,7 +100,7 @@ module.exports = (io:Server) => {
     });
 
     //インスタンスの基本情報の更新
-    socket.on("updateServerInfo", async (
+    socket.on("updateServerInfo", (
       dat:{
         RequestSender: IRequestSender,
         servername: IServerInfo["servername"]
@@ -106,14 +108,14 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::updateServerInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //権限確認
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::updateServerInfo", { result:"ERROR_ROLE", data:null });
           return;
@@ -126,6 +128,7 @@ module.exports = (io:Server) => {
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
           //招待コードを削除
+          // biome-ignore lint/performance/noDelete: 完全に削除したいため
           delete ServerInfoLimited.registration.invite.inviteCode;
           
           //全員にサーバー情報を返す

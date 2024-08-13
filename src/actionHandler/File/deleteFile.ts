@@ -1,41 +1,40 @@
-import fs from "fs";
-import sqlite3 from "sqlite3";
+import fs from "node:fs";
 import fetchFileInfo from "../../util/FIle/fetchFileInfo";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
 
-export default async function deleteFile(
-  userId: string,
-  fileId :string
-):Promise<boolean> {
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
+
+/**
+ * ファイルを削除する
+ * @param userId 
+ * @param fileId 
+ * @returns 
+ */
+export default function deleteFile(
+  _userId: string,
+  _fileId :string
+):boolean {
   try {
 
     //ファイル情報を取得、無ければエラー
-    const fileInfo = await fetchFileInfo(fileId);
+    const fileInfo = fetchFileInfo(_fileId);
     if (fileInfo === null) return false;
 
     //ファイルを削除する
-    fs.unlink('./STORAGE/USERFILE/' + userId + '/' + fileInfo.actualName, (err) => {
+    fs.unlink(`./STORAGE/USERFILE/${_userId}/${fileInfo.actualName}`, (err) => {
       if (err) {
         console.log(err);
         return false;
       }
     });
 
-    //ファイルインデックスから削除する
-    return new Promise((resolve) => {
-      db.run(
-        "DELETE FROM FILE" + userId + " WHERE id=?",
-        fileId,
-        (err) => {
-        if (err) {
-          resolve(false);
-          return;
-        } else {
-          resolve(true);
-          return;
-        }
-      });
-    });
+    //テーブルからもファイルデータを削除
+    db.prepare(
+      `DELETE FROM FILE${_userId} WHERE id=?`
+    ).run(_fileId);
+
+    return true;
 
   } catch(e) {
 

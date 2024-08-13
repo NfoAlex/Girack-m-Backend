@@ -1,11 +1,9 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 
-import authLogin from "../actionHandler/auth/authLogin";
-import { IUserInfo } from "../type/User";
-import addUserOnline from "../util/onlineUsers/addUserOnline";
 import fetchOnlineUsers from "../actionHandler/onlineUsers/fetchOnlineUsers";
-import IRequestSender from "../type/requestSender";
 import checkSession from "../actionHandler/auth/checkSession";
+
+import type IRequestSender from "../type/requestSender";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -30,7 +28,7 @@ module.exports = (io:Server) => {
 
       try {
         //認証処理
-        const onlineUsers = await fetchOnlineUsers();
+        const onlineUsers = fetchOnlineUsers();
 
         //console.log("onlineUsers :: fetchOnlineUsers : onlineUsers->", onlineUsers);
 

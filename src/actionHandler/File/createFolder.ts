@@ -1,7 +1,6 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
-import type { IFile, IFolder } from "../../type/File";
-import fetchFolders from "../../util/FIle/fetchFolders";
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * フォルダーを作成する
@@ -9,11 +8,11 @@ import fetchFolders from "../../util/FIle/fetchFolders";
  * @param folderName 
  * @param directory 
  */
-export default async function createFolder(
-  userId: string,
-  folderName: string,
-  directoryId: string = ""
-):Promise<boolean> {
+export default function createFolder(
+  _userId: string,
+  _folderName: string,
+  _directoryId = ""
+):boolean {
   try {
 
     //ファイルId生成
@@ -25,27 +24,16 @@ export default async function createFolder(
       return id;
     }
 
-    //ディレクトリデータを挿入
-    return new Promise((resolve) => {
-      db.run(
-        `
-        INSERT INTO FOLDERS (
-          id, userId, name, positionedDirectoryId
-        ) VALUES (?, ?, ?, ?)
-        `,
-        [folderIdGenerated(), userId, folderName, directoryId],
-        (err:Error) => {
-          if (err) {
-            console.log("createFolder :: エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //フォルダデータをテーブルへ挿入
+    db.prepare(
+      `
+      INSERT INTO FOLDERS (
+        id, userId, name, positionedDirectoryId
+      ) VALUES (?, ?, ?, ?)
+      `
+    ).run(folderIdGenerated(), _userId, _folderName, _directoryId);
+
+    return true;
 
   } catch(e) {
 

@@ -1,5 +1,6 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/ONLINEUSERS.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ONLINEUSERS.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * オンラインユーザーへユーザーId、SocketIDを追加し結果を返す
@@ -8,27 +9,19 @@ const db = new sqlite3.Database("./records/ONLINEUSERS.db");
  * @param sessionId 
  * @returns boolean
  */
-export default async function addUserOnline(socketId:string, userId:string, sessionId:string)
-:Promise<boolean> {
+export default function addUserOnline(
+  _socketId: string,
+  _userId: string,
+  _sessionId: string
+): boolean {
   try {
 
-    return new Promise((resolve) => {
-      db.run(
-        `
-        INSERT INTO ONLINE_USERS (socketId,userId,sessionId) VALUES (?,?,?)
-        `,
-        [socketId, userId, sessionId],
-        (err:Error) => {
-          if (err) {
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //オンラインユーザーを記録
+    db.prepare(
+      "INSERT INTO ONLINE_USERS (socketId,userId,sessionId) VALUES (?,?,?)"
+    ).run(_socketId, _userId, _sessionId);
+
+    return true;
 
   } catch(e) {
 

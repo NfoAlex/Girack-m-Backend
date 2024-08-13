@@ -1,7 +1,11 @@
 import sqlite3 from "sqlite3";
-import { IMessage } from "../type/Message";
+import type { IMessage } from "../type/Message";
 const db = new sqlite3.Database("./records/MESSAGE.db");
 import ogs from 'open-graph-scraper';
+
+import Database from 'better-sqlite3';
+const _db = new Database('./records/MESSAGE.db');
+_db.pragma('journal_mode = WAL');
 
 //取得できるOpenGraphデータのinterface
 interface IOGData {
@@ -28,34 +32,41 @@ interface IURLParsed {
   favicon: string
 };
 
+/**
+ * URLからプレビューデータを取得してメッセージデータへ格納する
+ * @param _urls 
+ * @param _channelId 
+ * @param _messageId 
+ * @returns 
+ */
 export default async function genLinkPreview(
-  urls:RegExpMatchArray,
-  channelId:string,
-  messageId: string
+  _urls:RegExpMatchArray,
+  _channelId:string,
+  _messageId: string
 ):Promise<IMessage["linkData"]|null> {
   try {
 
     //プレビューデータの格納用変数
-    let previewResult:IMessage["linkData"] = {
+    const previewResult:IMessage["linkData"] = {
       //"0":{}
     };
 
     //URLの配列分フェッチ、パース処理
-    for (let index in urls) {
+    for (const index in _urls) {
 
       //もしURLが画像用ならここで処理して終了
-      if (urls[index].match(/(https?:\/\/.*\.(?:png|jpg|gif))/g) !== null) {
+      if (_urls[index].match(/(https?:\/\/.*\.(?:png|jpg|gif))/g) !== null) {
         previewResult[index] = {
           contentType: "image",
           mediaType: "image",
-          url: urls[index],
+          url: _urls[index],
         };
       } else {
 
         //Twitter用だったら二重処理
-        if (urls[index].includes("fxtwitter")) {
+        if (_urls[index].includes("fxtwitter")) {
           //プレビューデータ化処理
-          const resultForThis = await fetchURLForTwitter(urls[index]);
+          const resultForThis = await fetchURLForTwitter(_urls[index]);
           //挿入 :: ToDo
           //previewResult = {
           //  "0": resultForThis
@@ -63,7 +74,7 @@ export default async function genLinkPreview(
           previewResult[index] = resultForThis;
         } else {
           //プレビューデータ化処理
-          const resultForThis = await fetchURL(urls[index]);
+          const resultForThis = await fetchURL(_urls[index]);
           //挿入 :: ToDo
           previewResult[index] = resultForThis;
         }
@@ -72,26 +83,15 @@ export default async function genLinkPreview(
     }
 
     //プレビューデータの書き込み処理
-    return new Promise((resolve)=> {
-      db.run(
-        `
-        UPDATE C` + channelId + ` SET
-          linkData=?
-        WHERE messageId=?
-        `,
-        [JSON.stringify(previewResult), messageId],
-        (err:Error) => {
-          if (err) {
-            console.log("genLinkPreview :: エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            resolve(previewResult);
-            return;
-          }
-        }
-      );
-    });
+    _db.prepare(
+      `
+      UPDATE C${_channelId} SET
+        linkData=?
+      WHERE messageId=?
+      `
+    ).run(JSON.stringify(previewResult), _messageId);
+
+    return previewResult;
 
   } catch(e) {
 

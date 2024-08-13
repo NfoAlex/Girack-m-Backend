@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import fetchUserConfig from "../actionHandler/User/fetchUserConfig";
 import changeUserName from "../actionHandler/User/changeUserName";
 import checkSession from "../actionHandler/auth/checkSession";
@@ -22,7 +22,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
 
     //ユーザーの設定データを取得
-    socket.on("fetchUserConfig", async (RequestSender:IRequestSender) => {
+    socket.on("fetchUserConfig", (RequestSender:IRequestSender) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -31,14 +31,14 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(RequestSender))) {
+      if (!(checkSession(RequestSender))) {
         socket.emit("RESULT::fetchUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //設定データ読み取り
-        const configData = await fetchUserConfig(RequestSender.userId);
+        const configData = fetchUserConfig(RequestSender.userId);
 
         //返す
         socket.emit("RESULT::fetchUserConfig", { result:"SUCCESS", data:configData });
@@ -49,7 +49,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーごとのチャンネル順序を取得
-    socket.on("fetchUserChannelOrder", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchUserChannelOrder", (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -58,14 +58,14 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //チャンネル順序の読み取り
-        const resultChannelOrder = await fetchUserChannelOrder(dat.RequestSender.userId);
+        const resultChannelOrder = fetchUserChannelOrder(dat.RequestSender.userId);
 
         //返す
         socket.emit("RESULT::fetchUserChannelOrder", { result:"SUCCESS", data:resultChannelOrder });
@@ -76,7 +76,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーの通知リストを取得
-    socket.on("fetchUserInbox", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchUserInbox", (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -85,14 +85,14 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //通知Inbox取得
-        const inbox = await fetchUserInbox(dat.RequestSender.userId);
+        const inbox = fetchUserInbox(dat.RequestSender.userId);
 
         //とれたならそのまま渡す
         if (inbox) {
@@ -113,9 +113,9 @@ module.exports = (io:Server) => {
       itemId: string
     }[] = []
       //キューが動作しているかどうか
-    let ActingremoteFromUserInbox:boolean = false;
+    const ActingremoteFromUserInbox = false;
       //Socketハンドラ
-    socket.on("removeFromUserInbox", async (
+    socket.on("removeFromUserInbox", (
       dat: {
         RequestSender: IRequestSender,
         inboxCategory: "mention"|"event",
@@ -124,24 +124,42 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       //キューに追加
+      /*
       queueRemove.push({
         userId: dat.RequestSender.userId,
         inboxCategory: dat.inboxCategory,
         channelId: dat.channelId,
         itemId: dat.inboxItemId
       });
+      */
       //console.log("User :: socket(removeFromUserInbox) : ActingremoteFromUserInbox->", ActingremoteFromUserInbox);
 
       //もしすでに処理始めているなら停止
-      if (ActingremoteFromUserInbox) return;
+      //if (ActingremoteFromUserInbox) return;
 
       try {
+        //Inboxから削除、結果受け取り（引数にキューのデータを使う）
+        const inboxEditResult = removeFromUserInbox(
+          dat.RequestSender.userId,
+          dat.inboxCategory,
+          dat.channelId,
+          dat.inboxItemId
+        );
+
+        //結果を送信
+        if (inboxEditResult) {
+          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS", data:true });
+        } else {
+          socket.emit("RESULT::removeFromUserInbox", { result:"SUCCESS_NO_CHANGES", data:false });
+        }
+
+        /*
         //処理をしていると設定
         ActingremoteFromUserInbox = true;
         //ループで通知削除処理
@@ -149,7 +167,7 @@ module.exports = (io:Server) => {
           //キューからデータ取得
           const q = queueRemove[0];
           //Inboxから削除、結果受け取り（引数にキューのデータを使う）
-          const inboxEditResult = await removeFromUserInbox(
+          const inboxEditResult = removeFromUserInbox(
             q.userId,
             q.inboxCategory,
             q.channelId,
@@ -172,6 +190,7 @@ module.exports = (io:Server) => {
 
         //処理をやめたと設定
         ActingremoteFromUserInbox = false;
+        */
       } catch(e) {
         socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_INTERNAL_THING", data:null });
         return;
@@ -179,7 +198,7 @@ module.exports = (io:Server) => {
     });
     
     //設定データを保存する
-    socket.on("saveUserConfig", async (dat:{RequestSender:IRequestSender, config:IUserConfig}) => {
+    socket.on("saveUserConfig", (dat:{RequestSender:IRequestSender, config:IUserConfig}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -188,14 +207,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::saveUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //書き込み
-        const saveUserConfigResult:boolean = await saveUserConfig(dat.RequestSender.userId, dat.config);
+        const saveUserConfigResult:boolean = saveUserConfig(dat.RequestSender.userId, dat.config);
         //結果に応じて結果と設定データを返す
         if (saveUserConfigResult) {
           socket.emit("RESULT::saveUserConfig", { result:"SUCCESS", data:dat.config});
@@ -208,7 +227,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーごとのチャンネル順序を保存
-    socket.on("saveUserChannelOrder", async (dat:{RequestSender:IRequestSender, channelOrder:IChannelOrder}) => {
+    socket.on("saveUserChannelOrder", (dat:{RequestSender:IRequestSender, channelOrder:IChannelOrder}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -217,14 +236,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::saveUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //書き込み、結果受け取り
-        const resultSaveUserChannelOrder:boolean = await saveUserChannelOrder(dat.RequestSender.userId, dat.channelOrder);
+        const resultSaveUserChannelOrder:boolean = saveUserChannelOrder(dat.RequestSender.userId, dat.channelOrder);
         //結果に応じて結果と設定データを返す
         if (resultSaveUserChannelOrder) {
           socket.emit("RESULT::saveUserChannelOrder", { result:"SUCCESS", data:null});
@@ -237,7 +256,7 @@ module.exports = (io:Server) => {
     });
 
     //一人分のユーザー情報取得(ユーザーIDから)
-    socket.on("fetchUserInfo", async (dat:{RequestSender:IRequestSender, userId:string}) => {
+    socket.on("fetchUserInfo", (dat:{RequestSender:IRequestSender, userId:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -245,13 +264,13 @@ module.exports = (io:Server) => {
       }
       */
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
-        const userInfo = await fetchUser(dat.userId, null);
+        const userInfo = fetchUser(dat.userId, null);
         socket.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_DB_THING", data:null });
@@ -260,7 +279,7 @@ module.exports = (io:Server) => {
     });
 
     //複数ユーザーの取得
-    socket.on("fetchUserAll", async (dat:{RequestSender:IRequestSender, indexPage:number}) => {
+    socket.on("fetchUserAll", (dat:{RequestSender:IRequestSender, indexPage:number}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -269,14 +288,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchUserAll", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //ユーザーを取得
-        const fetchUserAllResult = await fetchUserAll(dat.indexPage);
+        const fetchUserAllResult = fetchUserAll(dat.indexPage);
         //結果に応じてデータを送信
         if (fetchUserAllResult !== null) {
           socket.emit("RESULT::fetchUserAll", {
@@ -295,7 +314,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザー名で検索して一括取得
-    socket.on("searchUserInfo", async (
+    socket.on("searchUserInfo", (
       dat: {
         RequestSender: IRequestSender,
         userName: string, //検索文字列
@@ -305,14 +324,14 @@ module.exports = (io:Server) => {
     ) => {
       console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //情報検索、取得
-        const userInfos = await searchUser(
+        const userInfos = searchUser(
           dat.userName, dat.rule, dat.channelId
         );
 
@@ -323,7 +342,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザー名の変更
-    socket.on("changeUserName", async (dat:{RequestSender:IRequestSender, userName:string}) => {
+    socket.on("changeUserName", (dat:{RequestSender:IRequestSender, userName:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -332,17 +351,18 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //ユーザー名を変更
-        await changeUserName(dat.RequestSender.userId, dat.userName);
+        changeUserName(dat.RequestSender.userId, dat.userName);
         socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
+        
         //現在のユーザー情報を取得して送信
-        const userInfo = await fetchUser(dat.RequestSender.userId, null);
+        const userInfo = fetchUser(dat.RequestSender.userId, null);
         io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
@@ -350,7 +370,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーをBANする
-    socket.on("banUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+    socket.on("banUser", (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
@@ -359,7 +379,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::banUser", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -367,31 +387,31 @@ module.exports = (io:Server) => {
       try {
         //もし操作者と標的が一緒なら停止
         if (dat.RequestSender.userId === dat.targetUserId) {
-          socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
+          socket.emit("RESULT::banUser", { result:"ERROR_CANNOT_BAN_YOURSELF", data:false });
           return;
         }
 
         //ユーザー情報が空、あるいはホスト権限を持つユーザーなら停止
-        const userInfo = await fetchUser(dat.targetUserId, null);
+        const userInfo = fetchUser(dat.targetUserId, null);
         if (userInfo === null || userInfo.userId === "HOST") {
           socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
           return;
         }
 
         //権限確認
-        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "UserManage"))) {
           socket.emit("RESULT::banUser", { result:"ERROR_ROLE", data:false });
           return;
         }
 
         //BAN処理
-        const banUserResult = await banUser(dat.RequestSender.userId, dat.targetUserId);
+        const banUserResult = banUser(dat.RequestSender.userId, dat.targetUserId);
         //結果を返す
         if (banUserResult) {
           socket.emit("RESULT::banUser", { result:"SUCCESS", data:true });
 
           //現在のユーザー情報を取得して送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::banUser", { result:"ERROR_DB_THING", data:false });
@@ -403,7 +423,7 @@ module.exports = (io:Server) => {
     });
 
     //ユーザーのBAN状態を解除する
-    socket.on("pardonUser", async (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
+    socket.on("pardonUser", (dat:{RequestSender:IRequestSender, targetUserId:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_ROLE",
@@ -412,33 +432,33 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::pardonUser", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //ユーザー情報が空なら停止
-        const userInfo = await fetchUser(dat.targetUserId, null);
+        const userInfo = fetchUser(dat.targetUserId, null);
         if (userInfo === null) {
           socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
           return;
         }
 
         //権限確認
-        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "UserManage"))) {
           socket.emit("RESULT::pardonUser", { result:"ERROR_ROLE", data:false });
           return;
         }
 
         //BANの解除処理
-        const pardonUserResult = await pardonUser(dat.RequestSender.userId, dat.targetUserId);
+        const pardonUserResult = pardonUser(dat.RequestSender.userId, dat.targetUserId);
         //結果を返す
         if (pardonUserResult) {
           socket.emit("RESULT::pardonUser", { result:"SUCCESS", data:true });
 
           //現在のユーザー情報を取得して送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });

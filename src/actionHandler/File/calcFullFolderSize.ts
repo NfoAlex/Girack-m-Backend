@@ -1,15 +1,17 @@
 import calcDirectorySize from "../../util/FIle/calcDirectorySize";
 
 /**
- * フォルダのサイズを取得
+ * 指定のユーザーId用フォルダの総サイズを取得
+ * @param _userId 
+ * @returns 
  */
-export default async function calcFullFolderSize(
-  userId: string,
-):Promise<number|null> {
+export default function calcFullFolderSize(
+  _userId: string,
+):number|null {
   try {
 
     //容量を計算する、できなかったらエラー
-    const folderSize = await calcDirectorySize(userId, "");
+    const folderSize = calcDirectorySize(_userId, "");
     if (folderSize === null) {
       return null;
     }

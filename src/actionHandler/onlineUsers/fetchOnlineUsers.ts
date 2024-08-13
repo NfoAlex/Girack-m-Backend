@@ -1,33 +1,23 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/ONLINEUSERS.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ONLINEUSERS.db');
+db.pragma('journal_mode = WAL');
 
-export default async function fetchOnlineUsers():Promise<string[]|null> {
+/**
+ * オンラインのユーザーを取得
+ * @returns 
+ */
+export default function fetchOnlineUsers():string[]|null {
   try {
 
-    //オンラインのユーザーを取得
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT DISTINCT userId from ONLINE_USERS
-        `,
-        (err:Error, onlineUsers:{userId:string}[]) => {
-          if (err) {
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchOnlineUser :: db : onlineUsers->", onlineUsers);
-            //取得結果を配列にする
-            const onlineUsersArr:string[] = [];
-            for (let userId of onlineUsers) {
-              onlineUsersArr.push(userId["userId"]);
-            }
+    //オンラインユーザー取得
+    const userOnline = db.prepare("SELECT DISTINCT userId from ONLINE_USERS").all() as {userId:string}[];
+    //取得結果を配列にする
+    const onlineUsersArr:string[] = [];
+    for (const userId of userOnline) {
+      onlineUsersArr.push(userId.userId);
+    }
 
-            resolve(onlineUsersArr);
-            return;
-          }
-        }
-      )
-    });
+    return onlineUsersArr;
 
   } catch(e) {
 

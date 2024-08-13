@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 import checkSession from "../actionHandler/auth/checkSession";
 import createChannel from "../actionHandler/Channel/createChannel";
 import fetchChannel from "../actionHandler/Channel/fetchChannel";
@@ -16,7 +16,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
 
     //チャンネル作成
-    socket.on("createChannel", async (dat:
+    socket.on("createChannel", (dat:
       {
         RequestSender:IRequestSender,
         channelName:string,
@@ -32,7 +32,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::createChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -45,14 +45,14 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::createChannel", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //チャンネルを作成する
-        const createChannelResult = await createChannel(
+        const createChannelResult = createChannel(
           dat.channelName,
           dat.description,
           dat.isPrivate,
@@ -71,7 +71,7 @@ module.exports = (io:Server) => {
     });
 
     //チャンネル削除
-    socket.on("deleteChannel", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+    socket.on("deleteChannel", (dat:{RequestSender:IRequestSender, channelId:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR"|"ERROR_CANNOT_DELETE_RANDOM",
@@ -80,27 +80,27 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
-        //Randomチャンネルは削除できないようにするため
+        //最初のRandomチャンネルは削除できないようにするため
         if (dat.channelId === "0001") {
-          socket.emit("RESULT::deleteChannel", { result:"ERROR_CANNOT_DELETE_RANDOM", data:null });
+          socket.emit("RESULT::deleteChannel", { result:"ERROR_CANNOT_DELETE_0001", data:null });
           return;
         }
 
         //ロール権限を確認する
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ChannelManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ChannelManage");
         if (!roleCheckResult) { //falseなら停止
           socket.emit("RESULT::deleteChannel", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //チャンネルを削除する
-        const deleteChannelResult = await deleteChannel(
+        const deleteChannelResult = deleteChannel(
           dat.RequestSender.userId,
           dat.channelId,
         );
@@ -119,7 +119,7 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルを更新
-    socket.on("updateChannel", async (
+    socket.on("updateChannel", (
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
@@ -127,14 +127,14 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::updateChannel", { result:"ERROR_SESSION_ERROR" });
         return;
       }
 
       try {
         //チャンネル更新
-        const resultChannelUpdate = await updateChannel(
+        const resultChannelUpdate = updateChannel(
           dat.RequestSender.userId,
           dat.channelId,
           dat.channelInfo
@@ -146,7 +146,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
           
           //チャンネル情報を収集、送信
-          const channelInfoUpdated = await fetchChannel(dat.channelId, dat.RequestSender.userId);
+          const channelInfoUpdated = fetchChannel(dat.channelId, dat.RequestSender.userId);
           if (channelInfoUpdated !== null) {
             io.to("LOGGEDIN").emit("RESULT::fetchChannelInfo", {
               result: "SUCCESS",
@@ -167,16 +167,16 @@ module.exports = (io:Server) => {
     });
 
     //チャンネル情報を取得する
-    socket.on("fetchChannelInfo", async (dat:{RequestSender:IRequestSender, channelId:string}) => {
+    socket.on("fetchChannelInfo", (dat:{RequestSender:IRequestSender, channelId:string}) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchChannelInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
       
       try {
         //チャンネル情報取得
-        const channelInfo = await fetchChannel(dat.channelId, dat.RequestSender.userId);
+        const channelInfo = fetchChannel(dat.channelId, dat.RequestSender.userId);
         //結果送信
         if (channelInfo !== null) {
           socket.emit("RESULT::fetchChannelInfo", {
@@ -201,16 +201,16 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルを一覧で取得
-    socket.on("fetchChannelList", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchChannelList", (dat:{RequestSender:IRequestSender}) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchChannelList", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //チャンネルリストを取得
-        const channelList = await fetchChannelList(dat.RequestSender.userId);
+        const channelList = fetchChannelList(dat.RequestSender.userId);
         socket.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
       } catch(e) {
         socket.emit("RESULT::fetchChannelList", { result:"ERROR_DB_THING", data:null });
@@ -218,7 +218,7 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルへ参加
-    socket.on("joinChannel", async (dat:{ RequestSender:IRequestSender, channelId:string }) => {
+    socket.on("joinChannel", (dat:{ RequestSender:IRequestSender, channelId:string }) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -227,14 +227,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::joinChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //参加処理
-        const joinChannelResult:boolean = await joinChannel(dat.RequestSender.userId, dat.channelId);
+        const joinChannelResult:boolean = joinChannel(dat.RequestSender.userId, dat.channelId);
 
         //結果を送信
         if (joinChannelResult) {
@@ -250,7 +250,7 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルから脱退
-    socket.on("leaveChannel", async (dat:{ RequestSender:IRequestSender, channelId:string }) => {
+    socket.on("leaveChannel", (dat:{ RequestSender:IRequestSender, channelId:string }) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_DB_THING"|"ERROR_SESSION_ERROR",
@@ -259,14 +259,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::leaveChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //脱退処理
-        const leaveChannelResult:boolean = await leaveChannel(dat.RequestSender.userId, dat.channelId);
+        const leaveChannelResult:boolean = leaveChannel(dat.RequestSender.userId, dat.channelId);
 
         //結果を送信
         if (leaveChannelResult) {

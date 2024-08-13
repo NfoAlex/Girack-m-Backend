@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 
 import fetchRoles from "../actionHandler/Role/fetchRoles";
 import checkSession from "../actionHandler/auth/checkSession";
@@ -35,7 +35,7 @@ module.exports = (io:Server) => {
 
       try {
         //全ロールを取得
-        const roles = await fetchRoles();
+        const roles = fetchRoles();
 
         //nullじゃないならそれを返す
         if (roles !== null) {
@@ -65,7 +65,7 @@ module.exports = (io:Server) => {
 
       try {
         //ロールを検索
-        const roleResult = await searchRole(dat.searchQuery, dat.pageIndex);
+        const roleResult = searchRole(dat.searchQuery, dat.pageIndex);
         //nullじゃないなら結果送信
         if (roleResult !== null) {
           socket.emit("RESULT::searchRole", { result:"SUCCESS", data:roleResult });
@@ -120,19 +120,19 @@ module.exports = (io:Server) => {
 
       try {
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::addRole", { result:"ERROR_ROLE", data:false });
           return;
         }
 
         //ロールを付与
-        const addRoleResult:boolean = await addRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
+        const addRoleResult:boolean = addRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
         //結果に応じてそう返す
         if (addRoleResult) {
           socket.emit("RESULT::addRole", { result:"SUCCESS", data:addRoleResult });
 
           //成功したのならそのユーザーの情報を全体に送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::addRole", { result:"ERROR_DB_THING", data:addRoleResult });
@@ -165,19 +165,19 @@ module.exports = (io:Server) => {
 
       try {
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::unlinkRole", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //ロールを付与
-        const unlinkRoleResult:boolean = await unlinkRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
+        const unlinkRoleResult:boolean = unlinkRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
         //結果に応じてそう返す
         if (unlinkRoleResult) {
           socket.emit("RESULT::unlinkRole", { result:"SUCCESS", data:unlinkRoleResult });
 
           //成功したのならそのユーザーの情報を全体に送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::unlinkRole", { result:"ERROR_DB_THING", data:unlinkRoleResult });
@@ -212,7 +212,7 @@ module.exports = (io:Server) => {
 
       try {
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::createRole", { result:"ERROR_ROLE", data:null });
           return;
         }
@@ -224,7 +224,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::createRole", { result:"SUCCESS", data:null });
 
           //作成したロール情報を送信
-          const roleInfo:IUserRole = await fetchRoleSingle(createRoleResult);
+          const roleInfo:IUserRole = fetchRoleSingle(createRoleResult);
           io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
@@ -258,19 +258,19 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::updateRole", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //ロールの更新、結果を格納
-        const updateRoleResult = await updateRole(dat.RequestSender.userId, dat.roleData);
+        const updateRoleResult = updateRole(dat.RequestSender.userId, dat.roleData);
         //結果に応じて送信
         if (updateRoleResult) {
           socket.emit("RESULT::updateRole", {result:"SUCCESS", data:null});
 
           //現在のロール情報を全員に送信
-          const roleInfo = await fetchRoleSingle(dat.roleData.roleId);
+          const roleInfo = fetchRoleSingle(dat.roleData.roleId);
           io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::updateRole", {result:"ERROR_DB_THING", data:null});
@@ -304,13 +304,13 @@ module.exports = (io:Server) => {
         }
 
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::deleteRole", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //ロールの更新、結果を格納
-        const deleteRoleResult = await deleteRole(dat.roleId);
+        const deleteRoleResult = deleteRole(dat.roleId);
         //結果に応じて送信
         if (deleteRoleResult) {
           socket.emit("RESULT::deleteRole", {result:"SUCCESS", data:null});

@@ -1,61 +1,54 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
+
 import fetchMessage from "./fetchMessage";
 
 import type { IMessage } from "../../type/Message";
 
 /**
  * メッセージの編集
- * @param channelId 
- * @param messageId 
- * @param userIdBy 
+ * @param _channelId 
+ * @param _messageId 
+ * @param _userIdBy 
  * @returns 
  */
 export default async function editMessage(
-  channelId: string,
-  messageId: string,
-  contentUpdating: string,
-  userIdBy: string,
+  _channelId: string,
+  _messageId: string,
+  _contentUpdating: string,
+  _userIdBy: string,
 ):Promise<IMessage|null> {
   try {
 
     //もし更新内容が空なら停止
-    if (contentUpdating === "" || contentUpdating === null) return null;
+    if (_contentUpdating === "" || _contentUpdating === null) return null;
 
     //編集するメッセージを取得
-    const messageEditing = await fetchMessage(channelId, messageId);
+    const messageEditing = fetchMessage(_channelId, _messageId);
     if (messageEditing === null) return null;
 
     //もし現在のテキストと編集内容が一緒なら停止
-    if (messageEditing.content === contentUpdating) return null;
+    if (messageEditing.content === _contentUpdating) return null;
 
     //操作者とメッセ主が違うならエラーで停止
-    if (messageEditing.userId !== userIdBy) return null;
+    if (messageEditing.userId !== _userIdBy) return null;
 
-    return new Promise((resolve) => {
-      db.run(
-        `
-        UPDATE C` + channelId + ` SET
-          content=?,
-          isEdited=?
-        WHERE messageId='` + messageId + `'
-        `,
-        [contentUpdating, true],
-        (err:Error) => {
-          if (err) {
-            console.log("editMessage :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //取得したメッセデータも上書きして結果として渡す
-            messageEditing.content = contentUpdating;
-            messageEditing.isEdited = true;
-            resolve(messageEditing);
-            return;
-          }
-        }
-      );
-    });
+    //メッセージの編集をDBへ適用
+    db.prepare(
+      `
+      UPDATE C${_channelId} SET
+        content=?,
+        isEdited=?
+      WHERE messageId='${_messageId}'
+      `
+    ).run(_contentUpdating, 1);
+
+    //取得したメッセデータも上書きして結果として渡す
+    messageEditing.content = _contentUpdating;
+    messageEditing.isEdited = true;
+
+    return messageEditing;
 
   } catch(e) {
 

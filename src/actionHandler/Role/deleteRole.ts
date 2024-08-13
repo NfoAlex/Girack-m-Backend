@@ -1,20 +1,17 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/ROLE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ROLE.db');
+db.pragma('journal_mode = WAL');
 
-export default async function deleteRole(roleId:string) {
+/**
+ * ロールを削除
+ * @param roleId 
+ * @returns 
+ */
+export default function deleteRole(roleId:string) {
   try {
 
-    return new Promise((resolve) => {
-      db.run("DELETE FROM ROLES WHERE roleId=?", roleId, (err) => {
-        if (err) {
-          resolve(false);
-          return;
-        } else {
-          resolve(true);
-          return;
-        }
-      });
-    });
+    //ロールを削除
+    db.prepare("DELETE FROM ROLES WHERE roleId=?").run(roleId);
 
   } catch(e) {
 

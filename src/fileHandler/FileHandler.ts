@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
 import multer from "multer";
-import path from 'path';
+import path from 'node:path';
 import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
@@ -10,7 +10,7 @@ import type IRequestSender from "../type/requestSender";
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
 
-  destination: async function (req, file, cb) {
+  destination: async (req, file, cb) => {
     console.log("FileHandler :: storage : req.body->", req.body);
 
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
@@ -29,13 +29,13 @@ const storage = multer.diskStorage({
         return;
       }
       //取り出した情報を数値化
-      const fileSize = parseInt(contentLength);
+      const fileSize = Number.parseInt(contentLength);
 
       ///////////////////////////////////////////////
       //ディレクトリサイズを計算して超えていないか調べる
 
       //ディレクトリサイズを計算
-      const currentFullSize = await calcDirectorySize(metadata.RequestSender.userId, "");
+      const currentFullSize = calcDirectorySize(metadata.RequestSender.userId, "");
       if (currentFullSize === null) {
         const error = new Error("ERROR_INTERNAL_THING");
         cb(error, "STORAGE/TEMP");
@@ -57,15 +57,15 @@ const storage = multer.diskStorage({
       //セッション認証
       if (await checkSession(metadata.RequestSender)) {
         //このユーザー用のディレクトリ作成
-        try{fs.mkdirSync("./STORAGE/USERFILE/" + metadata.RequestSender.userId);}catch(e){}
+        try{fs.mkdirSync(`./STORAGE/USERFILE/${metadata.RequestSender.userId}`);}catch(e){}
         // アップロードされるファイルの保存先
-        cb(null, "STORAGE/USERFILE/"+metadata.RequestSender.userId);
+        cb(null, `STORAGE/USERFILE/${metadata.RequestSender.userId}`);
         return;
-      } else {
-        const error = new Error("ERROR_WRONG_SESSION");
-        console.log("FileHandler :: storage : セッションエラー");
-        cb(error, "STORAGE/TEMP");
       }
+      
+      const error = new Error("ERROR_WRONG_SESSION");
+      console.log("FileHandler :: storage : セッションエラー");
+      cb(error, "STORAGE/TEMP");
 
     } else {
       const error = new Error("ERROR_INFO_NOT_FOUND");
@@ -75,9 +75,9 @@ const storage = multer.diskStorage({
     }
   },
 
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     //配置する用のファイル名設定
-    const actualName = file.fieldname + '-' + Date.now() + path.extname(file.originalname);
+    const actualName = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
     
     //バックエンドに配置するファイル名をreq.bodyに含める
     req.body.actualName = actualName;

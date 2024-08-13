@@ -1,36 +1,34 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
+
 import type { IFile } from "../../type/File";
 
-export default async function fetchFileIndex(
-  userId: string,
-  directory: string = "",
-  searchQuery: string = ""
-):Promise<IFile[]|null> {
+/**
+ * 指定ユーザーのファイルインデックス取得
+ * @param _userId 
+ * @param _directory 
+ * @param _searchQuery 
+ * @returns 
+ */
+export default function fetchFileIndex(
+  _userId: string,
+  _directory = "",
+  _searchQuery = ""
+):IFile[]|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT * FROM FILE` + userId + `
-          WHERE directory=?
-          AND
-          name LIKE '%` + searchQuery + `%'
-        `,
-        directory,
-        (err:Error, fileIndex:IFile[]) => {
-          if (err) {
-            console.log("fetchFileIndex :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchFileIndex :: db : 結果->", fileIndex);
-            resolve(fileIndex);
-            return;
-          }
-        }
-      );
-    });
+    //ファイルインデックスを取得
+    const FileIndex = db.prepare(
+      `
+      SELECT * FROM FILE${_userId}
+        WHERE directory=?
+        AND
+        name LIKE '%${_searchQuery}%'
+      `
+    ).all(_directory) as IFile[];
+
+    return FileIndex;
 
   } catch(e) {
 

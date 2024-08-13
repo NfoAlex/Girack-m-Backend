@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 import { ServerInfo } from "../../db/InitServer";
 import mergeDeeply from "../../util/mergeDeeply";
 

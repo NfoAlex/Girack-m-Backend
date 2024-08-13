@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io";
+import type { Socket, Server } from "socket.io";
 
 import checkSession from "../actionHandler/auth/checkSession";
 import type IRequestSender from "../type/requestSender";
@@ -16,7 +16,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
     
     //自分のファイルインデックスを取得
-    socket.on("fetchFileIndex", async (
+    socket.on("fetchFileIndex", (
       dat: {
         RequestSender: IRequestSender,
         directory: string,
@@ -31,7 +31,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchFileIndex", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -41,7 +41,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイルインデックス取得
-        const fileIndex = await fetchFileIndex(
+        const fileIndex = fetchFileIndex(
           dat.RequestSender.userId,
           dat.directory,
           dat.searchQuery
@@ -69,9 +69,9 @@ module.exports = (io:Server) => {
     });
 
     //ファイルを削除する
-    socket.on("deleteFile", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("deleteFile", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteFile", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -81,7 +81,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイル削除し結果を受け取る
-        const deleteFileResult = await deleteFile(dat.RequestSender.userId, dat.fileId);
+        const deleteFileResult = deleteFile(dat.RequestSender.userId, dat.fileId);
         //結果に応じて送信
         if (deleteFileResult) {
           socket.emit("RESULT::deleteFile", {result:"SUCCESS", data:dat.fileId});
@@ -94,10 +94,10 @@ module.exports = (io:Server) => {
     });
 
     //ファイル単体情報の取得
-    socket.on("fetchFileInfo", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("fetchFileInfo", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       try {
         //ファイル情報の取得
-        const fileInfo = await fetchFileInfo(dat.fileId);
+        const fileInfo = fetchFileInfo(dat.fileId);
         //nullならそう返す
         if (fileInfo === null) {
           socket.emit(
@@ -145,7 +145,7 @@ module.exports = (io:Server) => {
           }
           
           //セッション認証をする
-          const authSessionResult = await checkSession(dat.RequestSender);
+          const authSessionResult = checkSession(dat.RequestSender);
 
           //結果に応じてそう送信
           if (authSessionResult) {
@@ -179,14 +179,14 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーを取得
-    socket.on("fetchFolders", async (
+    socket.on("fetchFolders", (
       dat: {
         RequestSender: IRequestSender,
         positionedDirectoryId: string
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchFolders", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -196,7 +196,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーを取得
-        const folder = await fetchFolders(
+        const folder = fetchFolders(
           dat.RequestSender.userId,
           dat.positionedDirectoryId
         );
@@ -213,9 +213,9 @@ module.exports = (io:Server) => {
     });
 
     //全ファイルの容量を取得
-    socket.on("calcFullFolderSize", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("calcFullFolderSize", (dat:{RequestSender:IRequestSender}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::calcFullFolderSize", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -225,7 +225,7 @@ module.exports = (io:Server) => {
 
       try {
         //容量を取得する
-        const fileSize = await calcFullFolderSize(dat.RequestSender.userId);
+        const fileSize = calcFullFolderSize(dat.RequestSender.userId);
         //結果に応じてそう返す
         if (fileSize !== null) {
           socket.emit("RESULT::calcFullFolderSize", { result:"SUCCESS", data:fileSize });
@@ -239,9 +239,9 @@ module.exports = (io:Server) => {
     });
 
     //ファイルの公開設定をトグル
-    socket.on("toggleFileIsPublic", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("toggleFileIsPublic", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::toggleFileIsPublic", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -251,7 +251,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイルの公開設定をトグル、結果としてboolを受け取る
-        const resultToggle = await toggleFileIsPublic(dat.RequestSender.userId, dat.fileId);
+        const resultToggle = toggleFileIsPublic(dat.RequestSender.userId, dat.fileId);
         //結果に応じて送信
         if (resultToggle) {
           socket.emit("RESULT::toggleFileIsPublic", {
@@ -274,7 +274,7 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーを作成する
-    socket.on("createFolder", async (
+    socket.on("createFolder", (
       dat: {
         RequestSender: IRequestSender,
         folderName: string,
@@ -282,7 +282,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::createFolder", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -292,7 +292,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーを作成する
-        const createFolderResult = await createFolder(
+        const createFolderResult = createFolder(
           dat.RequestSender.userId,
           dat.folderName,
           dat.directoryId
@@ -311,9 +311,9 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーと中身のすべてを削除
-    socket.on("deleteFolder", async (dat:{RequestSender:IRequestSender, folderId:string}) => {
+    socket.on("deleteFolder", (dat:{RequestSender:IRequestSender, folderId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteFolder", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -329,7 +329,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーの削除、結果受け取り
-        const deleteFolderResult = await deleteFolder(dat.RequestSender.userId, dat.folderId);
+        const deleteFolderResult = deleteFolder(dat.RequestSender.userId, dat.folderId);
         //結果に応じてそう送信
         if (deleteFolderResult) {
           socket.emit("RESULT::deleteFolder", { result:"SUCCESS", data:null });

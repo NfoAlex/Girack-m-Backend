@@ -8,17 +8,17 @@ import fetchSession from "../actionHandler/auth/fetchSession";
 import { ServerInfo } from "../db/InitServer";
 import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
+import changeSessionName from "../actionHandler/auth/changeSessionName";
+import sessionLogout from "../actionHandler/auth/sessionLogout";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserInfo } from "../type/User";
-import sessionLogout from "../actionHandler/auth/sessionLogout";
-import changeSessionName from "../actionHandler/auth/changeSessionname";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
     
     //ログイン認証
-    socket.on("authLogin", async (dat:{username:string, password:string}) => {
+    socket.on("authLogin", (dat:{username:string, password:string}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_WRONGINFO",
@@ -32,7 +32,7 @@ module.exports = (io:Server) => {
           authResult:boolean,
           UserInfo: IUserInfo|null,
           sessionId: string|null
-        } = await authLogin(dat.username, dat.password);
+        } = authLogin(dat.username, dat.password);
 
         console.log("auth :: authLogin : authResult->", authData);
 
@@ -48,7 +48,7 @@ module.exports = (io:Server) => {
         ) {
           //参加したチャンネル全部分のSocketルーム参加
           if (authData.UserInfo.channelJoined !== undefined) {
-            for (let channelId of authData.UserInfo.channelJoined) {
+            for (const channelId of authData.UserInfo.channelJoined) {
               socket.join(channelId);
             }
           }
@@ -58,7 +58,7 @@ module.exports = (io:Server) => {
           socket.join(authData.UserInfo.userId);
 
           //オンラインのユーザーとして記録
-          const addUserOnlineResult = await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
+          const addUserOnlineResult = addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
 
           //オンラインになる人としてユーザーIdをログイン済みの全員に送信
           io.to("LOGGEDIN").emit("addOnlineUser", {data:authData.UserInfo.userId});
@@ -83,13 +83,13 @@ module.exports = (io:Server) => {
     });
 
     //セッションのみでの認証
-    socket.on("authSession", async (dat:{userId:string, sessionId:string}) => {
+    socket.on("authSession", (dat:{userId:string, sessionId:string}) => {
       //セッション確認
-      if (!(await checkSession(dat))) { //失敗
+      if (!(checkSession(dat))) { //失敗
         socket.emit("RESULT::authSession", { result:"ERROR_SESSION_ERROR", data:false });
       } else { //成功
         //参加チャンネル分、Socketルームへ参加させる
-        const userInfo = await fetchUser(dat.userId, null);
+        const userInfo = fetchUser(dat.userId, null);
         //ユーザー情報が空ならエラー
         if (userInfo === null) {
           socket.emit("RESULT::authSession", { result:"ERROR_DB_THING", data:false });
@@ -97,7 +97,7 @@ module.exports = (io:Server) => {
         }
 
         //情報が空じゃなければチャンネルへの参加処理
-        for (let channelId of userInfo.channelJoined) {
+        for (const channelId of userInfo.channelJoined) {
           socket.join(channelId);
         }
         //認証済みの人として参加
@@ -109,7 +109,7 @@ module.exports = (io:Server) => {
         socket.emit("RESULT::authSession", { result:"SUCCESS", data:true });
 
         //オンラインのユーザーとして記録
-        await addUserOnline(socket.id, dat.userId, dat.sessionId);
+        addUserOnline(socket.id, dat.userId, dat.sessionId);
         //オンラインになる人としてユーザーIdをログイン済みの全員に送信
         io.to("LOGGEDIN").emit("addOnlineUser", {data:dat.userId});
       }
@@ -155,7 +155,7 @@ module.exports = (io:Server) => {
     });
 
     //パスワード変更
-    socket.on("changePassword", async (
+    socket.on("changePassword", (
       dat:{RequestSender:IRequestSender, currentPassword:string, newPassword:string}
     ) => {
       /*
@@ -166,7 +166,7 @@ module.exports = (io:Server) => {
       */
      
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::changePassword", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -174,7 +174,7 @@ module.exports = (io:Server) => {
       try {
         //パスワードを変更し結果を受け取る
         const changePasswordResult = 
-          await changePassword(
+          changePassword(
             dat.RequestSender.userId,
             dat.currentPassword,
             dat.newPassword
@@ -192,16 +192,16 @@ module.exports = (io:Server) => {
     });
 
     //セッション情報を取得
-    socket.on("fetchSession", async (dat:{RequestSender:IRequestSender, indexNum:number}) => {
+    socket.on("fetchSession", (dat:{RequestSender:IRequestSender, indexNum:number}) => {
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchSession", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //セッション情報を取得
-        const sessionData = await fetchSession(dat.RequestSender.userId, dat.indexNum);
+        const sessionData = fetchSession(dat.RequestSender.userId, dat.indexNum);
         //nullじゃなければ送信
         if (sessionData !== null) {
           socket.emit("RESULT::fetchSession", { result:"SUCCESS", data:sessionData });
@@ -219,7 +219,7 @@ module.exports = (io:Server) => {
     });
 
     //セッション名前
-    socket.on("changeSessionName", async (
+    socket.on("changeSessionName", (
       dat: {
         RequestSender: IRequestSender,
         targetSessionId: string,
@@ -227,14 +227,14 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::changeSessionName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //セッション名を変更
-        const changeSessionname:boolean = await changeSessionName(dat.RequestSender.userId, dat.targetSessionId, dat.newName);
+        const changeSessionname:boolean = changeSessionName(dat.RequestSender.userId, dat.targetSessionId, dat.newName);
         //成功ならそう送信
         if (changeSessionname) {
           socket.emit("RESULT::changeSessionName", { result:"SUCCESS", data:null });
@@ -251,16 +251,16 @@ module.exports = (io:Server) => {
     });
 
     //セッション情報をログアウトさせる
-    socket.on("sessionLogout", async (dat:{RequestSender: IRequestSender, targetSessionId:string}) => {
+    socket.on("sessionLogout", (dat:{RequestSender: IRequestSender, targetSessionId:string}) => {
       //セッション確認
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::sessionLogout", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //セッションデータを削除する
-        const sessionLogoutResult = await sessionLogout(dat.RequestSender.userId, dat.targetSessionId);
+        const sessionLogoutResult = sessionLogout(dat.RequestSender.userId, dat.targetSessionId);
 
         if (sessionLogoutResult) {
           socket.emit("RESULT::sessionLogout", { result:"SUCCESS", data:null });

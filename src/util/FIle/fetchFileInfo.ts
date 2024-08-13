@@ -1,36 +1,28 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/FILEINDEX.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/FILEINDEX.db');
+db.pragma('journal_mode = WAL');
+
 import type { IFile } from "../../type/File";
 
-export default async function fetchFileInfo(fileId: string):Promise<IFile|null> {
+/**
+ * ファイル情報を取得する
+ * @param _fileId 
+ * @returns 
+ */
+export default function fetchFileInfo(_fileId: string):IFile|null {
   try {
     
     //ファイルIdからアップロード主を抜き出す
-    const userId = fileId.slice(0,8);
+    const userId = _fileId.slice(0,8);
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT * FROM FILE` + userId + ` WHERE id=?
-        `,
-        fileId,
-        (err:Error, fileInfo:[IFile]) => {
-          if (err) {
-            console.log("fetchFileInfo :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchFileInfo :: db : 結果->", fileInfo);
-            if (fileInfo[0] !== undefined) {
-              resolve(fileInfo[0]);
-            } else {
-              resolve(null);
-            }
-            return;
-          }
-        }
-      );
-    });
+    //ファイル情報を取得
+    const fileInfo = db.prepare(
+      `SELECT * FROM FILE${userId} WHERE id=?`
+    ).get(_fileId) as IFile | undefined;
+    //undefinedならnullを返す
+    if (fileInfo === undefined) return null;
+
+    return fileInfo;
 
   } catch(e) {
 
