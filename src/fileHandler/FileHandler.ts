@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
 import multer from "multer";
-import path from 'path';
+import path from 'node:path';
 import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
