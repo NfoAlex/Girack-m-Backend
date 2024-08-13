@@ -12,15 +12,15 @@ import type { IChannel, IChannelbeforeParsing } from "../../type/Channel";
  * @param _userId 
  * @returns 
  */
-export default async function fetchChannelList(_userId: string)
-:Promise<IChannel[]|null> {
+export default function fetchChannelList(_userId: string)
+:IChannel[]|null {
   try {
 
     //ユーザー情報を取得、ないならnull
     const userInfo = fetchUser(_userId, null);
     if (userInfo === null) return null;
 
-    //このユーザーがサーバー管理権限がありプラベを見られるか調べる
+    //このユーザーがサーバー管理権限を持っていてプラベを見られるか調べる
     const roleServerManage = roleCheck(_userId, "ServerManage");
 
     //チャンネル情報を一括取得

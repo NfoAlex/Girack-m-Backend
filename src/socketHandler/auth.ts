@@ -201,7 +201,11 @@ module.exports = (io:Server) => {
 
       try {
         //セッション情報を取得
-        const sessionData = fetchSession(dat.RequestSender.userId, dat.indexNum);
+        const sessionData = fetchSession(
+          dat.RequestSender.userId,
+          dat.RequestSender.sessionId,
+          dat.indexNum
+        );
         //nullじゃなければ送信
         if (sessionData !== null) {
           socket.emit("RESULT::fetchSession", { result:"SUCCESS", data:sessionData });
