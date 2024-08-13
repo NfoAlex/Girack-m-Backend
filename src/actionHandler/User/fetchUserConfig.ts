@@ -1,42 +1,45 @@
-import fs from "fs";
-import sqlite3 from "sqlite3";
+import fs from "node:fs";
 import mergeDeeply from "../../util/mergeDeeply";
-const db = new sqlite3.Database("./records/USER.db");
 
-import { IUserConfig, IUserConfigBeforeParsing } from "../../type/User";
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-export default function fetchUserConfig(userId:string)
-:Promise<IUserConfig|null> {
-  //ユーザー情報取得
-  return new Promise<IUserConfig|null>((resolve) => {
-    try {
+import type { IUserConfig, IUserConfigBeforeParsing } from "../../type/User";
 
-      //デフォルトの設定値取得
-      const defaultConfigData:IUserConfig = JSON.parse(fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')); //サーバー情報のJSON読み込み
+/**
+ * ユーザーの設定データを取得
+ * @param userId 
+ * @returns 
+ */
+export default function fetchUserConfig(_userId:string)
+:IUserConfig|null {
+  try {
+    //デフォルトの設定値取得
+    const defaultConfigData:IUserConfig = JSON.parse(fs.readFileSync('./src/db/defaultValues/UserConfig.json', 'utf-8')); //サーバー情報のJSON読み込み
 
-      //ユーザーをIDで検索
-      db.all("SELECT * FROM USERS_CONFIG WHERE userId = ?", [userId], (err:Error, datConfig:IUserConfigBeforeParsing[]) => {
-        if (err) {
-          console.log("fetchUserConfig :: ERROR ->", err);
-          resolve(null);
-        } else {
-          //console.log("fetchUserConfig :: 検索結果->", userId, datConfig);
-          //DBでは設定の値がstringで保存されているためJSONへ
-          datConfig[0].channel = JSON.parse(datConfig[0].channel);
-          datConfig[0].notification = JSON.parse(datConfig[0].notification);
-          datConfig[0].sidebar = JSON.parse(datConfig[0].sidebar);
-          //設定データをデフォルトにマージする形で形成させる
-          const datConfigResult = mergeDeeply(defaultConfigData, datConfig[0]);
-          resolve(datConfigResult);
-        }
-      });
-    
-    } catch(e) {
+    const userConfig = db.prepare("SELECT * FROM USERS_CONFIG WHERE userId = ?").get(_userId) as IUserConfigBeforeParsing | undefined;
+    if (userConfig === undefined) return null;
 
-      console.log("fetchUserConfig :: fetchUserConfig : エラー->", e);
-      resolve(null);
-      return;
+    //パースする
+    const userConfigParsed:IUserConfig = {
+      ...userConfig,
+      channel: JSON.parse(userConfig.channel),
+      notification: JSON.parse(userConfig.notification),
+      sidebar: JSON.parse(userConfig.sidebar),
+      userId: _userId
+    };
 
-    }
-  });
+    const configResult:IUserConfig = mergeDeeply(defaultConfigData, userConfigParsed);
+    console.log("fetchUserConfig :: マージ->", configResult);
+
+
+    //マージした設定JSONを返す
+    return configResult;
+
+  } catch(e) {
+
+    return null;
+
+  }
 }

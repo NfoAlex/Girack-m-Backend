@@ -38,7 +38,9 @@ module.exports = (io:Server) => {
 
       try {
         //設定データ読み取り
-        const configData = await fetchUserConfig(RequestSender.userId);
+        const configData = fetchUserConfig(RequestSender.userId);
+
+        console.log("User :: socket(fetchUserConfig) : configData->", configData);
 
         //返す
         socket.emit("RESULT::fetchUserConfig", { result:"SUCCESS", data:configData });
