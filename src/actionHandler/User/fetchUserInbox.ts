@@ -1,31 +1,26 @@
-import sqlite3 from "sqlite3";
-import { IUserInbox } from "../../type/User";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-export default async function fetchUserInbox(userId: string):Promise<IUserInbox|null> {
+import type { IUserInbox } from "../../type/User";
+
+/**
+ * ユーザーのInbox(通知)を取得
+ * @param _userId 
+ * @returns 
+ */
+export default function fetchUserInbox(_userId: string):IUserInbox|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT inbox FROM USERS_SAVES
-          WHERE userId=?
-        `,
-        userId,
-        (err:Error, inboxData:[{inbox: string}]) => {
-          if (err) {
-            console.log("fetchUserInbox :: エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
-            //文字列をJSONにしてから返す
-            resolve(JSON.parse(inboxData[0].inbox));
-            return;
-          }
-        }
-      )
-    });
+    //Inboxのデータを取得(この時点ではString)
+    const userInbox = db.prepare(
+      "SELECT inbox FROM USERS_SAVES WHERE userId=?"
+    ).get(_userId) as {inbox: string};
+
+    //Inboxをパース
+    const userInboxParsed:IUserInbox = JSON.parse(userInbox.inbox);
+
+    return userInboxParsed;
 
   } catch(e) {
 

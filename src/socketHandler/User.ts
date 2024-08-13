@@ -94,7 +94,7 @@ module.exports = (io:Server) => {
 
       try {
         //通知Inbox取得
-        const inbox = await fetchUserInbox(dat.RequestSender.userId);
+        const inbox = fetchUserInbox(dat.RequestSender.userId);
 
         //とれたならそのまま渡す
         if (inbox) {
@@ -115,7 +115,7 @@ module.exports = (io:Server) => {
       itemId: string
     }[] = []
       //キューが動作しているかどうか
-    let ActingremoteFromUserInbox:boolean = false;
+    let ActingremoteFromUserInbox = false;
       //Socketハンドラ
     socket.on("removeFromUserInbox", async (
       dat: {
