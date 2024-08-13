@@ -216,7 +216,7 @@ module.exports = (io:Server) => {
 
       try {
         //書き込み
-        const saveUserConfigResult:boolean = await saveUserConfig(dat.RequestSender.userId, dat.config);
+        const saveUserConfigResult:boolean = saveUserConfig(dat.RequestSender.userId, dat.config);
         //結果に応じて結果と設定データを返す
         if (saveUserConfigResult) {
           socket.emit("RESULT::saveUserConfig", { result:"SUCCESS", data:dat.config});
