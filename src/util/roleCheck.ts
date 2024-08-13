@@ -8,7 +8,13 @@ db.pragma('journal_mode = WAL');
 //ロールのJSONデータをキーで参照できるように
 type UserRoleKey = keyof IUserRole;
 
-export default async function roleCheck(_userId:string, _termChecking:UserRoleKey):Promise<boolean> {
+/**
+ * 指定のユーザーIdが指定項目の権限を持っているかどうか調べる
+ * @param _userId 調べるユーザーId
+ * @param _termChecking 調べるロール内の権限
+ * @returns 
+ */
+export default function roleCheck(_userId:string, _termChecking:UserRoleKey):boolean {
   try {
 
     //SYSTEMならtrue
@@ -17,7 +23,7 @@ export default async function roleCheck(_userId:string, _termChecking:UserRoleKe
     }
 
     //ユーザー情報を取得する
-    const userInfo = await fetchUser(_userId, null);
+    const userInfo = fetchUser(_userId, null);
     //ユーザーがなければ取りやめ
     if (userInfo === null) {
       return false
