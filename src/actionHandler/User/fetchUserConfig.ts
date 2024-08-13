@@ -30,11 +30,8 @@ export default function fetchUserConfig(_userId:string)
       userId: _userId
     };
 
+    //設定データを初期設定へマージして返す
     const configResult:IUserConfig = mergeDeeply(defaultConfigData, userConfigParsed);
-    console.log("fetchUserConfig :: マージ->", configResult);
-
-
-    //マージした設定JSONを返す
     return configResult;
 
   } catch(e) {
