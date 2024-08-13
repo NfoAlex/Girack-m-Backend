@@ -165,19 +165,19 @@ module.exports = (io:Server) => {
 
       try {
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::unlinkRole", { result:"ERROR_ROLE", data:null });
           return;
         }
 
         //ロールを付与
-        const unlinkRoleResult:boolean = await unlinkRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
+        const unlinkRoleResult:boolean = unlinkRole(dat.RequestSender.userId, dat.targetUserId, dat.roleId);
         //結果に応じてそう返す
         if (unlinkRoleResult) {
           socket.emit("RESULT::unlinkRole", { result:"SUCCESS", data:unlinkRoleResult });
 
           //成功したのならそのユーザーの情報を全体に送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::unlinkRole", { result:"ERROR_DB_THING", data:unlinkRoleResult });
