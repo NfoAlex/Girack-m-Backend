@@ -251,7 +251,7 @@ module.exports = (io:Server) => {
 
       try {
         //ファイルの公開設定をトグル、結果としてboolを受け取る
-        const resultToggle = await toggleFileIsPublic(dat.RequestSender.userId, dat.fileId);
+        const resultToggle = toggleFileIsPublic(dat.RequestSender.userId, dat.fileId);
         //結果に応じて送信
         if (resultToggle) {
           socket.emit("RESULT::toggleFileIsPublic", {
