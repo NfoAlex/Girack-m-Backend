@@ -21,18 +21,24 @@ export default async function calcRoleUser(userId:string)
   try {
 
     //権限をそれぞれ調べてレベルを返す
-    if (await roleCheck(userId, "ServerManage")) {
+    if (roleCheck(userId, "ServerManage")) {
       return 5;
-    } else if (await roleCheck(userId, "RoleManage")) {
+    }
+    
+    if (roleCheck(userId, "RoleManage")) {
       return 4;
-    } else if (
-      await roleCheck(userId, "ChannelManage")
+    }
+    
+    if (
+      roleCheck(userId, "ChannelManage")
       ||
-      await roleCheck(userId, "UserManage")
+      roleCheck(userId, "UserManage")
     ) {
       return 3;
-    } else if (
-      await roleCheck(userId, "MessageDelete")
+    }
+    
+    if (
+      roleCheck(userId, "MessageDelete")
     ) {
       return 2;
     }
