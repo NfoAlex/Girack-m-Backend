@@ -1,8 +1,8 @@
-import fs from "fs";
+import fs from "node:fs";
 import { ServerInfo } from "../../db/InitServer";
 import mergeDeeply from "../../util/mergeDeeply";
 
-import IServerInfo from "../../type/Server";
+import type IServerInfo from "../../type/Server";
 
 //サーバー設定テンプレ
 const ServerInfoTemplate:IServerInfo = JSON.parse(fs.readFileSync('./src/db/defaultValues/ServerInfo.json', 'utf-8'));

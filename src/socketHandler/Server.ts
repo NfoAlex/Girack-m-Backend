@@ -23,6 +23,7 @@ module.exports = (io:Server) => {
       //転送するインスタンス情報を削るためにクローンする
       const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
       //招待コードを削除
+      // biome-ignore lint/performance/noDelete: 完全に削除したいため
       delete ServerInfoLimited.registration.invite.inviteCode;
 
       //返す
@@ -45,7 +46,7 @@ module.exports = (io:Server) => {
       }
 
       //権限確認
-      const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+      const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
       if (!roleCheckResult) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_ROLE", data:null });
         return;
@@ -71,7 +72,7 @@ module.exports = (io:Server) => {
 
       try {
         //権限確認
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::updateServerConfig", { result:"ERROR_ROLE", data:null });
           return;
@@ -86,6 +87,7 @@ module.exports = (io:Server) => {
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
           //招待コードを削除
+          // biome-ignore lint/performance/noDelete: 完全に削除したいため
           delete ServerInfoLimited.registration.invite.inviteCode;
           //サーバー情報を返す
           io.emit("RESULT::fetchServerInfoLimited", { result:"SUCCESS", data:ServerInfoLimited });
@@ -113,7 +115,7 @@ module.exports = (io:Server) => {
 
       try {
         //権限確認
-        const roleCheckResult = await roleCheck(dat.RequestSender.userId, "ServerManage");
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ServerManage");
         if (!roleCheckResult) {
           socket.emit("RESULT::updateServerInfo", { result:"ERROR_ROLE", data:null });
           return;
@@ -126,6 +128,7 @@ module.exports = (io:Server) => {
           //転送するインスタンス情報を削るためにクローンする
           const ServerInfoLimited:IServerInfo = structuredClone(ServerInfo);
           //招待コードを削除
+          // biome-ignore lint/performance/noDelete: 完全に削除したいため
           delete ServerInfoLimited.registration.invite.inviteCode;
           
           //全員にサーバー情報を返す
