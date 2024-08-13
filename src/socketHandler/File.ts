@@ -69,7 +69,7 @@ module.exports = (io:Server) => {
     });
 
     //ファイルを削除する
-    socket.on("deleteFile", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("deleteFile", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       //セッション認証
       if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteFile", {
@@ -94,7 +94,7 @@ module.exports = (io:Server) => {
     });
 
     //ファイル単体情報の取得
-    socket.on("fetchFileInfo", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("fetchFileInfo", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       try {
         //ファイル情報の取得
         const fileInfo = fetchFileInfo(dat.fileId);
@@ -179,14 +179,14 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーを取得
-    socket.on("fetchFolders", async (
+    socket.on("fetchFolders", (
       dat: {
         RequestSender: IRequestSender,
         positionedDirectoryId: string
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchFolders", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -196,7 +196,7 @@ module.exports = (io:Server) => {
 
       try {
         //フォルダーを取得
-        const folder = await fetchFolders(
+        const folder = fetchFolders(
           dat.RequestSender.userId,
           dat.positionedDirectoryId
         );
@@ -213,9 +213,9 @@ module.exports = (io:Server) => {
     });
 
     //全ファイルの容量を取得
-    socket.on("calcFullFolderSize", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("calcFullFolderSize", (dat:{RequestSender:IRequestSender}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::calcFullFolderSize", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -239,9 +239,9 @@ module.exports = (io:Server) => {
     });
 
     //ファイルの公開設定をトグル
-    socket.on("toggleFileIsPublic", async (dat:{RequestSender:IRequestSender, fileId:string}) => {
+    socket.on("toggleFileIsPublic", (dat:{RequestSender:IRequestSender, fileId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::toggleFileIsPublic", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -274,7 +274,7 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーを作成する
-    socket.on("createFolder", async (
+    socket.on("createFolder", (
       dat: {
         RequestSender: IRequestSender,
         folderName: string,
@@ -282,7 +282,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::createFolder", {
           result: "ERROR_WRONG_SESSION",
           data: null
@@ -311,9 +311,9 @@ module.exports = (io:Server) => {
     });
 
     //フォルダーと中身のすべてを削除
-    socket.on("deleteFolder", async (dat:{RequestSender:IRequestSender, folderId:string}) => {
+    socket.on("deleteFolder", (dat:{RequestSender:IRequestSender, folderId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteFolder", {
           result: "ERROR_WRONG_SESSION",
           data: null
