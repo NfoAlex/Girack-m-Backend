@@ -1,10 +1,18 @@
-import sqlite3 from "sqlite3";
-import { IUserRole } from "../../type/User";
-const db = new sqlite3.Database("./records/ROLE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ROLE.db');
+db.pragma('journal_mode = WAL');
 
+import type { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
+
+/**
+ * ロールを作成する
+ * @param _userId 
+ * @param _roleDataCreating 
+ * @returns 
+ */
 export default async function createRole(
-  userId: string,
-  roleDataCreating: {
+  _userId: string,
+  _roleDataCreating: {
     name: string,
     color: string
   }
@@ -18,33 +26,19 @@ export default async function createRole(
       return null;
     }
 
-    //書き込み結果を待ってそれを返す
-    return new Promise((resolve) => {
-      //テーブルへデータ挿入
-      db.run(`
-        INSERT INTO ROLES (
-          roleId,
-          name,
-          color
-        )
-        VALUES (?, ?, ?)
-        `,
-        [
-          roleIdNew, //生成したロールID
-          roleDataCreating.name, //名前
-          roleDataCreating.color //ロールの色
-        ],
-        (err) => {
-          if (err) {
-            resolve(null);
-            return;
-          } else {
-            resolve(roleIdNew);
-            return;
-          }
-        }
-      );
-    });
+    //ロールテーブルへ挿入
+    db.prepare(
+      `
+      INSERT INTO ROLES (
+        roleId,
+        name,
+        color
+      )
+      VALUES (?, ?, ?)
+      `
+    ).run(roleIdNew, _roleDataCreating.name, _roleDataCreating.color);
+
+    return roleIdNew;
 
   } catch(e) {
 
@@ -54,9 +48,12 @@ export default async function createRole(
   }
 }
 
-//チャンネルIDの空きを探す
+/**
+ * ロールIDの空きを探す
+ * @returns string Idの空き
+ */
 async function getNewRoleId():Promise<string> {
-  let tryCount:number = 0;
+  let tryCount = 0;
 
   return new Promise<string>((resolve) => {
     try {
@@ -70,15 +67,10 @@ async function getNewRoleId():Promise<string> {
         }
     
         //そのIDのロールデータを取得してみる
-        const datRole = await new Promise((resolve) => {
-          db.all(
-            "SELECT * FROM ROLES WHERE roleId=?",
-            roleIdGen,
-            (err, roleDat:IUserRole[]) => {
-              resolve(roleDat[0]);
-            }
-          )
-        });
+        const datRole = db.prepare(
+          "SELECT * FROM ROLES WHERE roleId=?"
+        ).get(roleIdGen) as IUserRoleBeforeParsing | undefined;
+
         console.log("createRole :: getNewRoleId : datRole->", datRole);
         
         //取得したロールデータが無効ならループ停止してIDを返す

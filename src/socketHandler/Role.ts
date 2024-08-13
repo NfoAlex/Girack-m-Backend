@@ -212,7 +212,7 @@ module.exports = (io:Server) => {
 
       try {
         //ロール権限の確認
-        if (!(await roleCheck(dat.RequestSender.userId, "RoleManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "RoleManage"))) {
           socket.emit("RESULT::createRole", { result:"ERROR_ROLE", data:null });
           return;
         }
@@ -224,7 +224,7 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::createRole", { result:"SUCCESS", data:null });
 
           //作成したロール情報を送信
-          const roleInfo:IUserRole = await fetchRoleSingle(createRoleResult);
+          const roleInfo:IUserRole = fetchRoleSingle(createRoleResult);
           io.emit("RESULT::fetchRoleSingle", { result:"SUCCESS", data:roleInfo });
         } else {
           socket.emit("RESULT::createRole", { result:"ERROR_DB_THING", data:null });
