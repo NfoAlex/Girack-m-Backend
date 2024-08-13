@@ -31,7 +31,7 @@ module.exports = (io:Server) => {
     });
 
     //全てのインスタンス情報を取得
-    socket.on("fetchServerInfoFull", async (dat:{RequestSender:IRequestSender}) => {
+    socket.on("fetchServerInfoFull", (dat:{RequestSender:IRequestSender}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_MISSINGROLE",
@@ -40,7 +40,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -56,7 +56,7 @@ module.exports = (io:Server) => {
     });
 
     //サーバー設定の更新
-    socket.on("updateServerConfig", async (dat:{ RequestSender:IRequestSender, ServerConfig:IServerInfo["config"]}) => {
+    socket.on("updateServerConfig", (dat:{ RequestSender:IRequestSender, ServerConfig:IServerInfo["config"]}) => {
       /*
       返し : {
         result: "SUCCESS"|"ERROR_INTERNAL_ERROR|ERROR_DB_THING|ERROR_SESSION_ERROR",
@@ -65,7 +65,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::updateServerConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -100,7 +100,7 @@ module.exports = (io:Server) => {
     });
 
     //インスタンスの基本情報の更新
-    socket.on("updateServerInfo", async (
+    socket.on("updateServerInfo", (
       dat:{
         RequestSender: IRequestSender,
         servername: IServerInfo["servername"]
@@ -108,7 +108,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::updateServerInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
