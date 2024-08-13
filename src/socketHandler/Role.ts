@@ -65,7 +65,7 @@ module.exports = (io:Server) => {
 
       try {
         //ロールを検索
-        const roleResult = await searchRole(dat.searchQuery, dat.pageIndex);
+        const roleResult = searchRole(dat.searchQuery, dat.pageIndex);
         //nullじゃないなら結果送信
         if (roleResult !== null) {
           socket.emit("RESULT::searchRole", { result:"SUCCESS", data:roleResult });
