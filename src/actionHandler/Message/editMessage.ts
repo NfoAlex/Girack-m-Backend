@@ -25,7 +25,7 @@ export default async function editMessage(
     if (_contentUpdating === "" || _contentUpdating === null) return null;
 
     //編集するメッセージを取得
-    const messageEditing = await fetchMessage(_channelId, _messageId);
+    const messageEditing = fetchMessage(_channelId, _messageId);
     if (messageEditing === null) return null;
 
     //もし現在のテキストと編集内容が一緒なら停止

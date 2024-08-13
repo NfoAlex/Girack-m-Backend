@@ -21,7 +21,7 @@ export default async function reactMessage(
   try {
 
     //メッセージ情報を取得
-    const message = await fetchMessage(_channelId, _messageId);
+    const message = fetchMessage(_channelId, _messageId);
     //もしメッセージがnullなら停止
     if (message === null) return false;
 

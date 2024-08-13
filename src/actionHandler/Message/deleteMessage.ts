@@ -20,7 +20,7 @@ export default async function deleteMessage(
   try {
 
     //削除するメッセージを取得
-    const messageDeleting = await fetchMessage(_channelId, _messageId);
+    const messageDeleting = fetchMessage(_channelId, _messageId);
     if (messageDeleting === null) return false;
 
     //削除する人の権限レベル

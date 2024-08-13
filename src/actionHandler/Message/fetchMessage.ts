@@ -1,47 +1,41 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
 
 import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
 
+/**
+ * メッセージを取得
+ * @param _channelId 
+ * @param _messageId 
+ * @returns 
+ */
 export default function fetchMessage(
-  channelId: string,
-  messageId: string
-):Promise<IMessage|null>|null {
+  _channelId: string,
+  _messageId: string
+):IMessage|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT * FROM C` + channelId + `
-          WHERE messageId='` + messageId + `'
-        `,
-        (err:Error, message:IMessageBeforeParsing[]) => {
-          if (err) {
-            console.log("fetchMessage :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //console.log("fetchMessage :: db : 結果->", message);
-            //取得メッセが空なら停止
-            if (message.length === 0) {
-              resolve(null);
-              return;
-            }
+    //メッセージの取得
+    const msg = db.prepare(
+      `
+      SELECT * FROM C${_channelId}
+        WHERE messageId='${_messageId}'
+      `
+    ).get() as IMessageBeforeParsing|undefined;
+    //undefinedならnull
+    if (msg === undefined) return null;
 
-            //生メッセージデータを扱える形にパースする
-            const messageParsed:IMessage = {
-              ...message[0],
-              isEdited: message[0].isEdited===1?true:false,
-              linkData: message[0].linkData!==undefined?JSON.parse(message[0].linkData):{},
-              fileId: message[0].fileId!==''?message[0].fileId.split(","):[], //空なら''だけなのでこの条件
-              reaction: message[0].reaction!==undefined?JSON.parse(message[0].reaction):{}
-            };
-            resolve(messageParsed);
-            return;
-          }
-        }
-      )
-    });
+    //パースする
+    const msgParsed:IMessage = {
+      ...msg,
+      isEdited: msg.isEdited === 1,
+      linkData: msg.linkData!==undefined?JSON.parse(msg.linkData):{},
+      fileId: msg.fileId!==''?msg.fileId.split(","):[], //空なら''だけなのでこの条件
+      reaction: msg.reaction!==undefined?JSON.parse(msg.reaction):{}
+    }
+
+    return msgParsed;
 
   } catch(e) {
 
