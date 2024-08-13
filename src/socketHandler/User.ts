@@ -331,7 +331,7 @@ module.exports = (io:Server) => {
 
       try {
         //情報検索、取得
-        const userInfos = await searchUser(
+        const userInfos = searchUser(
           dat.userName, dat.rule, dat.channelId
         );
 
@@ -358,10 +358,11 @@ module.exports = (io:Server) => {
 
       try {
         //ユーザー名を変更
-        await changeUserName(dat.RequestSender.userId, dat.userName);
+        changeUserName(dat.RequestSender.userId, dat.userName);
         socket.emit("RESULT::changeUserName", { result:"SUCCESS", data:null });
+        
         //現在のユーザー情報を取得して送信
-        const userInfo = await fetchUser(dat.RequestSender.userId, null);
+        const userInfo = fetchUser(dat.RequestSender.userId, null);
         io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
       } catch(e) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_DB_THING", data:null });
