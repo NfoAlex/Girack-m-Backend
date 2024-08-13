@@ -439,26 +439,26 @@ module.exports = (io:Server) => {
 
       try {
         //ユーザー情報が空なら停止
-        const userInfo = await fetchUser(dat.targetUserId, null);
+        const userInfo = fetchUser(dat.targetUserId, null);
         if (userInfo === null) {
           socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });
           return;
         }
 
         //権限確認
-        if (!(await roleCheck(dat.RequestSender.userId, "UserManage"))) {
+        if (!(roleCheck(dat.RequestSender.userId, "UserManage"))) {
           socket.emit("RESULT::pardonUser", { result:"ERROR_ROLE", data:false });
           return;
         }
 
         //BANの解除処理
-        const pardonUserResult = await pardonUser(dat.RequestSender.userId, dat.targetUserId);
+        const pardonUserResult = pardonUser(dat.RequestSender.userId, dat.targetUserId);
         //結果を返す
         if (pardonUserResult) {
           socket.emit("RESULT::pardonUser", { result:"SUCCESS", data:true });
 
           //現在のユーザー情報を取得して送信
-          const userInfo = await fetchUser(dat.targetUserId, null);
+          const userInfo = fetchUser(dat.targetUserId, null);
           io.emit("RESULT::fetchUserInfo", { result:"SUCCESS", data:userInfo });
         } else {
           socket.emit("RESULT::pardonUser", { result:"ERROR_DB_THING", data:false });

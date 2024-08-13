@@ -1,29 +1,29 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-export default async function pardonUser(sendersUserId:string, targetUserId:string)
-:Promise<boolean> {
+import roleCheck from "../../util/roleCheck";
+
+/**
+ * ユーザーのBAN解除
+ * @param _sendersUserId 
+ * @param _targetUserId 
+ * @returns 
+ */
+export default function pardonUser(_sendersUserId:string, _targetUserId:string)
+:boolean {
   try {
-    
-    // ToDo :: 権限レベルの確認
 
-    //書き込み
-    return new Promise((resolve) => {
-      db.run(
-        "UPDATE USERS_INFO SET banned=? WHERE userId=?",
-        [false, targetUserId],
-        (err) => {
-          if (err) {
-            console.log("pardonUser :: db : エラー->", err);
-            resolve(false);
-            return;
-          } else {
-            resolve(true);
-            return;
-          }
-        }
-      );
-    });
+    //権限を確認
+    const canPardon = roleCheck(_sendersUserId, "UserManage");
+    if (!canPardon) return false;
+
+    //DBへ記録
+    db.prepare(
+      "UPDATE USERS_INFO SET banned=? WHERE userId=?"
+    ).run(0, _targetUserId);
+
+    return true;
 
   } catch(e) {
 
