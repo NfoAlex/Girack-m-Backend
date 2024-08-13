@@ -58,7 +58,7 @@ module.exports = (io:Server) => {
           socket.join(authData.UserInfo.userId);
 
           //オンラインのユーザーとして記録
-          const addUserOnlineResult = await addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
+          const addUserOnlineResult = addUserOnline(socket.id, authData.UserInfo.userId, authData.sessionId);
 
           //オンラインになる人としてユーザーIdをログイン済みの全員に送信
           io.to("LOGGEDIN").emit("addOnlineUser", {data:authData.UserInfo.userId});
