@@ -12,11 +12,11 @@ import fetchMessage from "./fetchMessage";
  * @param _userIdBy 削除操作をしているユーザーのId
  * @returns 
  */
-export default async function deleteMessage(
+export default function deleteMessage(
   _channelId: string,
   _messageId: string,
   _userIdBy: string,
-):Promise<boolean> {
+):boolean {
   try {
 
     //削除するメッセージを取得
@@ -24,9 +24,9 @@ export default async function deleteMessage(
     if (messageDeleting === null) return false;
 
     //削除する人の権限レベル
-    const rolePower = await calcRoleUser(_userIdBy);
+    const rolePower = calcRoleUser(_userIdBy);
     //削除される人の権限レベル
-    const rolePowerAgainst = await calcRoleUser(messageDeleting.userId);
+    const rolePowerAgainst = calcRoleUser(messageDeleting.userId);
 
     //レベル比較
     if (rolePowerAgainst > rolePower) return false;

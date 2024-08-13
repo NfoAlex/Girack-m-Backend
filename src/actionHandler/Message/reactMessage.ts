@@ -12,12 +12,12 @@ import fetchMessage from "./fetchMessage";
  * @param _userId 
  * @returns 
  */
-export default async function reactMessage(
+export default function reactMessage(
   _channelId: string,
   _messageId: string,
   _reactionName: string,
   _userId: string
-):Promise<boolean> {
+):boolean {
   try {
 
     //メッセージ情報を取得

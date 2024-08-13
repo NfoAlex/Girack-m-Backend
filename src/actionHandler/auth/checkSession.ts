@@ -6,17 +6,22 @@ import Database from 'better-sqlite3';
 const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
-export default async function checkSession(RequestSender:IRequestSender)
-:Promise<boolean> {
+/**
+ * セッションIdの一致を調べて認証する
+ * @param _RequestSender 
+ * @returns 
+ */
+export default function checkSession(_RequestSender:IRequestSender)
+:boolean {
   try {
 
     //データ確認
-    if (RequestSender.userId === undefined && RequestSender.sessionId === undefined) {
+    if (_RequestSender.userId === undefined && _RequestSender.sessionId === undefined) {
       return false;
     }
 
     //ユーザー情報があるか、BANされているかどうかを確認
-    const userInfo = await fetchUser(RequestSender.userId, null);
+    const userInfo = fetchUser(_RequestSender.userId, null);
     if (userInfo === null) {
       return false;
     }
@@ -29,11 +34,11 @@ export default async function checkSession(RequestSender:IRequestSender)
       "SELECT * FROM USERS_SESSION WHERE userId = ?"
     );
     //ループ用データ取得処理部分
-    const iterateSessionData = stmtSessionData.iterate(RequestSender.userId) as Iterable<IUserSession>;
+    const iterateSessionData = stmtSessionData.iterate(_RequestSender.userId) as Iterable<IUserSession>;
 
     //ループして一致するセッションデータを探す
     for (const session of iterateSessionData) {
-      if (session.sessionId === RequestSender.sessionId) {
+      if (session.sessionId === _RequestSender.sessionId) {
         return true;
       }
     }

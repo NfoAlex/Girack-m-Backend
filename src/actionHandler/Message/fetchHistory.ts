@@ -10,7 +10,7 @@ import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
  * @param _fetchingPosition 
  * @returns 
  */
-export default async function fetchHistory(
+export default function fetchHistory(
   _channelId: string,
   _fetchingPosition: {
     positionMessageId?: string
@@ -18,13 +18,13 @@ export default async function fetchHistory(
     includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
   }
-):Promise<
+):
   {
     history: IMessage[],
     atTop: boolean,
     atEnd: boolean
   } | null
-> {
+ {
   try {
 
     //履歴の取り込み数

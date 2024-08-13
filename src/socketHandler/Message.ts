@@ -35,14 +35,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::sendMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //メッセージデータを処理
-        const messageData = await saveMessage(
+        const messageData = saveMessage(
           dat.RequestSender.userId,
           dat.message
         );
@@ -100,7 +100,7 @@ module.exports = (io:Server) => {
     });
 
     //メッセージの削除
-    socket.on("deleteMessage", async (
+    socket.on("deleteMessage", (
       dat: {
         RequestSender: IRequestSender
         channelId: string,
@@ -115,14 +115,14 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::deleteMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //削除処理
-        const deleteMessageResult = await deleteMessage(
+        const deleteMessageResult = deleteMessage(
           dat.channelId,
           dat.messageId,
           dat.RequestSender.userId
@@ -158,7 +158,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::editMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -228,7 +228,7 @@ module.exports = (io:Server) => {
     })
 
     //履歴の取得
-    socket.on("fetchHistory", async (
+    socket.on("fetchHistory", (
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
@@ -248,7 +248,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::fetchHistory", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -259,7 +259,7 @@ module.exports = (io:Server) => {
           history: IMessage[],
           atTop: boolean,
           atEnd: boolean
-        }|null = await fetchHistory(dat.channelId, dat.fetchingPosition);
+        }|null = fetchHistory(dat.channelId, dat.fetchingPosition);
 
         //データを送信
         socket.emit(
@@ -279,7 +279,7 @@ module.exports = (io:Server) => {
     });
 
     //リアクション追加処理
-    socket.on("reactMessage", async (
+    socket.on("reactMessage", (
       dat: {
         RequestSender: IRequestSender,
         channelId: string,
@@ -288,14 +288,14 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::reactMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
 
       try {
         //リアクション追加処理、結果受け取り
-        const reactResult:boolean = await reactMessage(
+        const reactResult:boolean = reactMessage(
           dat.channelId,
           dat.messageId,
           dat.reactionName,
@@ -305,7 +305,7 @@ module.exports = (io:Server) => {
         //リアクション結果に応じて処理
         if (reactResult) {
           //処理した後のメッセージ取得
-          const messageNow = await fetchMessage(dat.channelId, dat.messageId);
+          const messageNow = fetchMessage(dat.channelId, dat.messageId);
           //メッセージが取得できたら成功と送信
           if (messageNow !== null) {
             //更新させる
@@ -332,7 +332,7 @@ module.exports = (io:Server) => {
         messageTime: string
     }) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::setMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -345,7 +345,7 @@ module.exports = (io:Server) => {
         }
 
         //最新既読時間書き込み
-        const setMessageReadTimeResult:boolean = await setMessageReadTime(
+        const setMessageReadTimeResult:boolean = setMessageReadTime(
           dat.RequestSender.userId,
           dat.channelId,
           dat.messageTime
@@ -364,13 +364,13 @@ module.exports = (io:Server) => {
     });
 
     //チャンネルの既読時間を取得
-    socket.on("getMessageReadTime", async (
+    socket.on("getMessageReadTime", (
       dat: {
         RequestSender: IRequestSender
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::getMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }

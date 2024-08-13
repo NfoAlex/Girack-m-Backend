@@ -13,15 +13,15 @@ import type { IMessageReadTime } from "../../type/Message";
  * @param _messageTime 
  * @returns 
  */
-export default async function setMessageReadTime(
+export default function setMessageReadTime(
   _userId: string,
   _channelId: string,
   _messageTime: string
-):Promise<boolean> {
+):boolean {
   try {
 
     //メッセージ既読時間の読み取り
-    const messageReadTime:IMessageReadTime|null = await getMessageReadTime(_userId);
+    const messageReadTime:IMessageReadTime|null = getMessageReadTime(_userId);
     //取得できなかったら失敗と返す
     if (messageReadTime===null) return false;
 

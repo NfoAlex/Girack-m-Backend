@@ -13,21 +13,21 @@ import type { IMessage } from "../../type/Message";
  * @param _message 
  * @returns 
  */
-export default async function saveMessage(
+export default function saveMessage(
   _userId: string,
   _message: {
     channelId: string,
     content: string,
     fileId: string[]
   }
-):Promise<
+):
   {
     messageResult: IMessage,
     userIdMentioning: string[] | null
   }
   |
   null
-> {
+{
   try {
 
     //形成するメッセージデータ
@@ -70,7 +70,7 @@ export default async function saveMessage(
     messageData.messageId = _message.channelId + randId + timestampJoined;
 
     //メンションだった時用のInbox追加処理
-    const userIdMentioning = await checkAndAddToInbox(
+    const userIdMentioning = checkAndAddToInbox(
       _message.channelId,
       messageData.messageId,
       _message.content
@@ -116,11 +116,11 @@ export default async function saveMessage(
 /**
  * メンションか返信なら対象のユーザーのInboxへ追加する
  */
-async function checkAndAddToInbox(
+function checkAndAddToInbox(
   channelId: string,
   messageId: string,
   content: string
-):Promise<string[]|null> {
+):string[]|null {
   //メンション用のRegex
   const MentionRegex:RegExp = /@<([0-9]*)>/g;
   //マッチ結果
@@ -147,7 +147,7 @@ async function checkAndAddToInbox(
       //メンションクエリーから@<>を削除してユーザーIdを抽出
       const userIdFormatted = targetUserId.slice(2).slice(0,-1);
       //この人のinboxを取り出す
-      const inboxOfTargetUser = await fetchUserInbox(userIdFormatted);
+      const inboxOfTargetUser = fetchUserInbox(userIdFormatted);
       if (inboxOfTargetUser === null) continue;
 
       //チャンネル用ホルダーが無ければ空配列を作成
