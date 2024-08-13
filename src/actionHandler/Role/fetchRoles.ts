@@ -1,39 +1,36 @@
-import sqlite3 from "sqlite3";
-import { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
-const db = new sqlite3.Database("./records/ROLE.db");
+import Database from 'better-sqlite3';
+const _db = new Database('./records/ROLE.db');
+_db.pragma('journal_mode = WAL');
 
-export default async function fetchRoles():Promise<IUserRole[] | null> {
+import type { IUserRole, IUserRoleBeforeParsing } from "../../type/User";
+
+/**
+ * すべてのロールを取得する
+ * @returns 
+ */
+export default function fetchRoles():IUserRole[] | null {
   try {
 
-    return new Promise((resolve) => {
-      //ロールデータをすべて取得
-      db.all("SELECT * FROM ROLES", (err:Error, roleData:IUserRoleBeforeParsing[]) => {
-        if (err) {
-          resolve(null);
-          return;
-        } else {
-          //変数パース用の配列変数
-          let roleDataParsed:IUserRole[] = [];
-          //変数のパース処理
-          for (let role of roleData) {
-            //配列プッシュ
-            roleDataParsed.push({
-              roleId: role.roleId,
-              name: role.name,
-              color: role.color,
-              ServerManage: role.ServerManage===1?true:false,
-              RoleManage: role.RoleManage===1?true:false,
-              ChannelManage: role.ChannelManage===1?true:false,
-              UserManage: role.UserManage===1?true:false,
-              MessageDelete: role.MessageDelete===1?true:false,
-              MessageAttatchFile: role.MessageAttatchFile===1?true:false
-            });
-          }
-          resolve(roleDataParsed);
-          return;
-        }
+    const roles = _db.prepare("SELECT * FROM ROLES").all() as IUserRoleBeforeParsing[];
+
+    //変数パース用の配列変数
+    const roleDataParsed:IUserRole[] = [];
+
+    for (const role of roles) {
+      roleDataParsed.push({
+        roleId: role.roleId,
+        name: role.name,
+        color: role.color,
+        ServerManage: role.ServerManage === 1,
+        RoleManage: role.RoleManage === 1,
+        ChannelManage: role.ChannelManage === 1,
+        UserManage: role.UserManage === 1,
+        MessageDelete: role.MessageDelete === 1,
+        MessageAttatchFile: role.MessageAttatchFile === 1
       });
-    });
+    }
+
+    return roleDataParsed;
 
   } catch(e) {
 
