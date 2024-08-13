@@ -1,6 +1,6 @@
-import sqlite3 from "sqlite3";
-import { IUserInfo } from "../../type/User";
-const db = new sqlite3.Database("./records/ONLINEUSERS.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ONLINEUSERS.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * オンラインユーザーリストから一致するSocketIDを
@@ -8,84 +8,42 @@ const db = new sqlite3.Database("./records/ONLINEUSERS.db");
  * @param socketId 
  * @returns string
  */
-export default async function removeUserOnlineBySocketId(socketId:string)
-:Promise<string | null> {
+export default function removeUserOnlineBySocketId(_socketId:string)
+: string | null {
   try {
 
     //console.log("removeUserOnlineBySocketId :: socketId->", socketId);
 
-    //切断するユーザーIdを取得
-    const userIdDisconnecting:string|null = await new Promise((resolve) => {
-      db.all(
-        `
-        SELECT userId FROM ONLINE_USERS WHERE socketId=?
-        `,
-        socketId,
-        (err:Error, onlineUsers:IUserInfo[]) => {
-          if (err) {
-            console.log("removeUserOnlineBySocketId :: db : エラー->", err);
-            resolve(null);
-            return;
-          } else {
-            //配列の長さを確認して返す、空だったらnull
-            if (onlineUsers.length !== 0) {
-              resolve(onlineUsers[0].userId);
-            } else {
-              resolve(null);
-            }
-            return;
-          }
-        }
-      );
-    });
+    const userIdDisconnectingRaw = db.prepare(
+      "SELECT userId FROM ONLINE_USERS WHERE socketId=?"
+    ).get(_socketId) as {userId: string} | undefined;
 
-    //もしユーザーIdがnullだったらそう返して停止
-    if (userIdDisconnecting === null) {
+    console.log("removeUserOnlineBySocketId :: userId->", userIdDisconnectingRaw);
+
+    //もしユーザーIdデータがundefinedだったら停止
+    if (userIdDisconnectingRaw === undefined) {
       return null;
     }
 
-    //切断処理とそのユーザーがまだいるかどうか判断処理
-    return new Promise((resolve) => {
-      db.serialize(() => {
-        //SocketIDに該当する接続を削除
-        db.run(
-          `
-          DELETE FROM ONLINE_USERS WHERE socketId=?
-          `,
-          socketId,
-          (err:Error, onlineUsers:any[]) => {
-            if (err) {
-              console.log("removeUserOnlineBySocketId :: db(DELETE socketId) : エラー->, err");
-              return;
-            }
-          }
-        );
+    //抽出
+    const userIdDisconnecting = userIdDisconnectingRaw.userId;
 
-        //切断するユーザーIdのSocket数を調べて0なら切断したと送信
-        db.all(
-          `
-          SELECT COUNT(*) FROM ONLINE_USERS WHERE userId=?
-          `,
-          userIdDisconnecting,
-          (err:Error, onlineUsersNum:{"COUNT(*)":number}[]) => {
-            if (err) {
-              console.log("removeUserOnlineBySocketId :: db(COUNT(*)) : エラー->", err);
-            } else {
-              //console.log("removeUserOnlineBySocketId :: db(COUNT(*)) : カウント->", onlineUsersNum);
-              //ここで接続数調べ
-              if (onlineUsersNum[0]['COUNT(*)'] === 0) {
-                resolve(userIdDisconnecting);
-                return;
-              } else {
-                resolve(null);
-                return;
-              }
-            }
-          }
-        );
+    //ユーザーをオンラインリストから削除
+    db.prepare("DELETE FROM ONLINE_USERS WHERE socketId=?").run(_socketId);
 
-      });
-    });
+    //同じユーザーIdがまだオンラインかどうか数えて調べる
+    const userCountRaw = db.prepare(
+      "SELECT COUNT(*) FROM ONLINE_USERS WHERE userId=?"
+    ).get(userIdDisconnecting) as {"COUNT(*)":number};
+    const userCount = userCountRaw["COUNT(*)"];
+
+    //他にオンラインのセッションがあるならnull
+    if (userCount !== 0) {
+      return null;
+    }
+
+    //このユーザーIdは切断したと返す
+    return userIdDisconnecting;
 
   } catch(e) {
 

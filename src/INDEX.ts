@@ -1,8 +1,8 @@
 // 実行 :: npx ts-node ./src/INDEX.ts
 
-import fs from "fs";
-import { createServer } from "http";
-import { Server, Socket } from "socket.io";
+import fs from "node:fs";
+import { createServer } from "node:http";
+import { Server, type Socket } from "socket.io";
 import express from "express";
 
 const app = express();
@@ -56,8 +56,8 @@ io.on("connection", (socket:Socket) => {
   //ユーザーから切断されたとき
   socket.on("disconnect", async () => {
     //接続を削除
-    const userIdDisconnecting = await removeUserOnlineBySocketId(socket.id);
-    //ログイン中の全員に切断されたユーザーIdを返す
+    const userIdDisconnecting = removeUserOnlineBySocketId(socket.id);
+    //完全に切断されたのなら(nullじゃない)、ログイン中のユーザー全員に通知
     if (userIdDisconnecting !== null) {
       io.to("LOGGEDIN").emit("removeOnlineUser", {data:userIdDisconnecting});
     }
