@@ -67,7 +67,7 @@ module.exports = (io:Server) => {
 
       try {
         //チャンネル順序の読み取り
-        const resultChannelOrder = await fetchUserChannelOrder(dat.RequestSender.userId);
+        const resultChannelOrder = fetchUserChannelOrder(dat.RequestSender.userId);
 
         //返す
         socket.emit("RESULT::fetchUserChannelOrder", { result:"SUCCESS", data:resultChannelOrder });

@@ -1,24 +1,28 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
-export default async function fetchUserChannelOrder(userId: string) {
+import type { IChannelOrder } from "../../type/Channel";
+
+/**
+ * チャンネル順番データを取得
+ * @param _userId 
+ * @returns 
+ */
+export default function fetchUserChannelOrder(_userId: string)
+:IChannelOrder|null {
   try {
 
-    return new Promise((resolve) => {
-      db.all(
-        `
-        SELECT channelOrder FROM USERS_SAVES
-          WHERE userId=?
-        `,
-        userId,
-        (err:Error, channelOrderData:[{channelOrder: string}]) => {
-          //console.log("fetchUserChannelOrder :: db : channelOrder->", channelOrderData);
-          //文字列をJSONにしてから返す
-          resolve(JSON.parse(channelOrderData[0].channelOrder));
-          return;
-        }
-      )
-    });
+    const channelOrderData = db.prepare(
+      `
+      SELECT channelOrder FROM USERS_SAVES
+        WHERE userId=?
+      `
+    ).get(_userId) as {channelOrder: string};
+
+    const channelOrderParsed:IChannelOrder = JSON.parse(channelOrderData.channelOrder);
+
+    return channelOrderParsed;
 
   } catch(e) {
 
