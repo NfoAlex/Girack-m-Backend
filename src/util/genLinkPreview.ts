@@ -1,11 +1,9 @@
-import sqlite3 from "sqlite3";
-import type { IMessage } from "../type/Message";
-const db = new sqlite3.Database("./records/MESSAGE.db");
-import ogs from 'open-graph-scraper';
-
 import Database from 'better-sqlite3';
 const _db = new Database('./records/MESSAGE.db');
 _db.pragma('journal_mode = WAL');
+import ogs from 'open-graph-scraper';
+
+import type { IMessage } from "../type/Message";
 
 //取得できるOpenGraphデータのinterface
 interface IOGData {
