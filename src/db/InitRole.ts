@@ -1,10 +1,11 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/ROLE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/ROLE.db');
+db.pragma('journal_mode = WAL');
 
-db.serialize(() => {
-  //ロール情報を保存するROLESテーブルを無ければ作成
-  db.run(
-  `create table if not exists ROLES(
+//ロール情報を保存するROLESテーブルを無ければ作成
+db.exec(
+  `
+  create table if not exists ROLES(
     roleId TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     color TEXT NOT NULL DEFAULT '#ffffff',
@@ -14,50 +15,48 @@ db.serialize(() => {
     UserManage BOOLEAN NOT NULL DEFAULT '0',
     MessageDelete BOOLEAN NOT NULL DEFAULT '0',
     MessageAttatchFile BOOLEAN NOT NULL DEFAULT '0'
-  )`);
+  )
+  `
+);
 
-  //無かったらMEMBERロールを挿入する
-  db.run(`
-    INSERT INTO ROLES (
-      roleId,
-      name
-    )
-    VALUES (?, ?)
-    ON CONFLICT(roleId) DO NOTHING;
-    `,
-    "MEMBER",
-    "Member"
-  );
+//無かったらMEMBERロールを挿入する
+db.prepare(`
+  INSERT INTO ROLES (
+    roleId,
+    name
+  )
+  VALUES (?, ?)
+  ON CONFLICT(roleId) DO NOTHING;
+  `
+).run("MEMBER","Member");
 
-  //無かったらMEMBERロールを挿入する
-  db.run(`
-    INSERT INTO ROLES (
-      roleId,
-      name,
-      color,
-      ServerManage,
-      RoleManage,
-      ChannelManage,
-      UserManage,
-      MessageDelete,
-      MessageAttatchFile
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(roleId) DO NOTHING;
-    `,
-    "HOST",
-    "Host",
-    "#7E097E",
-    true,
-    true,
-    true,
-    true,
-    true,
-    true
-  );
+//無かったらHOSTロールを挿入する
+db.prepare(`
+  INSERT INTO ROLES (
+    roleId,
+    name,
+    color,
+    ServerManage,
+    RoleManage,
+    ChannelManage,
+    UserManage,
+    MessageDelete,
+    MessageAttatchFile
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT(roleId) DO NOTHING;
+  `
+).run(
+  "HOST",
+  "Host",
+  "#7E097E",
+  1,
+  1,
+  1,
+  1,
+  1,
+  1
+);
 
-  console.log("InitRole :: ロールDB作成完了");
-});
-
-
+console.log("InitRole :: ロールDB作成完了");
 db.close();

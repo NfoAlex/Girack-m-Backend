@@ -1,19 +1,15 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/USER.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/USER.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * USERS_SAVEへinboxカラム追加
  */
-export default async function migration20240612() {
-  db.all(
-    `
-    ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{ "mention": {}, "event": {} }';
-    `,
-    (err:Error, tables:[{name:string}]) => {
-      if (err) {
-        console.log("migration(20240612) :: エラー!->", err);
-      }
-      return;
-    }
-  );
+export default function migration20240612() {
+  //かぶり防止のためのtry/catch
+  try {
+    db.prepare(
+      `ALTER TABLE USERS_SAVES ADD inbox TEXT DEFAULT '{ "mention": {}, "event": {} }'`
+    ).run();
+  } catch(e) {}
 }
