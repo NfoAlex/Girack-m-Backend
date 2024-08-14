@@ -1,23 +1,26 @@
-import sqlite3 from "sqlite3";
-const db = new sqlite3.Database("./records/MESSAGE.db");
+import Database from 'better-sqlite3';
+const db = new Database('./records/MESSAGE.db');
+db.pragma('journal_mode = WAL');
 
 /**
  * すべてのチャンネル履歴テーブルへfileIdカラムを追加
  */
-export default async function migrationMessage20240714() {
-  //チャンネル分のテーブルへisEditedカラムを追加
-  db.all(
-    `
-    SELECT name FROM sqlite_master WHERE type='table';
-    `,
-    (err:Error, tables:{name:string}[]) => {
-      //console.log("20240714 :: tables->", tables);
+export default function migrationMessage20240714() {
+  //チャンネル分のテーブル取得
+  const tableChannels = db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table'"
+  ).all() as {name:string}[];
 
-      //ループしてfileIdカラムを追加
-      for (let channelName of tables) {
-        db.run(`ALTER TABLE ` + channelName.name + ` ADD fileId TEXT NOT NULL DEFAULT ''`, (err:Error)=>{});
-      }
-      return;
-    }
-  );
+  //ループして履歴テーブル全部にfileId列を追加
+  for (const channelName of tableChannels) {
+    //被りエラー防止のためのtry/catch
+    try {
+      db.prepare(
+        `ALTER TABLE ${channelName.name} ADD fileId TEXT NOT NULL DEFAULT ''`
+      ).run();
+    } catch(e) {}
+  }
+  
+  db.close();
 }
+
