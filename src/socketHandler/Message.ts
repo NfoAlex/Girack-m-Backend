@@ -324,6 +324,33 @@ module.exports = (io:Server) => {
       }
     });
 
+    /**
+     * メッセージの取得
+     * @param dat.channelId チャンネルID
+     * @param dat.messageId メッセージID
+     */
+    socket.on("fetchMessage", (
+      dat: {
+        channelId: string,
+        messageId: string
+      }
+    ) => {
+      try {
+        //メッセージの取得
+        const messageData = fetchMessage(dat.channelId, dat.messageId);
+
+        //結果に応じて送信
+        if (messageData !== null) {
+          socket.emit("RESULT::fetchMessage", { result:"SUCCESS", data:messageData});
+        } else {
+          socket.emit("RESULT::fetchMessage", { result:"ERROR_DB_THING", data:null});
+        }
+      } catch(e) {
+        console.log("Message :: socket(fetchMessage) : エラー->", e);
+        socket.emit("RESULT::fetchMessage", { result:"ERROR_DB_THING", data:null});
+      }
+    });
+
     //メッセージの最終既読メッセ時間を保存する
     socket.on("setMessageReadTime", (
       dat: {
