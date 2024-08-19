@@ -18,10 +18,17 @@ export default function fetchUser(_userId:string|null, _username:string|null)
     if (_userId === null) {
       const userInfo = db.prepare(
         "SELECT * FROM USERS_INFO WHERE userName = ?"
-      ).get(_username) as IUserInfo|undefined;
+      ).get(_username) as IUserInfoBeforeParsing|undefined;
 
       if (userInfo !== undefined) {
-        return userInfo;
+        //パースして返す
+        const userInfoParsed:IUserInfo = {
+          ...userInfo,
+          channelJoined: userInfo.channelJoined.split(","),
+          role: userInfo.role.split(","),
+          banned: userInfo.banned===1
+        };
+        return userInfoParsed;
       }
 
       return null;
