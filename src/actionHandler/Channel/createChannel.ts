@@ -3,6 +3,10 @@ import fetchChannel from "./fetchChannel";
 import Database from 'better-sqlite3';
 const db = new Database('./records/SERVER.db');
 db.pragma('journal_mode = WAL');
+const dbMsg = new Database('./records/MESSAGE.db');
+dbMsg.pragma('journal_mode = WAL');
+
+import type { IChannelbeforeParsing } from "../../type/Channel";
 
 /**
  * チャンネルを作成する
@@ -13,11 +17,11 @@ db.pragma('journal_mode = WAL');
  * @returns 
  */
 export default async function createChannel(
-    _channelName:string,
-    _description:string,
-    _isPrivate:boolean,
-    _userId:string,
-  ):Promise<boolean> {
+  _channelName:string,
+  _description:string,
+  _isPrivate:boolean,
+  _userId:string,
+):Promise<boolean> {
   try {
 
     //空いているチャンネルIDを探して取得
@@ -26,9 +30,9 @@ export default async function createChannel(
     if (channelIdGen === "") return false;
 
     //チャンネル用履歴テーブル作成
-    db.exec(
+    dbMsg.exec(
       `
-      create table if not exists C${channelIdGen}(
+      create table C${channelIdGen}(
         messageId TEXT PRIMARY KEY,
         channelId TEXT NOT NULL,
         userId TEXT NOT NULL,
