@@ -84,11 +84,14 @@ async function getNewChannelId():Promise<string> {
         }
     
         //チャンネル検索、データ格納
-        const datChannel = await fetchChannel(channelIdGen, "SYSTEM");
+        //const datChannel = fetchChannel(channelIdGen, "SYSTEM");
+        const datChannel = db.prepare(
+          "SELECT * FROM CHANNELS WHERE channelId=?"
+        ).get(channelIdGen) as IChannelbeforeParsing|undefined;
         console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
         
         //データ長さが0ならループ停止してIDを返す
-        if (datChannel === null) {
+        if (datChannel === undefined) {
           clearInterval(checkLoop);
           resolve(channelIdGen); //IDを返す
         }
