@@ -69,7 +69,7 @@ export default async function createChannel(
 }
 
 //チャンネルIDの空きを探す
-async function getNewChannelId():Promise<string> {
+function getNewChannelId():Promise<string> {
   let tryCount = 0;
 
   return new Promise<string>((resolve) => {
