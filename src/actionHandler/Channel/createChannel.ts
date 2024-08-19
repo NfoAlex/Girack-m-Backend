@@ -1,5 +1,3 @@
-import fetchChannel from "./fetchChannel";
-
 import Database from 'better-sqlite3';
 const db = new Database('./records/SERVER.db');
 db.pragma('journal_mode = WAL');
