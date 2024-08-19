@@ -16,7 +16,7 @@ module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
 
     //チャンネル作成
-    socket.on("createChannel", (dat:
+    socket.on("createChannel", async (dat:
       {
         RequestSender:IRequestSender,
         channelName:string,
@@ -52,7 +52,7 @@ module.exports = (io:Server) => {
         }
 
         //チャンネルを作成する
-        const createChannelResult = createChannel(
+        const createChannelResult = await createChannel(
           dat.channelName,
           dat.description,
           dat.isPrivate,

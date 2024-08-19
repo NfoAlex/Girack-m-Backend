@@ -1,8 +1,10 @@
-import fetchChannel from "./fetchChannel";
-
 import Database from 'better-sqlite3';
 const db = new Database('./records/SERVER.db');
 db.pragma('journal_mode = WAL');
+const dbMsg = new Database('./records/MESSAGE.db');
+dbMsg.pragma('journal_mode = WAL');
+
+import type { IChannelbeforeParsing } from "../../type/Channel";
 
 /**
  * チャンネルを作成する
@@ -13,11 +15,11 @@ db.pragma('journal_mode = WAL');
  * @returns 
  */
 export default async function createChannel(
-    _channelName:string,
-    _description:string,
-    _isPrivate:boolean,
-    _userId:string,
-  ):Promise<boolean> {
+  _channelName:string,
+  _description:string,
+  _isPrivate:boolean,
+  _userId:string,
+):Promise<boolean> {
   try {
 
     //空いているチャンネルIDを探して取得
@@ -26,9 +28,9 @@ export default async function createChannel(
     if (channelIdGen === "") return false;
 
     //チャンネル用履歴テーブル作成
-    db.exec(
+    dbMsg.exec(
       `
-      create table if not exists C${channelIdGen}(
+      create table C${channelIdGen}(
         messageId TEXT PRIMARY KEY,
         channelId TEXT NOT NULL,
         userId TEXT NOT NULL,
@@ -69,7 +71,7 @@ export default async function createChannel(
 }
 
 //チャンネルIDの空きを探す
-async function getNewChannelId():Promise<string> {
+function getNewChannelId():Promise<string> {
   let tryCount = 0;
 
   return new Promise<string>((resolve) => {
@@ -84,11 +86,14 @@ async function getNewChannelId():Promise<string> {
         }
     
         //チャンネル検索、データ格納
-        const datChannel = await fetchChannel(channelIdGen, "SYSTEM");
+        //const datChannel = fetchChannel(channelIdGen, "SYSTEM");
+        const datChannel = db.prepare(
+          "SELECT * FROM CHANNELS WHERE channelId=?"
+        ).get(channelIdGen) as IChannelbeforeParsing|undefined;
         console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
         
         //データ長さが0ならループ停止してIDを返す
-        if (datChannel === null) {
+        if (datChannel === undefined) {
           clearInterval(checkLoop);
           resolve(channelIdGen); //IDを返す
         }
