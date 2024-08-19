@@ -47,11 +47,10 @@ module.exports = (io:Server) => {
           authData.sessionId !== null
         ) {
           //参加したチャンネル全部分のSocketルーム参加
-          if (authData.UserInfo.channelJoined !== undefined) {
-            for (const channelId of authData.UserInfo.channelJoined) {
-              socket.join(channelId);
-            }
+          for (const channelId of authData.UserInfo.channelJoined) {
+            socket.join(channelId);
           }
+
           //認証済みの人として参加
           socket.join("LOGGEDIN");
           //このユーザーIdのチャンネルへ参加
