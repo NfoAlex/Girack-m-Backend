@@ -131,7 +131,7 @@ function checkAndAddToInbox(
   //処理を終えて"@<>"を取り除いたユーザーId配列
   const userIdMentioningProcessed:string[] = [];
 
-  console.log("saveMessage :: checkAndAddToInbox : マッチ結果->", matchResult, " フィルター結果->", userIdMentioning);
+  //console.log("saveMessage :: checkAndAddToInbox : マッチ結果->", matchResult, " フィルター結果->", userIdMentioning);
 
   //そもそもマッチが無いなら停止
   if (matchResult === null) return null;
