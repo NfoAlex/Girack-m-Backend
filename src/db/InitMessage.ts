@@ -19,6 +19,7 @@ db.exec(
     userId TEXT NOT NULL,
     content TEXT NOT NULL,
     isEdited BOOLEAN NOT NULL DEFAULT '0',
+    isSystemMessage BOOLEAN NOT NULL DEFAULT '0',
     linkData TEXT DEFAULT '{}',
     fileId TEXT NOT NULL,
     time TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
