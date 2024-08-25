@@ -59,6 +59,13 @@ export type ISystemMessageFlag =
   "CHANNEL_INFO_UPDATED"
 ;
 
+//システムメッセージの内容用型
+export interface ISystemMessageContent {
+  flag: ISystemMessageFlag,
+  targetUserId: string | null,
+  senderUserId: string
+}
+
 //最終既読メッセージの時間
 export interface IMessageReadTime {
   [key: string]: string
