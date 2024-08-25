@@ -5,11 +5,13 @@ db.pragma('journal_mode = WAL');
 import migrationMessage20240603 from "./migration/Message/20240603";
 import migrationMessage20240709 from "./migration/Message/20240709";
 import migrationMessage20240714 from "./migration/Message/20240714";
+import migrationMessage20240822 from './migration/Message/20240822';
 
 //migration
 migrationMessage20240603();
 migrationMessage20240709();
 migrationMessage20240714();
+migrationMessage20240822();
 
 //randomチャンネル用のテーブル作成
 db.exec(
