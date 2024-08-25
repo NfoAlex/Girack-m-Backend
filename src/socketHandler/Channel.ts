@@ -285,6 +285,18 @@ module.exports = (io:Server) => {
         if (leaveChannelResult) {
           socket.leave(dat.channelId); //チャンネル用ルームから退出
           socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:dat.channelId });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_LEFT"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
         } else {
           socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
