@@ -48,6 +48,17 @@ export interface IMessage {
   }
 }
 
+//システムメッセージの内容用フラッグ
+export type ISystemMessageFlag =
+  "SERVER_JOINED" |
+  "SERVER_UPDATED" |
+  "CHANNEL_INVITED" |
+  "CHANNEL_JOINED" |
+  "CHANNEL_LEFT" |
+  "CHANNEL_KICKED" |
+  "CHANNEL_INFO_UPDATED"
+;
+
 //最終既読メッセージの時間
 export interface IMessageReadTime {
   [key: string]: string
