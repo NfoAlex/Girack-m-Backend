@@ -11,6 +11,7 @@ import updateChannel from "../actionHandler/Channel/updateChannel";
 
 import type IRequestSender from "../type/requestSender";
 import type { IChannel } from "../type/Channel";
+import recordSystemMessage from "../util/Message/recordSystemMessage";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -240,6 +241,18 @@ module.exports = (io:Server) => {
         if (joinChannelResult) {
           socket.join(dat.channelId); //チャンネル用ルームへ参加させる
           socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:dat.channelId });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_JOINED"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
         } else {
           socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
