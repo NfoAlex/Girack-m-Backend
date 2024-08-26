@@ -36,6 +36,7 @@ export default function saveMessage(
       channelId: _message.channelId,
       userId: _userId,
       isEdited: false,
+      isSystemMessage: false,
       content: _message.content,
       linkData: {},
       fileId: _message.fileId,

@@ -5,6 +5,7 @@ export interface IMessageBeforeParsing {
   userId: string,
   content: string,
   isEdited: 1|0,
+  isSystemMessage: 1|0,
   linkData: string,
   fileId: string,
   time: string,
@@ -17,6 +18,7 @@ export interface IMessage {
   channelId: string,
   userId: string,
   isEdited: boolean,
+  isSystemMessage: boolean,
   content: string,
   linkData: {
     [key: string]:
@@ -44,6 +46,24 @@ export interface IMessage {
       [key: string]: number
     }
   }
+}
+
+//システムメッセージの内容用フラッグ
+export type ISystemMessageFlag =
+  "SERVER_JOINED" |
+  "SERVER_UPDATED" |
+  "CHANNEL_INVITED" |
+  "CHANNEL_JOINED" |
+  "CHANNEL_LEFT" |
+  "CHANNEL_KICKED" |
+  "CHANNEL_INFO_UPDATED"
+;
+
+//システムメッセージの内容用型
+export interface ISystemMessageContent {
+  flag: ISystemMessageFlag,
+  targetUserId: string | null,
+  senderUserId: string
 }
 
 //最終既読メッセージの時間

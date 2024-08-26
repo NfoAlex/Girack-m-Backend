@@ -11,6 +11,7 @@ import updateChannel from "../actionHandler/Channel/updateChannel";
 
 import type IRequestSender from "../type/requestSender";
 import type { IChannel } from "../type/Channel";
+import recordSystemMessage from "../util/Message/recordSystemMessage";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -144,6 +145,18 @@ module.exports = (io:Server) => {
         if (resultChannelUpdate) {
           //更新操作の操作者にのみ結果を送信
           socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_INFO_UPDATED"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
           
           //チャンネル情報を収集、送信
           const channelInfoUpdated = fetchChannel(dat.channelId, dat.RequestSender.userId);
@@ -240,6 +253,18 @@ module.exports = (io:Server) => {
         if (joinChannelResult) {
           socket.join(dat.channelId); //チャンネル用ルームへ参加させる
           socket.emit("RESULT::joinChannel", { result:"SUCCESS", data:dat.channelId });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_JOINED"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
         } else {
           socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
@@ -272,6 +297,18 @@ module.exports = (io:Server) => {
         if (leaveChannelResult) {
           socket.leave(dat.channelId); //チャンネル用ルームから退出
           socket.emit("RESULT::leaveChannel", { result:"SUCCESS", data:dat.channelId });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_LEFT"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
         } else {
           socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }

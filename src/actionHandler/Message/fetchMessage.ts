@@ -30,6 +30,7 @@ export default function fetchMessage(
     const msgParsed:IMessage = {
       ...msg,
       isEdited: msg.isEdited === 1,
+      isSystemMessage: msg.isSystemMessage === 1,
       linkData: msg.linkData!==undefined?JSON.parse(msg.linkData):{},
       fileId: msg.fileId!==''?msg.fileId.split(","):[], //空なら''だけなのでこの条件
       reaction: msg.reaction!==undefined?JSON.parse(msg.reaction):{}
