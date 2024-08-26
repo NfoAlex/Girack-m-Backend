@@ -10,6 +10,7 @@ import fetchUser from "../actionHandler/User/fetchUser";
 import addUserOnline from "../util/onlineUsers/addUserOnline";
 import changeSessionName from "../actionHandler/auth/changeSessionName";
 import sessionLogout from "../actionHandler/auth/sessionLogout";
+import recordSystemMessage from "../util/Message/recordSystemMessage";
 
 import type IRequestSender from "../type/requestSender";
 import type { IUserInfo } from "../type/User";
@@ -143,6 +144,21 @@ module.exports = (io:Server) => {
           socket.emit("RESULT::authRegister", { result:datUserResult, data:null });
         } else {
           socket.emit("RESULT::authRegister", { result:"SUCCESS", data:datUserResult });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            datUserResult.userInfo.userId,
+            {
+              //チャンネルは通知するチャンネルへ
+              channelId: ServerInfo.config.CHANNEL.channelIdAnnounceRegistration,
+              contentFlag: "SERVER_JOINED"
+            }
+          );
+          //システムメッセージを設定されているチャンネルへ配信
+          io.to(
+            ServerInfo.config.CHANNEL.channelIdAnnounceRegistration
+          ).emit("receiveMessage", systemMessageAdded);
         }
 
         //console.log("auth :: authRegister : dat->", datUserResult);
