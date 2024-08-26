@@ -145,6 +145,18 @@ module.exports = (io:Server) => {
         if (resultChannelUpdate) {
           //更新操作の操作者にのみ結果を送信
           socket.emit("RESULT::updateChannel", { result:"SUCCESS" });
+
+          //システムメッセを記録する
+          const systemMessageAdded = recordSystemMessage(
+            null,
+            dat.RequestSender.userId,
+            {
+              channelId: dat.channelId,
+              contentFlag: "CHANNEL_INFO_UPDATED"
+            }
+          );
+          //システムメッセージを参加したチャンネルへ配信
+          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
           
           //チャンネル情報を収集、送信
           const channelInfoUpdated = fetchChannel(dat.channelId, dat.RequestSender.userId);
