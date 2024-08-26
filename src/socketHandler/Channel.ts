@@ -156,7 +156,7 @@ module.exports = (io:Server) => {
             }
           );
           //システムメッセージを参加したチャンネルへ配信
-          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
           
           //チャンネル情報を収集、送信
           const channelInfoUpdated = fetchChannel(dat.channelId, dat.RequestSender.userId);
@@ -264,7 +264,7 @@ module.exports = (io:Server) => {
             }
           );
           //システムメッセージを参加したチャンネルへ配信
-          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
         } else {
           socket.emit("RESULT::joinChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
@@ -308,7 +308,7 @@ module.exports = (io:Server) => {
             }
           );
           //システムメッセージを参加したチャンネルへ配信
-          io.to(dat.channelId).emit("receiveMessage", { result:"SUCCESS", systemMessageAdded});
+          io.to(dat.channelId).emit("receiveMessage", systemMessageAdded);
         } else {
           socket.emit("RESULT::leaveChannel", { result:"ERROR_DB_THING", data:dat.channelId });
         }
