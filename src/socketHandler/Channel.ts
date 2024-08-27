@@ -12,6 +12,7 @@ import updateChannel from "../actionHandler/Channel/updateChannel";
 import type IRequestSender from "../type/requestSender";
 import type { IChannel } from "../type/Channel";
 import recordSystemMessage from "../util/Message/recordSystemMessage";
+import searchChannel from "../actionHandler/Channel/searchChannel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -210,6 +211,28 @@ module.exports = (io:Server) => {
           result: "ERROR_DB_THING",
           data: null
         });
+      }
+    });
+
+    //チャンネルを検索する
+    socket.on("searchChannelInfo", (dat:{RequestSender:IRequestSender, query:string, pageIndex:number}) => {
+      /* セッション認証 */
+      if (!(checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::searchChannelInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //チャンネル情報を検索、取得する
+        const channelInfos = searchChannel(
+          dat.query,
+          dat.RequestSender.userId,
+          dat.pageIndex
+        );
+
+        socket.emit("RESULT::searchChannelInfo", {result:"SUCCESS", data:channelInfos });
+      } catch(e) {
+        socket.emit("RESULT::searchChannelInfo", {result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
