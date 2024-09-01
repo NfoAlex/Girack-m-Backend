@@ -178,6 +178,12 @@ module.exports = (io:Server) => {
       }
 
       try {
+        //ロールを確認する
+        if (!roleCheck(dat.RequestSender.userId, "APIUse")) {
+          socket.emit("RESULT::createApiClient", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
         //API利用情報作成
         const createResult = createApiClient(
           dat.RequestSender.userId,
