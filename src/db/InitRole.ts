@@ -2,6 +2,10 @@ import Database from 'better-sqlite3';
 const db = new Database('./records/ROLE.db');
 db.pragma('journal_mode = WAL');
 
+import migrationRole20240612 from './migration/Role/20240828';
+//migrate
+migrationRole20240612();
+
 //ロール情報を保存するROLESテーブルを無ければ作成
 db.exec(
   `
