@@ -97,12 +97,12 @@ db.prepare(
 //APIの利用情報を保存するREMOTEAPI_INFOテーブルを無ければ作成
 db.exec(
   `
-  create table if not exists REMOTAPI_INFO(
+  create table if not exists API_CLIENTS(
     apiClientId TEXT PRIMARY KEY,
     apiKey TEXT NOT NULL,
     clientName TEXT NOT NULL,
-    description TEXT NOT NULL,
-    latestUsedTim TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    latestUsedTim TEXT NOT NULL DEFAULT '',
     createdBy TEXT NOT NULL,
     isEnabled BOOLEAN NOT NULL,
     approvedStatus TEXT NOT NULL DEFAULT 'WAITING'
