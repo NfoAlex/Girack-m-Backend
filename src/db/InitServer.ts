@@ -101,8 +101,9 @@ db.exec(
     apiClientId TEXT PRIMARY KEY,
     clientName TEXT NOT NULL,
     description TEXT NOT NULL,
+    latestUsedTim TEXT NOT NULL,
     createdBy TEXT NOT NULL,
-    status BOOLEAN NOT NULL,
+    isEnabled BOOLEAN NOT NULL,
     approvedStatus TEXT NOT NULL DEFAULT 'WAITING'
   )
   `
