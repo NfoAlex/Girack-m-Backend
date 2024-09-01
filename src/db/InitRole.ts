@@ -14,7 +14,8 @@ db.exec(
     ChannelManage BOOLEAN NOT NULL DEFAULT '0',
     UserManage BOOLEAN NOT NULL DEFAULT '0',
     MessageDelete BOOLEAN NOT NULL DEFAULT '0',
-    MessageAttatchFile BOOLEAN NOT NULL DEFAULT '0'
+    MessageAttatchFile BOOLEAN NOT NULL DEFAULT '0',
+    APIUse BOOLEAN NOT NULL DEFAULT '0'
   )
   `
 );
@@ -41,15 +42,17 @@ db.prepare(`
     ChannelManage,
     UserManage,
     MessageDelete,
-    MessageAttatchFile
+    MessageAttatchFile,
+    APIUse
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT(roleId) DO NOTHING;
   `
 ).run(
   "HOST",
   "Host",
   "#7E097E",
+  1,
   1,
   1,
   1,
