@@ -5,6 +5,7 @@ import updateServerConfig from "../actionHandler/Server/updateServerConfig";
 import roleCheck from "../util/roleCheck";
 import updateServerInfo from "../actionHandler/Server/updateServerInfo";
 import fetchApiInfo from "../actionHandler/Server/fetchApiInfo";
+import createApiClient from "../actionHandler/Server/createApiClient";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
@@ -159,6 +160,39 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Server :: socket(fetchApiInfo) : エラー->", e);
         socket.emit("RESULT::fetchApiInfo", { result:"ERROR_INTERNAL_THING", data:null });
+      }
+    });
+
+    //API利用情報を作成する
+    socket.on("createApiClient", (
+      dat: {
+        RequestSender: IRequestSender,
+        name: string,
+        description: string
+      }
+    ) => {
+      /* セッション認証 */
+      if (!(checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::createApiClient", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //API利用情報作成
+        const createResult = createApiClient(
+          dat.RequestSender.userId,
+          dat.name,
+          dat.description
+        );
+        //結果に応じてそう送信
+        if (createResult) {
+          socket.emit("RESULT::createApiClient", { result:"SUCCESS", data:null });
+        } else {
+          socket.emit("RESULT::createApiClient", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("Server :: socket(createApiClient) : エラー->", e);
+        socket.emit("RESULT::createApiClient", { result:"ERROR_INTERNAL_THING", data:false });
       }
     });
 
