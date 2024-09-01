@@ -94,5 +94,19 @@ db.prepare(
   "MEMBER"
 );
 
+//APIの利用情報を保存するREMOTEAPI_INFOテーブルを無ければ作成
+db.exec(
+  `
+  create table if not exists REMOTAPI_INFO(
+    apiClientId TEXT PRIMARY KEY,
+    clientName TEXT NOT NULL,
+    description TEXT NOT NULL,
+    createdBy TEXT NOT NULL,
+    status BOOLEAN NOT NULL,
+    approvedStatus TEXT NOT NULL DEFAULT 'WAITING'
+  )
+  `
+);
+
 console.log("InitServer :: サーバー情報認識");
 db.close();
