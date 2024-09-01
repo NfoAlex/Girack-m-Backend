@@ -28,6 +28,7 @@ export default interface IServerInfo {
 
 export interface IAPIClientInfo {
   apiClientId: string,
+  apiKey: string,
   clientName: string,
   description: string,
   latestUsedTime: string,
@@ -38,6 +39,7 @@ export interface IAPIClientInfo {
 
 export interface IAPIClientInfoBeforeParsing {
   apiClientId: string,
+  apiKey: string,
   clientName: string,
   description: string,
   latestUsedTime: string,

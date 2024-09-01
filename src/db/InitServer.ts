@@ -99,6 +99,7 @@ db.exec(
   `
   create table if not exists REMOTAPI_INFO(
     apiClientId TEXT PRIMARY KEY,
+    apiKey TEXT NOT NULL,
     clientName TEXT NOT NULL,
     description TEXT NOT NULL,
     latestUsedTim TEXT NOT NULL,
