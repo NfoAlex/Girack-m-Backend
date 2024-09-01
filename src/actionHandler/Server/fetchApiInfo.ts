@@ -12,7 +12,7 @@ export default function fetchApiInfo(_userId: string):IAPIClientInfo[]|null {
 
     //ここで取得
     const apiClientInfo = db.prepare(
-      "SELECT * FROM REMOTAPI_INFO WHERE createdBy=?"
+      "SELECT * FROM API_CLIENTS WHERE createdBy=?"
     ).all(_userId) as IAPIClientInfoBeforeParsing[] | undefined;
     
     if (apiClientInfo === undefined) return null;
