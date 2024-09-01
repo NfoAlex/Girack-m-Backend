@@ -14,7 +14,8 @@ const errorRoleHolder:IUserRole = {
   ChannelManage: false,
   UserManage: false,
   MessageDelete: false,
-  MessageAttatchFile: false
+  MessageAttatchFile: false,
+  APIUse: false
 };
 
 /**
@@ -38,7 +39,8 @@ export default function fetchRoleSingle(_targetRoleId:string)
       ChannelManage: role.ChannelManage === 1,
       UserManage: role.UserManage === 1,
       MessageDelete: role.MessageDelete === 1,
-      MessageAttatchFile: role.MessageAttatchFile === 1
+      MessageAttatchFile: role.MessageAttatchFile === 1,
+      APIUse: role.APIUse === 1
     };
 
     return roleParsed;

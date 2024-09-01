@@ -26,7 +26,8 @@ export interface IUserRole {
   ChannelManage: boolean,
   UserManage: boolean,
   MessageDelete: boolean,
-  MessageAttatchFile: boolean
+  MessageAttatchFile: boolean,
+  APIUse: boolean
 }
 
 //SQLから抜き出した生のロールデータ
@@ -39,7 +40,8 @@ export interface IUserRoleBeforeParsing {
   ChannelManage: 1|0,
   UserManage: 1|0,
   MessageDelete: 1|0,
-  MessageAttatchFile: 1|0
+  MessageAttatchFile: 1|0,
+  APIUse: 1|0
 }
 
 //ユーザーのパスワード

@@ -48,7 +48,8 @@ export default function searchRole(_searchQuery:string, _pageIndex:number)
         ChannelManage: role.ChannelManage === 1,
         UserManage: role.UserManage === 1,
         MessageDelete: role.MessageDelete === 1,
-        MessageAttatchFile: role.MessageAttatchFile === 1
+        MessageAttatchFile: role.MessageAttatchFile === 1,
+        APIUse: role.APIUse === 1
       });
     }
 
