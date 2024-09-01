@@ -4,6 +4,7 @@ import checkSession from "../actionHandler/auth/checkSession";
 import updateServerConfig from "../actionHandler/Server/updateServerConfig";
 import roleCheck from "../util/roleCheck";
 import updateServerInfo from "../actionHandler/Server/updateServerInfo";
+import fetchApiInfo from "../actionHandler/Server/fetchApiInfo";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
@@ -140,6 +141,24 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::updateServerInfo", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //ユーザーのAPI利用情報を取得
+    socket.on("fetchApiInfo", (dat:{RequestSender:IRequestSender}) => {
+      /* セッション認証 */
+      if (!(checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchApiInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //API利用情報取得
+        const apiClientInfo = fetchApiInfo(dat.RequestSender.userId);
+        socket.emit("RESULT::fetchApiInfo", { result:"SUCCESS", data:apiClientInfo });
+      } catch(e) {
+        console.log("Server :: socket(fetchApiInfo) : エラー->", e);
+        socket.emit("RESULT::fetchApiInfo", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
