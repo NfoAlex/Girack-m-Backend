@@ -24,7 +24,7 @@ export default function deleteFile(
     //ファイルを削除する
     fs.unlink(`./STORAGE/USERFILE/${_userId}/${fileInfo.actualName}`, (err) => {
       if (err) {
-        console.log(err);
+        console.log("deleteFile :: ファイルを削除できませんでした　エラー->", err);
         return false;
       }
     });
