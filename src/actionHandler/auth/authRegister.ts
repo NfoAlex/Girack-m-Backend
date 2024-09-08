@@ -40,7 +40,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
     const ServerConfig:IServerInfo = JSON.parse(fs.readFileSync("./records/server.json", "utf-8"));
 
     const count = db.prepare("SELECT COUNT(*) FROM USERS_INFO").get() as {"COUNT(*)":number};
-    console.log("authRegister :: カウント->", count);
+    //console.log("authRegister :: カウント->", count);
 
     //ユーザー数が0ならHOSTアカウントを作る、1以上ならMemberで普通に作る
     if (count["COUNT(*)"] === 0) {
@@ -125,7 +125,7 @@ async function getNewUserId():Promise<string> {
     
         //ユーザー検索、データ格納
         const datUser = await fetchUser(userIdGen, null);
-        console.log("authRegister :: getNewUserId : datUser->", datUser);
+        //console.log("authRegister :: getNewUserId : datUser->", datUser);
         
         //データ長さが0ならループ停止してIDを返す
         if (datUser === null) {
