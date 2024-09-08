@@ -113,7 +113,7 @@ module.exports = (io:Server) => {
           return;
         }
 
-        console.log("File :: socket(fetchFileInfo) : ファイル情報->", fileInfo);
+        //console.log("File :: socket(fetchFileInfo) : ファイル情報->", fileInfo);
 
         //ファイルが公開されているならそのまま送信、違うならセッション確認
         if (fileInfo.isPublic) {
