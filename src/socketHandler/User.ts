@@ -322,7 +322,7 @@ module.exports = (io:Server) => {
         channelId?: string //チャンネル限定か、それならチャンネルId
       }
     ) => {
-      console.log("User :: searchUserInfo : data->", dat);
+      //console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
       if (!(checkSession(dat.RequestSender))) {
         socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });

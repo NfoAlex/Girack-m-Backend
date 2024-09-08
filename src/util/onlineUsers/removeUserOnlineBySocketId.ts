@@ -18,7 +18,7 @@ export default function removeUserOnlineBySocketId(_socketId:string)
       "SELECT userId FROM ONLINE_USERS WHERE socketId=?"
     ).get(_socketId) as {userId: string} | undefined;
 
-    console.log("removeUserOnlineBySocketId :: userId->", userIdDisconnectingRaw);
+    //console.log("removeUserOnlineBySocketId :: userId->", userIdDisconnectingRaw);
 
     //もしユーザーIdデータがundefinedだったら停止
     if (userIdDisconnectingRaw === undefined) {

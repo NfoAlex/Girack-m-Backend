@@ -35,7 +35,7 @@ module.exports = (io:Server) => {
           sessionId: string|null
         } = authLogin(dat.username, dat.password);
 
-        console.log("auth :: authLogin : authResult->", authData);
+        //console.log("auth :: authLogin : authResult->", authData);
 
         //結果に応じて結果送信
         if (

@@ -71,7 +71,7 @@ async function getNewRoleId():Promise<string> {
           "SELECT * FROM ROLES WHERE roleId=?"
         ).get(roleIdGen) as IUserRoleBeforeParsing | undefined;
 
-        console.log("createRole :: getNewRoleId : datRole->", datRole);
+        //console.log("createRole :: getNewRoleId : datRole->", datRole);
         
         //取得したロールデータが無効ならループ停止してIDを返す
         if (datRole === undefined) {
