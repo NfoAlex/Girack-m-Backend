@@ -66,8 +66,8 @@ module.exports = (app:any) => {
       //ファイルを移動
       fs.renameSync(req.file.path, newPath);
       //一時的な検証用ログ
-      console.log("req.file.path -> " + req.file.path);
-      console.log("newPath -> " + newPath);
+      //console.log("req.file.path -> ", req.file.path);
+      //console.log("newPath -> ", newPath);
       if (fs.existsSync(newPath) === false) throw "ファイルの移動に失敗";
   
       // metadata の内容を表示
@@ -78,7 +78,7 @@ module.exports = (app:any) => {
   
     } catch (e) {
       console.log("multerHandler :: /uploadProfileIcon : エラー ->", e);
-      res.status(500).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> " + e);
+      res.status(500).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> ", e);
     }
   });
 
@@ -109,7 +109,7 @@ module.exports = (app:any) => {
       //最後まで条件に合わないならデフォルト画像送信
       res.sendFile(absolutePath + "/default.jpg");
     } catch(e) {
-      res.status(500).send("/icon :: プロフィール画像を取得できませんでした -> " + e);
+      res.status(500).send("/icon :: プロフィール画像を取得できませんでした -> ", e);
     }
   });
 }

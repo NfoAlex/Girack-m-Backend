@@ -15,7 +15,7 @@ import type IRequestSender from "../../type/requestSender";
 export default function uploadfile(req:any, res:any) {
   try {
 
-    console.log("/uploadfile :: ファイルが書き込まれました");
+    //console.log("/uploadfile :: ファイルが書き込まれました");
     // 補足データ（metadata）を取得し、JSONとしてパース
     //console.log("/uploadfile :: これからの処理に使うreq.body.metadata->", req.body);
 

@@ -11,7 +11,7 @@ import type IRequestSender from "../type/requestSender";
 const storage = multer.diskStorage({
 
   destination: async (req, file, cb) => {
-    console.log("FileHandler :: storage : req.body->", req.body);
+    //console.log("FileHandler :: storage : req.body->", req.body);
 
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
       

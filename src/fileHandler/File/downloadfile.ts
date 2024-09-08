@@ -6,7 +6,7 @@ import type IRequestSender from "../../type/requestSender";
 export default async function downloadfile(req:any, res:any) {
   try {
 
-    console.log("/downloadfile :: metadata->", req.body);
+    //console.log("/downloadfile :: metadata->", req.body);
 
     //送信者情報を取得
     const metadata:{RequestSender:IRequestSender} = JSON.parse(req.body.metadata);
@@ -35,7 +35,7 @@ export default async function downloadfile(req:any, res:any) {
 
     //送信者情報取り出し
     const RequestSender:IRequestSender = metadata.RequestSender;
-    console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
+    //console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
 
     //セッション認証できたらファイル送信
     if (await checkSession(RequestSender)) {

@@ -90,7 +90,7 @@ function getNewChannelId():Promise<string> {
         const datChannel = db.prepare(
           "SELECT * FROM CHANNELS WHERE channelId=?"
         ).get(channelIdGen) as IChannelbeforeParsing|undefined;
-        console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
+        //console.log("createChannel :: getNewChannelId : datChannel->", datChannel);
         
         //データ長さが0ならループ停止してIDを返す
         if (datChannel === undefined) {
