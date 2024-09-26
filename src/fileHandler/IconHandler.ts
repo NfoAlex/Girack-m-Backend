@@ -31,7 +31,7 @@ module.exports = (app:any) => {
       const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
 
       //セッションの認証
-      if (!(await checkSession(RequestSender))) {
+      if (!(checkSession(RequestSender))) {
         res.status(401).send("/uploadProfileIcon :: アップロード中にエラーが発生しました -> ERROR_SESSION_ERROR");
         return;
       }
