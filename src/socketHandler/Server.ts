@@ -43,7 +43,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -68,7 +68,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateServerConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -111,7 +111,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateServerInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -149,7 +149,7 @@ module.exports = (io:Server) => {
     //ユーザーのAPI利用情報を取得
     socket.on("fetchApiInfo", (dat:{RequestSender:IRequestSender}) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchApiInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -167,7 +167,7 @@ module.exports = (io:Server) => {
     //管理者として全員API利用情報を取得
     socket.on("fetchAllApiInfo", (dat:{RequestSender:IRequestSender}) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchAllApiInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -197,7 +197,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::createApiClient", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }

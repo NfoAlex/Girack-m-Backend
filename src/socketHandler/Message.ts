@@ -35,7 +35,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::sendMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -115,7 +115,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::deleteMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -158,7 +158,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::editMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -248,7 +248,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchHistory", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -288,7 +288,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::reactMessage", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -332,7 +332,7 @@ module.exports = (io:Server) => {
         messageTime: string
     }) => {
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::setMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -370,7 +370,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::getMessageReadTime", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }

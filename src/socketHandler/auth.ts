@@ -181,7 +181,7 @@ module.exports = (io:Server) => {
       */
      
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::changePassword", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -209,7 +209,7 @@ module.exports = (io:Server) => {
     //セッション情報を取得
     socket.on("fetchSession", (dat:{RequestSender:IRequestSender, indexNum:number}) => {
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchSession", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -246,7 +246,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::changeSessionName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -272,7 +272,7 @@ module.exports = (io:Server) => {
     //セッション情報をログアウトさせる
     socket.on("sessionLogout", (dat:{RequestSender: IRequestSender, targetSessionId:string}) => {
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::sessionLogout", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
