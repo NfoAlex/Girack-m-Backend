@@ -18,7 +18,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchOnlineUsers", {
           result: "ERROR_WRONG_SESSION",
           data: null

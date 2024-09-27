@@ -145,7 +145,7 @@ module.exports = (io:Server) => {
           }
           
           //セッション認証をする
-          const authSessionResult = checkSession(dat.RequestSender);
+          const authSessionResult = checkSession(dat?.RequestSender);
 
           //結果に応じてそう送信
           if (authSessionResult) {
