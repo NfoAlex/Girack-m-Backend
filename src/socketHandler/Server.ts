@@ -5,11 +5,11 @@ import updateServerConfig from "../actionHandler/Server/updateServerConfig";
 import roleCheck from "../util/roleCheck";
 import updateServerInfo from "../actionHandler/Server/updateServerInfo";
 import fetchApiInfo from "../actionHandler/Server/fetchApiInfo";
+import fetchAllApiInfo from "../actionHandler/Server/fetchAllApiInfo";
 import createApiClient from "../actionHandler/Server/createApiClient";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
-import fetchAllApiInfo from "../actionHandler/Server/fetchAllApiInfo";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
