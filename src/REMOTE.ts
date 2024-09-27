@@ -25,7 +25,11 @@ socketClient.on("connect", () => {
 
 //エラー表示用
 socketClient.io.on("error", (e) => {
-  console.log("REMOTE :: エラー->", e);
+  if (e.stack?.startsWith("Error: websocket error")) {
+    console.error("メインサーバーが見つかりませんでした...再接続しています")
+  } else {
+    console.error("REMOTE :: エラー->", e);
+  }
 });
 
 //共通ハンドラ
