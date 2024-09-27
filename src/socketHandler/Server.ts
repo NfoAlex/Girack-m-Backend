@@ -205,7 +205,7 @@ module.exports = (io:Server) => {
       try {
         //ロールを確認する
         if (!roleCheck(dat.RequestSender.userId, "APIUse")) {
-          socket.emit("RESULT::createApiClient", { result:"ERROR_ROLE", data:null });
+          socket.emit("RESULT::createApiClient", { result:"ERROR_MISSING_ROLE", data:null });
           return;
         }
 
