@@ -110,5 +110,12 @@ db.exec(
   `
 );
 
+//API_CLIENTS用のIndex作成
+db.exec(
+  `
+  create unique index if not exists idx_apiKey on API_CLIENTS(apiKey)
+  `
+);
+
 console.log("InitServer :: サーバー情報認識");
 db.close();
