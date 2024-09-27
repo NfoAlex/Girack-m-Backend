@@ -9,6 +9,7 @@ import createApiClient from "../actionHandler/Server/createApiClient";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
+import fetchAllApiInfo from "../actionHandler/Server/fetchAllApiInfo";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -160,6 +161,30 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Server :: socket(fetchApiInfo) : エラー->", e);
         socket.emit("RESULT::fetchApiInfo", { result:"ERROR_INTERNAL_THING", data:null });
+      }
+    });
+
+    //管理者として全員API利用情報を取得
+    socket.on("fetchAllApiInfo", (dat:{RequestSender:IRequestSender}) => {
+      /* セッション認証 */
+      if (!(checkSession(dat.RequestSender))) {
+        socket.emit("RESULT::fetchAllApiInfo", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //サーバー管理の権限が無かった時はエラー
+        if (!roleCheck(dat.RequestSender.userId, "ServerManage")) {
+          socket.emit("RESULT::fetchAllApiInfo", { result:"ERROR_MISSING_ROLE", data:null });
+          return;
+        }
+
+        //API利用情報取得
+        const apiClientInfo = fetchAllApiInfo(dat.RequestSender.userId);
+        socket.emit("RESULT::fetchAllApiInfo", { result:"SUCCESS", data:apiClientInfo });
+      } catch(e) {
+        console.log("Server :: socket(fetchAllApiInfo) : エラー->", e);
+        socket.emit("RESULT::fetchAllApiInfo", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
