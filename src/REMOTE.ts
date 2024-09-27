@@ -32,7 +32,7 @@ socketClient.io.on("error", (e) => {
   }
 });
 
-//共通ハンドラ
+//APIサーバーとしての共通ハンドラ
 remoteIo.on("connection", (socket:Socket) => {
   console.log("REMOTE :: 接続検知");
 
