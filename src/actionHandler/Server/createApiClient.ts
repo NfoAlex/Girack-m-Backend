@@ -1,8 +1,8 @@
-import type { IAPIClientInfo, IAPIClientInfoBeforeParsing } from "../../type/Server";
-
 import Database from 'better-sqlite3';
 const db = new Database('./records/SERVER.db');
 db.pragma('journal_mode = WAL');
+
+import type { IAPIClientInfo, IAPIClientInfoBeforeParsing } from "../../type/Server";
 
 /**
  * API利用情報を作成する

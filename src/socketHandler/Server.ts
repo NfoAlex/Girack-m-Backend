@@ -7,9 +7,11 @@ import updateServerInfo from "../actionHandler/Server/updateServerInfo";
 import fetchApiInfo from "../actionHandler/Server/fetchApiInfo";
 import fetchAllApiInfo from "../actionHandler/Server/fetchAllApiInfo";
 import createApiClient from "../actionHandler/Server/createApiClient";
+import modApiApprove from "../actionHandler/Server/modApiApprove";
 
 import type IServerInfo from "../type/Server";
 import type IRequestSender from "../type/requestSender";
+import type { IAPIClientInfo } from "../type/Server";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -224,6 +226,41 @@ module.exports = (io:Server) => {
       } catch(e) {
         console.log("Server :: socket(createApiClient) : エラー->", e);
         socket.emit("RESULT::createApiClient", { result:"ERROR_INTERNAL_THING", data:false });
+      }
+    });
+
+    //API利用情報の利用を許可する
+    socket.on("modApiApprove", (
+      dat: {
+        RequestSender: IRequestSender,
+        apiClientId: string,
+        newStatus: IAPIClientInfo["approvedStatus"]
+      }
+    ) => {
+      /* セッション認証 */
+      if (!(checkSession(dat?.RequestSender))) {
+        socket.emit("RESULT::modApiApprove", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //ロールを確認する
+        if (!roleCheck(dat.RequestSender.userId, "ServerManage")) {
+          socket.emit("RESULT::modApiApprove", { result:"ERROR_MISSING_ROLE", data:null });
+          return;
+        }
+
+        //API利用情報の許可をしてみる
+        const approveResult = modApiApprove(dat.apiClientId, dat.newStatus);
+        //結果に応じてそう送信
+        if (approveResult) {
+          socket.emit("RESULT::modApiApprove", { result:"SUCCESS", data:null });
+        } else {
+          socket.emit("RESULT::modApiApprove", { result:"ERROR_DB_THING", data:null });
+        }
+      } catch(e) {
+        console.log("Server :: socket(modApiApprove) : エラー->", e);
+        socket.emit("RESULT::modApiApprove", { result:"ERROR_INTERNAL_THING", data:false });
       }
     });
 
