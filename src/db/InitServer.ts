@@ -111,9 +111,14 @@ db.exec(
 );
 
 //API_CLIENTS用のIndex作成
-db.exec(
+db.exec( //APIキー
   `
   create unique index if not exists idx_apiKey on API_CLIENTS(apiKey)
+  `
+);
+db.exec( //作成したユーザーId
+  `
+  create index if not exists idx_createdUserId on API_CLIENTS(createdUserId)
   `
 );
 
