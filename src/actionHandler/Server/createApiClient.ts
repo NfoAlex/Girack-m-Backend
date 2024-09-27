@@ -22,7 +22,7 @@ export default function createApiClient(
         apiKey,
         clientName,
         description,
-        createdBy,
+        createdUserId,
         isEnabled,
         approvedStatus
       ) values (?,?,?,?,?,?,?)

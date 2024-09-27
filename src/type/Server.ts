@@ -32,7 +32,7 @@ export interface IAPIClientInfo {
   clientName: string,
   description: string,
   latestUsedTime: string,
-  createdBy: string,
+  createdUserId: string,
   isEnabled: boolean,
   approvedStatus: "WAITING" | "APPROVED" | "BANNED"
 }
@@ -43,7 +43,7 @@ export interface IAPIClientInfoBeforeParsing {
   clientName: string,
   description: string,
   latestUsedTime: string,
-  createdBy: string,
+  createdUserId: string,
   isEnabled: 1 | 0,
   approvedStatus: "WAITING" | "APPROVED" | "BANNED"
 }

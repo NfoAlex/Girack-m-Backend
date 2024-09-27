@@ -103,7 +103,7 @@ db.exec(
     clientName TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     latestUsedTime TEXT NOT NULL DEFAULT '',
-    createdBy TEXT NOT NULL,
+    createdUserId TEXT NOT NULL,
     isEnabled BOOLEAN NOT NULL,
     approvedStatus TEXT NOT NULL DEFAULT 'WAITING'
   )
