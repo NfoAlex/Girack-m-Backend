@@ -26,9 +26,9 @@ socketClient.on("connect", () => {
 //エラー表示用
 socketClient.io.on("error", (e) => {
   if (e.stack?.startsWith("Error: websocket error")) {
-    console.error("メインサーバーが見つかりませんでした...再接続しています")
+    console.error("REMOTE :: socket(error) : メインサーバーが見つかりませんでした...再接続しています")
   } else {
-    console.error("REMOTE :: エラー->", e);
+    console.error("REMOTE :: socket(error) : エラー->", e);
   }
 });
 
