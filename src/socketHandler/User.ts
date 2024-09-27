@@ -58,7 +58,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -85,7 +85,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -124,7 +124,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::removeFromUserInbox", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -207,7 +207,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::saveUserConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -236,7 +236,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::saveUserChannelOrder", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -264,7 +264,7 @@ module.exports = (io:Server) => {
       }
       */
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -288,7 +288,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchUserAll", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -324,7 +324,7 @@ module.exports = (io:Server) => {
     ) => {
       //console.log("User :: searchUserInfo : data->", dat);
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::searchUserInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -351,7 +351,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::changeUserName", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -379,7 +379,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::banUser", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -432,7 +432,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション確認
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::pardonUser", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }

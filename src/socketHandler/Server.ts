@@ -40,7 +40,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchServerInfoFull", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -65,7 +65,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateServerConfig", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -108,7 +108,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateServerInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }

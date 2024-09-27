@@ -34,7 +34,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::createChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -82,7 +82,7 @@ module.exports = (io:Server) => {
       */
 
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -129,7 +129,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateChannel", { result:"ERROR_SESSION_ERROR" });
         return;
       }
@@ -183,7 +183,7 @@ module.exports = (io:Server) => {
     //チャンネル情報を取得する
     socket.on("fetchChannelInfo", (dat:{RequestSender:IRequestSender, channelId:string}) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchChannelInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -217,7 +217,7 @@ module.exports = (io:Server) => {
     //チャンネルを検索する
     socket.on("searchChannelInfo", (dat:{RequestSender:IRequestSender, query:string, pageIndex:number}) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::searchChannelInfo", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -239,7 +239,7 @@ module.exports = (io:Server) => {
     //チャンネルを一覧で取得
     socket.on("fetchChannelList", (dat:{RequestSender:IRequestSender}) => {
       /* セッション認証 */
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchChannelList", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -263,7 +263,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::joinChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -307,7 +307,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::leaveChannel", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
