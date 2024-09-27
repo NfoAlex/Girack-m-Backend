@@ -28,7 +28,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchRoles", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -58,7 +58,7 @@ module.exports = (io:Server) => {
       }
     ) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::searchRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -81,7 +81,7 @@ module.exports = (io:Server) => {
     //単一ロールを取得
     socket.on("fetchRoleSingle", async (dat:{RequestSender:IRequestSender, roleId:string}) => {
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::fetchRoleSingle", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -113,7 +113,7 @@ module.exports = (io:Server) => {
       }
       */
      //セッション認証
-     if (!(await checkSession(dat.RequestSender))) {
+     if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::addRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -158,7 +158,7 @@ module.exports = (io:Server) => {
       }
       */
      //セッション認証
-     if (!(await checkSession(dat.RequestSender))) {
+     if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::unlinkRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -205,7 +205,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::createRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -245,7 +245,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::updateRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
@@ -291,7 +291,7 @@ module.exports = (io:Server) => {
       */
 
       //セッション認証
-      if (!(await checkSession(dat.RequestSender))) {
+      if (!(checkSession(dat?.RequestSender))) {
         socket.emit("RESULT::deleteRole", { result:"ERROR_SESSION_ERROR", data:null });
         return;
       }
