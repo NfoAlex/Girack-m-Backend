@@ -11,9 +11,12 @@ db.pragma('journal_mode = WAL');
  * @param _RequestSender 
  * @returns 
  */
-export default function checkSession(_RequestSender:IRequestSender)
+export default function checkSession(_RequestSender:IRequestSender | undefined)
 :boolean {
   try {
+
+    //RequestSenderがundefinedならfalse
+    if (_RequestSender === undefined) return false;
 
     //データ確認
     if (_RequestSender.userId === undefined && _RequestSender.sessionId === undefined) {
