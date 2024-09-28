@@ -5,14 +5,23 @@ import { createServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import express from "express";
 import cors from "cors"; 
+import dotenv from "dotenv";
+
+// 環境変数を読み込む
+dotenv.config();
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 環境変数からCORSオリジンを読み込み、配列に変換
+const corsOrigins = process.env.CORS_ORIGINS?.split(',') || [];
+
 // CORSを許可
 app.use(cors({
-  origin: ['https://schat.girak.moe']
-})); // 追加
+  origin: corsOrigins
+}));
+
 
 //DB用に必要なディレクトリを作成
 try{fs.mkdirSync("./records/");}catch(e){}
@@ -35,7 +44,7 @@ const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
   cors: {
-    origin: ['https://schat.girak.moe'],
+    origin: corsOrigins,
     methods: ["GET", "POST"],
     credentials: true // クッキーを含むリクエストを許可
   }
