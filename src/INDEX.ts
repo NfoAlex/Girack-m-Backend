@@ -8,15 +8,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 // 環境変数を読み込む
-dotenv.config();
+const config =  dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 環境変数からCORSオリジンを読み込み、配列に変換
-const corsOrigins = process.env.CORS_ORIGINS?.split(',') || [];
-
+const corsOrigins = config.parsed?.CORS_ORIGIN?.split(",") || [];
+console.log("CORS_ORIGIN :: ", corsOrigins);
 // CORSを許可
 app.use(cors({
   origin: corsOrigins
