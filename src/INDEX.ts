@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORSを許可
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://schat.girak.moe']
+  origin: ['https://schat.girak.moe']
 })); // 追加
 
 //DB用に必要なディレクトリを作成
@@ -35,7 +35,7 @@ const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
   cors: {
-    origin: ['http://localhost:5173', 'https://schat.girak.moe'],
+    origin: ['https://schat.girak.moe'],
     methods: ["GET", "POST"],
     credentials: true // クッキーを含むリクエストを許可
   }
