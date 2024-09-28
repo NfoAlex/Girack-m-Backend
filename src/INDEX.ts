@@ -4,10 +4,15 @@ import fs from "node:fs";
 import { createServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import express from "express";
-
+import cors from "cors"; 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// CORSを許可
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://schat.girak.moe']
+})); // 追加
 
 //DB用に必要なディレクトリを作成
 try{fs.mkdirSync("./records/");}catch(e){}
@@ -29,6 +34,11 @@ const httpServer = createServer(app);
 const io:Server = new Server(httpServer, {
   //オプション
   maxHttpBufferSize: 1e8, // 100MBごとの通信を許可
+  cors: {
+    origin: ['http://localhost:5173', 'https://schat.girak.moe'],
+    methods: ["GET", "POST"],
+    credentials: true // クッキーを含むリクエストを許可
+  }
 });
 
 //ファイル操作ハンドラインポート
