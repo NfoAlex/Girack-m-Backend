@@ -6,18 +6,20 @@ import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
 
 /**
  * 履歴を取得する
- * @param _channelId 
+ * @param _historyId 
  * @param _fetchingPosition 
+ * @param _isThread 
  * @returns 
  */
 export default function fetchHistory(
-  _channelId: string,
+  _historyId: string,
   _fetchingPosition: {
     positionMessageId?: string
     positionMessageTime?: string
     includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
-  }
+  },
+  _isThread: boolean = false
 ):
   {
     history: IMessage[],
@@ -32,6 +34,9 @@ export default function fetchHistory(
     //履歴を読み出し始める位置
     let positionIndex = 0;
 
+    //チャンネルかスレッドのテーブル用ラベル設定
+    const historyIdLabel = !_isThread ? "C" : "T";
+
     //メッセージ位置の設定、指定がないなら0
     if (
       ( //Idの指定があるか？
@@ -44,7 +49,8 @@ export default function fetchHistory(
     ) {
       //メッセージのインデックス番号を計算する
       const positionTemp = calcPositionOfMessage(
-        _channelId,
+        _historyId,
+        historyIdLabel,
         {
           messageId: _fetchingPosition.positionMessageId,
           time: _fetchingPosition.positionMessageTime
@@ -72,7 +78,7 @@ export default function fetchHistory(
 
     //履歴の長さを取得
     const historyLengthRaw = db.prepare(
-      `SELECT COUNT(*) FROM C${_channelId}`
+      `SELECT COUNT(*) FROM ${historyIdLabel}${_historyId}`
     ).get() as {"COUNT(*)":number};
     const historyLength = historyLengthRaw["COUNT(*)"];
 
@@ -97,7 +103,7 @@ export default function fetchHistory(
     //履歴取得
     const history = db.prepare(
       `
-      SELECT * FROM C${_channelId}
+      SELECT * FROM ${historyIdLabel}${_historyId}
         ORDER BY time DESC
         LIMIT ${historyLimit}
         OFFSET ${positionIndex}
@@ -171,11 +177,13 @@ export default function fetchHistory(
 /**
  * メッセージの位置を取得
  * @param _channelId 
+ * @param _historyLabel 
  * @param _messagePos 
  * @returns 
  */
 function calcPositionOfMessage(
   _channelId:string,
+  _historyLabel: "C" | "T",
   _messagePos: {
     messageId?: string,
     time?: string
@@ -211,7 +219,7 @@ function calcPositionOfMessage(
           *,
           ROW_NUMBER() OVER (ORDER BY time DESC) AS RowNum
         FROM
-          C${_channelId}
+          ${_historyLabel}${_channelId}
       )
       SELECT
         *
