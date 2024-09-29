@@ -13,6 +13,7 @@ import type IRequestSender from "../type/requestSender";
 import type { IChannel } from "../type/Channel";
 import recordSystemMessage from "../util/Message/recordSystemMessage";
 import searchChannel from "../actionHandler/Channel/searchChannel";
+import createThread from "../actionHandler/Channel/createThread";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
@@ -117,6 +118,61 @@ module.exports = (io:Server) => {
         }
       } catch(e) {
         socket.emit("RESULT::deleteChannel", { result:"ERROR_DB_THING", data:null });
+      }
+    });
+
+    //スレッドを作成
+    socket.on("createThread", async (dat:
+      {
+        RequestSender: IRequestSender,
+        threadName: string,
+        channelId: string,
+        messageId: string
+      }
+    ) => {
+      /*
+      返し : {
+        result: "SUCCESS"|"ERROR_ROLE"|"ERROR_SESSION_ERROR"|"ERROR_DB_THING"|"ERROR_CHANNELNAME_BLANK",
+        data: createChannelResult<boolean>|null
+      }
+      */
+
+      /* セッション認証 */
+      if (!(checkSession(dat?.RequestSender))) {
+        socket.emit("RESULT::createThread", { result:"ERROR_SESSION_ERROR", data:null });
+        return;
+      }
+
+      try {
+        //チャンネル名が空ならエラーを返して終了
+        if (dat.threadName.length === 0 ) {
+          socket.emit("RESULT::createThread", { result:"ERROR_THREADNAME_BLANK", data:null });
+          return;
+        }
+
+        //ロール権限を確認する
+        const roleCheckResult = roleCheck(dat.RequestSender.userId, "ChannelManage");
+        if (!roleCheckResult) {
+          socket.emit("RESULT::createThread", { result:"ERROR_ROLE", data:null });
+          return;
+        }
+
+        //チャンネルを作成する
+        const createThreadResult = await createThread(
+          dat.threadName,
+          dat.channelId,
+          dat.messageId,
+          dat.RequestSender.userId
+        );
+
+        //返す
+        socket.emit("RESULT::createThread", { result:"SUCCESS", data:createThreadResult });
+
+        //最新のチャンネル情報を全員に送る
+        //const channelList = await fetchChannelList();
+        //io.emit("RESULT::fetchChannelList", { result:"SUCCESS", data:channelList });
+      } catch(e) {
+        socket.emit("RESULT::createThread", { result:"ERROR_INTERNAL_THING", data:null });
       }
     });
 
