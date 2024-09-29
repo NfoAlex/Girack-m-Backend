@@ -86,14 +86,18 @@ db.exec(
     threadName TEXT NOT NULL,
     createdBy TEXT NOT NULL,
     speakableRole TEXT NOT NULL,
-    parentChannelId TEXT NOT NULL
+    parentChannelId TEXT NOT NULL,
+    parentMessageId TEXT NOT NULL
   )
   `
 );
 
-//スレッドの親チャンネルIdカラムへインデックスを作成するように
+//スレッドの親チャンネルIdカラムとメッセIdカラムへインデックスを作成するように
 db.exec(
   `create index if not exists idx_parentChannelId on THREADS(parentChannelId)`
+);
+db.exec(
+  `create index if not exists idx_parentMessageId on THREADS(parentMessageId)`
 );
 
 //無かったらRandomチャンネルを最初に作成
