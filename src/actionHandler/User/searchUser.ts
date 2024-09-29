@@ -46,6 +46,7 @@ export default function searchUser(
       usersParsed.push({
         ...user,
         channelJoined: user.channelJoined.split(","),
+        threadJoined: user.threadJoined.split(","),
         role: user.role.split(","),
         banned: user.banned===1
       })

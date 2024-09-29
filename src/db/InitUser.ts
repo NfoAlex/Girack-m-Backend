@@ -4,6 +4,7 @@ db.pragma('journal_mode = WAL');
 
 import migration20240612 from "./migration/User/20240612";
 import migration20240618 from "./migration/User/20240618";
+import migration20240929 from './migration/User/20240929';
 
 //ユーザー基本情報を保存するUSERS_INFOテーブルを無ければ作成
 db.exec(
@@ -13,6 +14,7 @@ db.exec(
     userName TEXT NOT NULL,
     role TEXT NOT NULL,
     channelJoined TEXT NOT NULL,
+    threadJoined TEXT NOT NULL,
     banned BOOLEAN NOT NULL
   )
   `
@@ -69,6 +71,7 @@ db.exec(
 //migration
 migration20240612(); //inboxカラム追加
 migration20240618(); //messageReadIdからmessageReadTimeへ
+migration20240929(); //threadJoinedカラム追加
 
 console.log("InitUser :: ユーザーDB作成完了");
 db.close();

@@ -95,6 +95,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
         userName: username,
         role: isFirstUser?["HOST"]:["MEMBER"], //最初のユーザーならHOST
         channelJoined: ["0001"],
+        threadJoined: [],
         banned: false,
       },
       password: passwordGenerated

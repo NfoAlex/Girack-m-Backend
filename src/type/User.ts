@@ -4,6 +4,7 @@ export interface IUserInfo {
   userName: string,
   role: string[],
   channelJoined: string[],
+  threadJoined: string[],
   banned: boolean,
 };
 
@@ -13,6 +14,7 @@ export interface IUserInfoBeforeParsing {
   userName: string,
   role: string,
   channelJoined: string,
+  threadJoined: string,
   banned: 1|0
 };
 

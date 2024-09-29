@@ -44,6 +44,7 @@ export default function fetchUserAll(_indexPage:number)
         userName: user.userName,
         role: user.role.split(","),
         channelJoined: user.channelJoined.split(","),
+        threadJoined: user.threadJoined.split(","),
         banned: user.banned === 1
       };
     }

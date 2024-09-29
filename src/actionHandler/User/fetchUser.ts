@@ -25,6 +25,7 @@ export default function fetchUser(_userId:string|null, _username:string|null)
         const userInfoParsed:IUserInfo = {
           ...userInfo,
           channelJoined: userInfo.channelJoined.split(","),
+          threadJoined: userInfo.threadJoined.split(","),
           role: userInfo.role.split(","),
           banned: userInfo.banned===1
         };
@@ -43,6 +44,7 @@ export default function fetchUser(_userId:string|null, _username:string|null)
       const userInfoParsed:IUserInfo = {
         ...userInfo,
         channelJoined: userInfo.channelJoined.split(","),
+        threadJoined: userInfo.threadJoined.split(","),
         role: userInfo.role.split(","),
         banned: userInfo.banned===1
       };
