@@ -49,6 +49,11 @@ export default function saveMessage(
       return null;
     }
 
+    //空白の数を数える
+    const spaceCount = (_message.content.match(/ /g) || "").length + (_message.content.match(/　/g) || "").length;
+    //メッセージがスペースしか含まれていないならエラー
+    if (spaceCount === _message.content.length) return null;
+
     //メッセージID用の乱数生成
     const randId = Math.floor(Math.random()*9999).toString().padStart(4, "0");
 
