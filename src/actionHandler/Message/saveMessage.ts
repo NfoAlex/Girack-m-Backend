@@ -49,8 +49,8 @@ export default function saveMessage(
       return null;
     }
 
-    //空白の数を数える
-    const spaceCount = (_message.content.match(/ /g) || "").length + (_message.content.match(/　/g) || "").length;
+    //空白と改行の数を数える
+    const spaceCount = (_message.content.match(/ /g) || "").length + (_message.content.match(/　/g) || "").length + (_message.content.match(/\n/g) || "").length;
     //メッセージがスペースしか含まれていないならエラー
     if (spaceCount === _message.content.length) return null;
 
