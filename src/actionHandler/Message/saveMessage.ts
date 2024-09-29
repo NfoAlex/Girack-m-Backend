@@ -37,6 +37,7 @@ export default function saveMessage(
       userId: _userId,
       isEdited: false,
       isSystemMessage: false,
+      hasThread: false,
       content: _message.content,
       linkData: {},
       fileId: _message.fileId,

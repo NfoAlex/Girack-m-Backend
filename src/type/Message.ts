@@ -6,6 +6,7 @@ export interface IMessageBeforeParsing {
   content: string,
   isEdited: 1|0,
   isSystemMessage: 1|0,
+  hasThread: 1|0,
   linkData: string,
   fileId: string,
   time: string,
@@ -17,9 +18,10 @@ export interface IMessage {
   messageId: string,
   channelId: string,
   userId: string,
+  content: string,
   isEdited: boolean,
   isSystemMessage: boolean,
-  content: string,
+  hasThread: boolean,
   linkData: {
     [key: string]:
       {

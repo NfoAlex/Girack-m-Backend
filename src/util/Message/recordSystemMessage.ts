@@ -39,6 +39,7 @@ export default function recordSystemMessage(
       userId: "SYSTEM", //システムだから
       isEdited: false,
       isSystemMessage: true, //システムだから
+      hasThread: false,
       content: messageContentResult, //stringにしたもの
       linkData: {},
       fileId: [],

@@ -147,6 +147,7 @@ export default function fetchHistory(
         ...history[index],
         isEdited: history[index].isEdited === 1,
         isSystemMessage: history[index].isSystemMessage === 1,
+        hasThread: history[index].hasThread === 1,
         linkData: linkDataParsed,
         fileId: history[index].fileId===''?[]:history[index].fileId.split(","),
         reaction: JSON.parse(history[index].reaction)
