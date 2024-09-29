@@ -13,6 +13,11 @@ db.exec(
   `
 );
 
+//ユーザーIdのインデックス作成するように
+db.exec(
+  `create index if not exists idx_userId on FOLDERS(userId)`
+);
+
 console.log("initFile :: ファイルインデックス用DB作成完了");
 
 db.close();
