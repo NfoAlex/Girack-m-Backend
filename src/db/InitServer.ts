@@ -85,7 +85,6 @@ db.exec(
     threadId TEXT PRIMARY KEY,
     threadName TEXT NOT NULL,
     createdBy TEXT NOT NULL,
-    isPrivate BOOLEAN NOT NULL,
     speakableRole TEXT NOT NULL,
     parentChannelId TEXT NOT NULL
   )
