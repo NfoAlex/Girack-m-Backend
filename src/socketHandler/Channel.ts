@@ -8,12 +8,12 @@ import leaveChannel from "../actionHandler/Channel/leaveChannel";
 import roleCheck from "../util/roleCheck";
 import deleteChannel from "../actionHandler/Channel/deleteChannel";
 import updateChannel from "../actionHandler/Channel/updateChannel";
-
-import type IRequestSender from "../type/requestSender";
-import type { IChannel } from "../type/Channel";
 import recordSystemMessage from "../util/Message/recordSystemMessage";
 import searchChannel from "../actionHandler/Channel/searchChannel";
 import createThread from "../actionHandler/Channel/createThread";
+
+import type IRequestSender from "../type/requestSender";
+import type { IChannel } from "../type/Channel";
 
 module.exports = (io:Server) => {
   io.on("connection", (socket:Socket) => {
