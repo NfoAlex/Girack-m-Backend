@@ -11,17 +11,27 @@ import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
  * @returns 
  */
 export default function fetchMessage(
-  _channelId: string,
-  _messageId: string
+  _historyId: string,
+  _messageId: string,
+  _isThread: boolean = false,
 ):IMessage|null {
   try {
 
-    //メッセージの取得
-    const msg = db.prepare(
+    //SQLite構文(スレッドからか、チャンネルからか)
+    const stmt = !_isThread ?
       `
-      SELECT * FROM C${_channelId}
+      SELECT * FROM C${_historyId}
         WHERE messageId='${_messageId}'
       `
+    :
+      `
+      SELECT * FROM T${_historyId}
+        WHERE messageId='${_messageId}'
+      `;
+
+    //メッセージの取得
+    const msg = db.prepare(
+      stmt
     ).get() as IMessageBeforeParsing|undefined;
     //undefinedならnull
     if (msg === undefined) return null;
