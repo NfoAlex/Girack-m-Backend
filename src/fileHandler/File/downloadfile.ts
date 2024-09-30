@@ -1,9 +1,10 @@
 import path from 'node:path';
+import { Request, Response } from 'express';
 import checkSession from "../../actionHandler/auth/checkSession";
 import fetchFileInfo from "../../util/FIle/fetchFileInfo";
 import type IRequestSender from "../../type/requestSender";
 
-export default async function downloadfile(req:any, res:any) {
+export default async function downloadfile(req: Request, res: Response) {
   try {
 
     //console.log("/downloadfile :: metadata->", req.body);
