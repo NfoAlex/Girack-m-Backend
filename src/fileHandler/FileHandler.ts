@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import multer from "multer";
 import path from 'node:path';
+import cookieParser from "cookie-parser";
 import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
@@ -98,6 +99,9 @@ import fetchfile from "./File/fetchfile";
 import downloadfile from "./File/downloadfile";
 
 module.exports = (app:Express) => {
+
+  //クッキー処理用
+  app.use(cookieParser());
 
   //ファイルのアップロード処理
   app.post("/uploadfile", upload.single("file"), (req:any, res:any) => uploadfile(req, res));
