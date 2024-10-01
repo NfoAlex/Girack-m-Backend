@@ -21,7 +21,7 @@ export default async function downloadfile(req: Request, res: Response) {
 
     if (fileInfo.isPublic) {
       const filePath = path.join(`./STORAGE/USERFILE/${uploaderId}/${fileInfo.actualName}`);
-      res.download(filePath);
+      res.download(filePath, fileInfo.name);
       return;
     }
 
@@ -37,7 +37,7 @@ export default async function downloadfile(req: Request, res: Response) {
     //セッション認証できたらファイル送信
     if (checkSession(RequestSender)) {
       const filePath = path.join(`./STORAGE/USERFILE/${uploaderId}/${fileInfo.actualName}`);
-      res.download(filePath);
+      res.download(filePath, fileInfo.name);
       return;
     }
 
