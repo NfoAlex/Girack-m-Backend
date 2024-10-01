@@ -110,6 +110,6 @@ module.exports = (app:Express) => {
   app.get("/fetchfile/:id", (req:any, res:any) => fetchfile(req,res));
 
   //ファイルをダウンロードする
-  app.post("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
+  app.get("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
 
 }
