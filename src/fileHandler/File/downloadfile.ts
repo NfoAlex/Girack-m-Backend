@@ -1,15 +1,13 @@
 import path from 'node:path';
+import { Request, Response } from 'express';
 import checkSession from "../../actionHandler/auth/checkSession";
 import fetchFileInfo from "../../util/FIle/fetchFileInfo";
 import type IRequestSender from "../../type/requestSender";
 
-export default async function downloadfile(req:any, res:any) {
+export default async function downloadfile(req: Request, res: Response) {
   try {
 
-    //console.log("/downloadfile :: metadata->", req.body);
-
-    //送信者情報を取得
-    const metadata:{RequestSender:IRequestSender} = JSON.parse(req.body.metadata);
+    //console.log("downloadfile :: req.cookie->", req.cookies);
 
     //ファイル情報を取得
     const fileInfo = fetchFileInfo(req.params.id);
@@ -23,24 +21,23 @@ export default async function downloadfile(req:any, res:any) {
 
     if (fileInfo.isPublic) {
       const filePath = path.join(`./STORAGE/USERFILE/${uploaderId}/${fileInfo.actualName}`);
-      res.download(filePath);
+      res.download(filePath, fileInfo.name);
       return;
     }
 
-    //送信者情報が無いならそうエラーを送信
-    if (req.body.metadata === undefined) {
-      res.status(400).send({ result:"ERROR_FILE_IS_PRIVATE" });
-      return;
-    }
+    //const cookieInfo = JSON.parse(req.cookies);
 
     //送信者情報取り出し
-    const RequestSender:IRequestSender = metadata.RequestSender;
-    //console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
+    const RequestSender:IRequestSender = {
+      userId: req.cookies?.userId,
+      sessionId: req.cookies?.sessionId
+    };
+    //console.log("/downloadfile :: checkSession->", RequestSender, checkSession(RequestSender));
 
     //セッション認証できたらファイル送信
-    if (await checkSession(RequestSender)) {
+    if (checkSession(RequestSender)) {
       const filePath = path.join(`./STORAGE/USERFILE/${uploaderId}/${fileInfo.actualName}`);
-      res.download(filePath);
+      res.download(filePath, fileInfo.name);
       return;
     }
 

@@ -31,9 +31,14 @@ export default async function fetchfile(req:any, res:any) {
     }
 
     //送信者情報取り出し
-    const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
+    //const RequestSender:IRequestSender = JSON.parse(req.body.metadata);
+    const RequestSender:IRequestSender = {
+      userId: req.cookies?.userId,
+      sessionId: req.cookies?.sessionId
+    };
+
     //セッション認証できたら成功と送信
-    if (await checkSession(RequestSender)) {
+    if (checkSession(RequestSender)) {
       res.status(200).send({ result:"SUCCESS" });
       return;
     }

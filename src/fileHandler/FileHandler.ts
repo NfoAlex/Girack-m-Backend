@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import multer from "multer";
 import path from 'node:path';
+import cookieParser from "cookie-parser";
 import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
@@ -14,12 +15,17 @@ const storage = multer.diskStorage({
     //console.log("FileHandler :: storage : req.body->", req.body);
 
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
+
+      const RequestSender:IRequestSender = {
+        userId: req.cookies?.userId,
+        sessionId: req.cookies?.sessionId
+      };
       
       //送信者情報取り出し
-      const metadata:{
-        RequestSender: IRequestSender,
-        directory: string
-      } = JSON.parse(req.body.metadata);
+      // const metadata:{
+      //   RequestSender: IRequestSender,
+      //   directory: string
+      // } = JSON.parse(req.body.metadata);
 
       //容量情報取り出し
       const contentLength:string|undefined = req.headers['content-length'];
@@ -35,7 +41,7 @@ const storage = multer.diskStorage({
       //ディレクトリサイズを計算して超えていないか調べる
 
       //ディレクトリサイズを計算
-      const currentFullSize = calcDirectorySize(metadata.RequestSender.userId, "");
+      const currentFullSize = calcDirectorySize(RequestSender.userId, "");
       if (currentFullSize === null) {
         const error = new Error("ERROR_INTERNAL_THING");
         cb(error, "STORAGE/TEMP");
@@ -55,11 +61,11 @@ const storage = multer.diskStorage({
       ///////////////////////////////////////////////
 
       //セッション認証
-      if (await checkSession(metadata.RequestSender)) {
+      if (checkSession(RequestSender)) {
         //このユーザー用のディレクトリ作成
-        try{fs.mkdirSync(`./STORAGE/USERFILE/${metadata.RequestSender.userId}`);}catch(e){}
+        try{fs.mkdirSync(`./STORAGE/USERFILE/${RequestSender.userId}`);}catch(e){}
         // アップロードされるファイルの保存先
-        cb(null, `STORAGE/USERFILE/${metadata.RequestSender.userId}`);
+        cb(null, `STORAGE/USERFILE/${RequestSender.userId}`);
         return;
       }
       
@@ -99,6 +105,9 @@ import downloadfile from "./File/downloadfile";
 
 module.exports = (app:Express) => {
 
+  //クッキー処理用
+  app.use(cookieParser());
+
   //ファイルのアップロード処理
   app.post("/uploadfile", upload.single("file"), (req:any, res:any) => uploadfile(req, res));
 
@@ -106,6 +115,6 @@ module.exports = (app:Express) => {
   app.get("/fetchfile/:id", (req:any, res:any) => fetchfile(req,res));
 
   //ファイルをダウンロードする
-  app.post("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
+  app.get("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
 
 }
