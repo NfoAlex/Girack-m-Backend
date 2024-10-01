@@ -36,10 +36,10 @@ export default async function downloadfile(req: Request, res: Response) {
 
     //送信者情報取り出し
     const RequestSender:IRequestSender = metadata.RequestSender;
-    //console.log("/downloadfile :: checkSession->", await checkSession(RequestSender));
+    //console.log("/downloadfile :: checkSession->", checkSession(RequestSender));
 
     //セッション認証できたらファイル送信
-    if (await checkSession(RequestSender)) {
+    if (checkSession(RequestSender)) {
       const filePath = path.join(`./STORAGE/USERFILE/${uploaderId}/${fileInfo.actualName}`);
       res.download(filePath);
       return;

@@ -56,7 +56,7 @@ const storage = multer.diskStorage({
       ///////////////////////////////////////////////
 
       //セッション認証
-      if (await checkSession(metadata.RequestSender)) {
+      if (checkSession(metadata.RequestSender)) {
         //このユーザー用のディレクトリ作成
         try{fs.mkdirSync(`./STORAGE/USERFILE/${metadata.RequestSender.userId}`);}catch(e){}
         // アップロードされるファイルの保存先
