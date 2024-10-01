@@ -15,17 +15,11 @@ const storage = multer.diskStorage({
     //console.log("FileHandler :: storage : req.body->", req.body);
 
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
-
+      //送信者情報取り出し
       const RequestSender:IRequestSender = {
         userId: req.cookies?.userId,
         sessionId: req.cookies?.sessionId
       };
-      
-      //送信者情報取り出し
-      // const metadata:{
-      //   RequestSender: IRequestSender,
-      //   directory: string
-      // } = JSON.parse(req.body.metadata);
 
       //容量情報取り出し
       const contentLength:string|undefined = req.headers['content-length'];
