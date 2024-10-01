@@ -7,10 +7,7 @@ import type IRequestSender from "../../type/requestSender";
 export default async function downloadfile(req: Request, res: Response) {
   try {
 
-    //console.log("/downloadfile :: metadata->", req.body);
-
-    //送信者情報を取得
-    const metadata:{RequestSender:IRequestSender} = JSON.parse(req.body.metadata);
+    //console.log("downloadfile :: req.cookie->", req.cookies);
 
     //ファイル情報を取得
     const fileInfo = fetchFileInfo(req.params.id);
@@ -28,15 +25,14 @@ export default async function downloadfile(req: Request, res: Response) {
       return;
     }
 
-    //送信者情報が無いならそうエラーを送信
-    if (req.body.metadata === undefined) {
-      res.status(400).send({ result:"ERROR_FILE_IS_PRIVATE" });
-      return;
-    }
+    //const cookieInfo = JSON.parse(req.cookies);
 
     //送信者情報取り出し
-    const RequestSender:IRequestSender = metadata.RequestSender;
-    //console.log("/downloadfile :: checkSession->", checkSession(RequestSender));
+    const RequestSender:IRequestSender = {
+      userId: req.cookies?.userId,
+      sessionId: req.cookies?.sessionId
+    };
+    //console.log("/downloadfile :: checkSession->", RequestSender, checkSession(RequestSender));
 
     //セッション認証できたらファイル送信
     if (checkSession(RequestSender)) {
