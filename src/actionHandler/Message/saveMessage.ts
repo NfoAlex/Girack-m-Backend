@@ -52,7 +52,8 @@ export default function saveMessage(
     //空白と改行の数を数える
     const spaceCount = (_message.content.match(/ /g) || "").length + (_message.content.match(/　/g) || "").length + (_message.content.match(/\n/g) || "").length;
     //メッセージがスペースしか含まれていないならエラー
-    if (spaceCount === _message.content.length) return null;
+    if (spaceCount === _message.content.length && messageData.fileId.length === 0) return null;
+    if (spaceCount > 0 && messageData.fileId.length > 0)  return null;
 
     //メッセージID用の乱数生成
     const randId = Math.floor(Math.random()*9999).toString().padStart(4, "0");
