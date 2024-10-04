@@ -19,7 +19,8 @@ const corsOrigins = config.parsed?.CORS_ORIGIN?.split(",") || [];
 console.log("CORS_ORIGIN :: ", corsOrigins);
 // CORSを許可
 app.use(cors({
-  origin: corsOrigins
+  origin: corsOrigins,
+  credentials: true 
 }));
 
 
