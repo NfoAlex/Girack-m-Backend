@@ -7,12 +7,16 @@ import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
 import type { Express, NextFunction } from 'express';
 import type IRequestSender from "../type/requestSender";
+import dotenv from "dotenv";
 
 // multer の設定（ディスクストレージを使用）
 const storage = multer.diskStorage({
 
   destination: async (req, file, cb) => {
-    //console.log("FileHandler :: storage : req.body->", req.body);
+    // 環境変数を読み込む
+    const config =  dotenv.config();
+    // 環境変数からCORSオリジンを読み込み、配列に変換
+    const corsOrigins = config.parsed?.CORS_ORIGIN?.split(",") || [];
 
     if (req.body !== undefined && Object.keys(req.body).length !== 0) {
       //送信者情報取り出し
@@ -20,6 +24,18 @@ const storage = multer.diskStorage({
         userId: req.cookies?.userId,
         sessionId: req.cookies?.sessionId
       };
+
+      //CookieがないかつドメインがcorsOriginsと同じ場合reqestBodyのsessionIdを使って認証
+      if((!RequestSender.userId || !RequestSender.sessionId) && corsOrigins.includes(req.headers.origin ?? "")) {
+        if (req.body.metadata ) {
+          const metadata = JSON.parse(req.body.metadata);
+          RequestSender.userId = metadata.RequestSender.userId;
+          RequestSender.sessionId = metadata.RequestSender.sessionId;
+        }else if(req.headers['x-user-id'] && req.headers['x-session-id'] ){
+          RequestSender.userId = req.headers['x-user-id'] as string;
+          RequestSender.sessionId = req.headers['x-session-id'] as string;
+        }
+      }
 
       //容量情報取り出し
       const contentLength:string|undefined = req.headers['content-length'];

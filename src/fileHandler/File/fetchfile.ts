@@ -1,6 +1,8 @@
 import checkSession from "../../actionHandler/auth/checkSession";
 import type IRequestSender from "../../type/requestSender";
 import fetchFileInfo from "../../util/FIle/fetchFileInfo";
+import dotenv from "dotenv";
+
 
 /**
  * ファイルのアップロード処理
@@ -10,7 +12,10 @@ import fetchFileInfo from "../../util/FIle/fetchFileInfo";
  */
 export default async function fetchfile(req:any, res:any) {
   try {
-    
+    // 環境変数を読み込む
+    const config =  dotenv.config();
+    // 環境変数からCORSオリジンを読み込み、配列に変換
+    const corsOrigins = config.parsed?.CORS_ORIGIN?.split(",") || [];
     //ファイル情報を取得
     const fileInfo = fetchFileInfo(req.params.id);
     if (fileInfo === null) {
@@ -38,9 +43,18 @@ export default async function fetchfile(req:any, res:any) {
     };
 
     //セッション認証できたら成功と送信
-    if (checkSession(RequestSender)) {
+    if (req.cookie && checkSession(RequestSender)) {
       res.status(200).send({ result:"SUCCESS" });
       return;
+    }else if (req.cookies === undefined && corsOrigins.includes(req.headers.origin)) { //CookieがないかつドメインがcorsOriginsと同じ場合reqestBodyのsessionIdを使って認証
+      const RequestSender:IRequestSender = {
+        userId: req.body.metadata.RequestSender.userId,
+        sessionId: req.body.metadata.RequestSender.sessionId
+      };
+      if (checkSession(RequestSender)) {
+        res.status(200).send({ result:"SUCCESS" });
+        return;
+      }
     }
 
     res.status(400).send({ result:"ERROR_WRONG_SESSION" });
