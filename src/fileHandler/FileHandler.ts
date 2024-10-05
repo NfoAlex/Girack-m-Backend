@@ -27,10 +27,13 @@ const storage = multer.diskStorage({
 
       //CookieがないかつドメインがcorsOriginsと同じ場合reqestBodyのsessionIdを使って認証
       if((!RequestSender.userId || !RequestSender.sessionId) && corsOrigins.includes(req.headers.origin ?? "")) {
-        if (req.body.metadata !== undefined) {
+        if (req.body.metadata ) {
           const metadata = JSON.parse(req.body.metadata);
           RequestSender.userId = metadata.RequestSender.userId;
           RequestSender.sessionId = metadata.RequestSender.sessionId;
+        }else if(req.headers['x-user-id'] && req.headers['x-session-id'] ){
+          RequestSender.userId = req.headers['x-user-id'] as string;
+          RequestSender.sessionId = req.headers['x-session-id'] as string;
         }
       }
 

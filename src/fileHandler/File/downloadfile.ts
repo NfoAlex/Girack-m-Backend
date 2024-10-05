@@ -43,7 +43,7 @@ export default async function downloadfile(req: Request, res: Response) {
 
     // ユーザーIDとセッションIDが存在しない場合はエラーを返す
     if (!RequestSender.userId || !RequestSender.sessionId) {
-      res.status(401).send("Unauthorized: Missing userId or sessionId");
+      res.status(401).send({ result: "ERROR_WRONG_SESSION" });
       return;
     }
 
