@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { ServerInfo } from "../db/InitServer";
 import calcDirectorySize from "../util/FIle/calcDirectorySize";
 import checkSession from "../actionHandler/auth/checkSession";
-import type { Express, NextFunction } from 'express';
+import type { Express, NextFunction, Request, Response } from 'express';
 import type IRequestSender from "../type/requestSender";
 import dotenv from "dotenv";
 
@@ -119,12 +119,12 @@ module.exports = (app:Express) => {
   app.use(cookieParser());
 
   //ファイルのアップロード処理
-  app.post("/uploadfile", upload.single("file"), (req:any, res:any) => uploadfile(req, res));
+  app.post("/uploadfile", upload.single("file"), (req:Request, res:Response) => uploadfile(req, res));
 
   //ファイルの取得
-  app.get("/fetchfile/:id", (req:any, res:any) => fetchfile(req,res));
+  app.get("/fetchfile/:id", (req:Request, res:Response) => fetchfile(req,res));
 
   //ファイルをダウンロードする
-  app.get("/downloadfile/:id", upload.none(), (req:any, res:any) => downloadfile(req,res));
+  app.get("/downloadfile/:id", upload.none(), (req:Request, res:Response) => downloadfile(req,res));
 
 }
