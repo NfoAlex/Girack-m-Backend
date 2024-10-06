@@ -71,7 +71,7 @@ db.exec(
 //migration
 migration20240612(); //inboxカラム追加
 migration20240618(); //messageReadIdからmessageReadTimeへ
-migration20241006(); //USERS_PASSWORDへsaltカラム追加
+migration20241006(); //USERS_PASSWORDへsaltカラム追加、全員のパスハッシュ
 
 console.log("InitUser :: ユーザーDB作成完了");
 db.close();
