@@ -45,7 +45,8 @@ export interface IUserRoleBeforeParsing {
 //ユーザーのパスワード
 export interface IUserPassword {
   userId: string,
-  password:string
+  password: string,
+  salt: string
 }
 
 //セッション情報
