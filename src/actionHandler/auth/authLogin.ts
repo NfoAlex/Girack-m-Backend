@@ -4,6 +4,7 @@ import Database from 'better-sqlite3';
 const db = new Database('./records/USER.db');
 db.pragma('journal_mode = WAL');
 
+import * as crypto from "node:crypto";
 import type { IUserInfo, IUserPassword } from "../../type/User";
 
 /**
@@ -30,8 +31,13 @@ export default function authLogin(_username:string, _password:string)
     //undefinedなら停止
     if (passwordData === undefined) return {authResult:false, UserInfo:null, sessionId:null};
 
-    //パスワード比較
-    const authResult = passwordData.password === _password;
+    //ソフト加えたパスワード
+    const inputSaltedPassword = _password + passwordData.salt;
+    //それをハッシュ化
+    const inputHashedPassword = crypto.createHash('sha256').update(inputSaltedPassword).digest('hex');
+
+    //パスワードとハッシュ化した入力値の比較
+    const authResult = passwordData.password === inputHashedPassword;
 
     //違うなら失敗結果を返す
     if (authResult === false) return {authResult:false, UserInfo:null, sessionId:null};

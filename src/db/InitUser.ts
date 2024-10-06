@@ -4,6 +4,7 @@ db.pragma('journal_mode = WAL');
 
 import migration20240612 from "./migration/User/20240612";
 import migration20240618 from "./migration/User/20240618";
+import migration20241006 from './migration/User/20241006';
 
 //ユーザー基本情報を保存するUSERS_INFOテーブルを無ければ作成
 db.exec(
@@ -23,6 +24,7 @@ db.exec(
   `create table if not exists USERS_PASSWORD(
     userId TEXT PRIMARY KEY,
     password TEXT NOT NULL,
+    salt TEXT DEFAULT '',
     FOREIGN KEY(userId) REFERENCES USERS_INFO(userId)
   )`
 );
@@ -69,6 +71,7 @@ db.exec(
 //migration
 migration20240612(); //inboxカラム追加
 migration20240618(); //messageReadIdからmessageReadTimeへ
+migration20241006(); //USERS_PASSWORDへsaltカラム追加、全員のパスハッシュ
 
 console.log("InitUser :: ユーザーDB作成完了");
 db.close();

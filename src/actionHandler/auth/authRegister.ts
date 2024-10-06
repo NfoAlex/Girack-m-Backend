@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import fetchUser from "../User/fetchUser";
 import { ServerInfo } from "../../db/InitServer";
+import * as crypto from "node:crypto";
 
 import Database from 'better-sqlite3';
 const db = new Database('./records/USER.db');
@@ -34,7 +35,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
     if (userIdGen === "") throw Error;
 
     //パスワードを生成する
-    const passwordGenerated:string = generateKey();
+    const passwordGenerated = generateKey();
     
     //サーバーの設定ファイル読み取り
     const ServerConfig:IServerInfo = JSON.parse(fs.readFileSync("./records/server.json", "utf-8"));
@@ -64,8 +65,8 @@ export default async function authRegister(username:string, inviteCode:string|nu
 
     //生成したパスワードを記録
     db.prepare(
-      "INSERT INTO USERS_PASSWORD values (?,?)"
-    ).run(userIdGen, passwordGenerated);
+      "INSERT INTO USERS_PASSWORD (userId, password, salt) values (?,?,?)"
+    ).run(userIdGen, passwordGenerated.password, passwordGenerated.salt);
 
     //デフォルトのユーザー設定のJSON読み込み
     const defaultConfigData:IUserConfig = JSON.parse(
@@ -97,7 +98,7 @@ export default async function authRegister(username:string, inviteCode:string|nu
         channelJoined: ["0001"],
         banned: false,
       },
-      password: passwordGenerated
+      password: passwordGenerated.raw
     };
 
   } catch(e) {
@@ -150,15 +151,23 @@ async function getNewUserId():Promise<string> {
   });
 }
 
-//パスワード生成
-function generateKey():string {
+//パスワードとソルト生成
+function generateKey():{password:string, raw:string, salt:string} {
   const LENGTH = 24; //生成したい文字列の長さ
   const SOURCE = "abcdefghijklmnopqrstuvwxyz0123456789"; //元になる文字
-  let result = ""; //パスワード文字列
+  let passwordGen = ""; //パスワード文字列
 
   //パスワード生成、変数へ文字を追加
   for(let i=0; i<LENGTH; i++){
-    result += SOURCE[Math.floor(Math.random() * SOURCE.length)];
+    passwordGen += SOURCE[Math.floor(Math.random() * SOURCE.length)];
   }
-  return result;
+
+  //ソルト
+  const salt = crypto.randomBytes(16).toString('hex');
+  //ソルトを加える
+  const saltedPassword = passwordGen + salt;
+  //ハッシュ
+  const result = crypto.createHash('sha256').update(saltedPassword).digest('hex');
+
+  return {password:result, raw:passwordGen, salt};
 }
