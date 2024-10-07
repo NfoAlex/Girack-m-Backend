@@ -115,7 +115,11 @@ export default function fetchHistory(
     let atTop = false;
     let atEnd = false;
     //履歴の長さから取得開始位置を引いて30以内なら末端
-    if (historyLength - positionIndex < 30) {
+    if (
+      historyLength - positionIndex < 30
+        &&
+      (historyLength - positionIndex) < historyLimit
+    ) {
       atTop = true;
     }
 
