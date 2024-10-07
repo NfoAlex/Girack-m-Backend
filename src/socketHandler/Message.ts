@@ -238,7 +238,7 @@ module.exports = (io:Server) => {
           includeThisPosition: boolean,
           fetchDirection: "older"|"newer",
         },
-        fetchingLength?: number
+        historyLength?: number
       }
     ) => {
       /*
@@ -260,7 +260,7 @@ module.exports = (io:Server) => {
           history: IMessage[],
           atTop: boolean,
           atEnd: boolean
-        }|null = fetchHistory(dat.channelId, dat.fetchingPosition, dat.fetchingLength);
+        }|null = fetchHistory(dat.channelId, dat.fetchingPosition, dat.historyLength);
 
         //データを送信
         socket.emit(
