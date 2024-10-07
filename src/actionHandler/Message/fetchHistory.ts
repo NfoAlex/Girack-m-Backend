@@ -8,6 +8,7 @@ import type { IMessage, IMessageBeforeParsing } from "../../type/Message";
  * 履歴を取得する
  * @param _channelId 
  * @param _fetchingPosition 
+ * @param _historyLength
  * @returns 
  */
 export default function fetchHistory(
@@ -17,7 +18,8 @@ export default function fetchHistory(
     positionMessageTime?: string
     includeThisPosition: boolean,
     fetchDirection: "older"|"newer"
-  }
+  },
+  _historyLength = 30
 ):
   {
     history: IMessage[],
@@ -31,6 +33,11 @@ export default function fetchHistory(
     let historyLimit = 30;
     //履歴を読み出し始める位置
     let positionIndex = 0;
+
+    //もし履歴の取得数が指定されていて、30以下なら設定
+    if (_historyLength <= 30) {
+      historyLimit = _historyLength;
+    }
 
     //メッセージ位置の設定、指定がないなら0
     if (
